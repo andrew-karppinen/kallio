@@ -1,0 +1,72 @@
+
+
+
+ENNEN PELIÄ:
+
+alustaa pelin tiedot lataa kartan
+alustaa grafiikat 
+alustaa pelaajat jne
+
+client lähettää serverille tiedon yhteyden muodostamisesta
+server lähettää clientille tiedon pelin alkamisesta
+
+(server lähettää myös tiedon kartan koosta jotta sitä ei tarvise siirtää erikseen joka kerta)?
+
+
+jos peli loppuu häviöön siitä lähetetään tieto tai jos peli voitetaan siitä lähetetään tieto
+
+
+
+Peli SILMUKKA:
+
+1
+odottaa saapuneet muutokset
+sijoittaa saapuneet tiedot
+
+2
+piirtää tilanteen
+
+
+
+
+
+3
+tutkii tnt tilanteen
+tutkii räjähtääkö
+
+
+
+
+4
+toteuttaa räjähdykset
+jos räjähdys 0 vaihtaa räjähdyksen 1
+jos räjähdys 1 poistaa räjähdyksen tämän jälkeen
+
+
+jos räjähdysalueella pelaaja, peli loppuu
+räjäyttää räjäytettävät asiat pois tieltä
+jos räjähdysaluella tnt räjäyttää tämän ja asettaa uuden räjähdysalueen räjähdykset arvoon 0
+
+5
+vihollishahmon toiminnot
+liikuttaa vihollista
+tutkii liikkuuko pelaajan päälle jos liikkuu, peli loppuu
+
+
+
+6
+Paikallisen pelaajan liikkeet
+tutkii yrittääkö paikallinen pelaaja mennä maaliin jos yrittää laskee onko pisteitä keräämättä jos ei tämä pelaaja pääsee maaliin
+tutkii yrittääkö työntää kiveä tai tnt, tutkii onko työnnetävä pudotuksessa jne
+tutkii meneekö pisteen tai perustilen päälle jne
+
+7
+tutkii kivien tilanteen
+tutkii tippuuko pelaajan päälle
+tutkii putoaako vihollisen päälle
+tutkii tippuuko tnteen päälle
+
+8
+piirtää tilanteen
+
+

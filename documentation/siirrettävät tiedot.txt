@@ -1,0 +1,39 @@
+
+
+tiedot siirretään socketin kautta 
+vastaanottajakone muodostaa saapuneista tiedoista kartan eli listan jossa alkioina olioita
+Tämä tapahtuu samalla tavalla kun peliä aloittaessa.
+tieto kartan koosta siirretään vain pelin aluksi
+
+Peliä aloittaessa ohjelma lukee tiedot vain tiedostosta johon kartta tallennettu
+
+
+Luettelo numeroista joista kartta muodostetaan.
+
+
+paikallisen ja etäpelaajan paikat vaihdetaan tietoja lähettäessä
+koska toisella tietokoneella roolit on tietenkin päinvastaiset
+
+0 = tyhjä
+1 = paikallinen pelaaja 
+2 = toisen tietokoneen pelaaja 
+3 = perustile
+4 = tile joka voidaan räjäyttää
+5 = tile jota ei voida räjäyttää
+6 = piste
+7 = maali
+8 = tnt joka ei putoamassa 
+9 = tnt joka putoamassa
+10 = kivi joka ei putoamassa
+11 = kivi joka putoamassa
+14 =  vihollinen joka katsoo oikealle 
+15 = vihollinen joka katsoo alas
+16 = vihollinen joka katsoo vasemmalle
+17 = vihollinen joka katsoo ylös
+
+
+Lähetettävät numerot erotellaan pilkuilla
+lähetettävä merkkijonon ensimmäiset kaksi lukua kertoo kartan sijainnin x,y suunnissa
+sen jälkeen kartta vasemmalta oikealle ja ylhäältä alas
+
+

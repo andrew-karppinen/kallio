@@ -1,0 +1,38 @@
+
+
+
+PALIKAT:
+
+perustile
+kivi joka sisältää paivnovoiman
+tile mitä ei voi rikkoa
+tile minkä voi rikkoa räjäyttämällä
+TNT joka putoaa alaspäin ja osuessaan johonkin räjäyttää 3x3 kokoisen alueen
+timantti, piste joita kerätään
+
+maali jonne molempien pelaajien pitää päästä
+
+vihollinen joka kulkee suoraan tai esteeseen törmättäessä oikealle
+
+
+
+LIIKKUMINEN:
+ukkelia liikuttaessa se ei vain "napsahda" kohdasta toiseen vaan se liikkuu animoidusti
+kiveä työnnettäessä liikkuminen hidastuu
+kivi putoaa alaspäin hitaammin kun hahmo liikkuu, sama tnteelle
+
+
+KIVI:
+jos kivi putoaa pelaajan päälle peli päättyy
+jos kaksi kiveä on päällekkäin ylempi kivi siirtyy oikealle puolelle ja putoaa alaspäin jos edesä ei ole palikoita tätä estämässä,
+jos tämä ei onnistu tekee saman vasemmalle
+
+
+TNT:
+Räjäyttää 3x3 kokoisen alueelta kaiken muun kuin tilen jota ei voi tuhota
+
+
+MONINPELI:
+peli synkronoituu kahden tietokoneen välillä
+molempine pelaajien täytyy päästä maliin kun kaikki pisteet on kerätty
+Pelaajat tekee yhteistyötä
