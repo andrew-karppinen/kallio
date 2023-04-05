@@ -32,6 +32,12 @@ koska toisella tietokoneella roolit on tietenkin päinvastaiset
 17 = vihollinen joka katsoo ylös
 
 
+numerot olioksi = {"0":None,"1":gamedata.local_player_,"2":gamedata.remote_player_,"3":DefaultTile(),"4":Brick(),"5":Bedrock,"6":Diamond(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),"12":Monster(1),"13":Monster(2),"14":Monster(3),"15":Monster(4)}
+
+
+
+
+
 Lähetettävät numerot erotellaan pilkuilla
 lähetettävä merkkijonon ensimmäiset kaksi lukua kertoo kartan sijainnin x,y suunnissa
 sen jälkeen kartta vasemmalta oikealle ja ylhäältä alas

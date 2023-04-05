@@ -44,7 +44,6 @@ class Network:
 
         '''
         send map data
-
         0 = tyhjä
         1 = paikallinen pelaaja
         2 = toisen tietokoneen pelaaja
@@ -62,6 +61,8 @@ class Network:
         16 = vihollinen joka katsoo vasemmalle
         17 = vihollinen joka katsoo ylös
         '''
+
+        #objects to numbers
 
         sendlist = []
 
