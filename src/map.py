@@ -3,7 +3,7 @@ from src.objects import *
 
 
 
-def SetMap(gamedata:object,mapstr:str,map_height:int,map_width:int):
+def SetMap(gamedata:object,mapstr:str):
     '''
     0 = tyhjä
     1 = paikallinen pelaaja
@@ -64,7 +64,6 @@ def SetMap(gamedata:object,mapstr:str,map_height:int,map_width:int):
 
 
 
-#Määritetään funktio joka palauttaa tiedoston merkkijonona
 def ReadMapFile(file_path:str):
     '''
     read txt file
