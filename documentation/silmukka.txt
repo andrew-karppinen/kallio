@@ -7,10 +7,11 @@ alustaa pelin tiedot lataa kartan
 alustaa grafiikat 
 alustaa pelaajat jne
 
-client lähettää serverille tiedon yhteyden muodostamisesta
+clien yhdistää serveriin
+client lähettää serverille tiedon että on valmis aloittamaan pelin ja toisinpäin
 server lähettää clientille tiedon pelin alkamisesta
 
-(server lähettää myös tiedon kartan koosta jotta sitä ei tarvise siirtää erikseen joka kerta)?
+server lähettää myös tiedon kartan koosta jotta sitä ei tarvise siirtää erikseen joka kerta (ja mahdolliset muut tiedot muita tietoja)
 
 
 jos peli loppuu häviöön siitä lähetetään tieto tai jos peli voitetaan siitä lähetetään tieto
@@ -20,12 +21,15 @@ jos peli loppuu häviöön siitä lähetetään tieto tai jos peli voitetaan sii
 Peli SILMUKKA:
 
 1
-odottaa saapuneet muutokset
-sijoittaa saapuneet tiedot
+saapuneiden tietojen vastaanotto tapahtuu erillisessä threadissa
+odottaa saapuneet muutokset tältä threadilta
+
+
+sijoittaa saapuneen kartan paikalliseen karttaan
+
 
 2
 piirtää tilanteen
-
 
 
 
