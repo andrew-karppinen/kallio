@@ -5,6 +5,9 @@ from src.objects import *
 
 def SetMap(gamedata:object,mapstr:str):
     '''
+    Convert mapstr to map list
+    set maplist to gamedata object
+
     0 = tyhjä
     1 = paikallinen pelaaja
     2 = toisen tietokoneen pelaaja
@@ -60,7 +63,8 @@ def SetMap(gamedata:object,mapstr:str):
             maplist2d[y][x] = maplist[counter]
             counter += 1
 
-    return(maplist2d)
+
+    gamedata.current_map_ = maplist2d #set maplist to gamedata object
 
 
 
@@ -71,7 +75,7 @@ def ReadMapFile(file_path:str):
     the first line specifies map size
     returns the end of the file as a string
 
-    return height:int,width:int,map:str
+    return map:str height:int,width:int
     '''
 
 
