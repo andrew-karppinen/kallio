@@ -8,13 +8,13 @@ class GameData:
     '''
 
 
-    def __init__(self,local_player:object,remote_player:object = None,screen:pygame.surface = None):
+    def __init__(self,local_player:object,multiplayer:bool = False,remote_player:object = None,screen:pygame.surface = None):
 
 
         self.screen_ = screen #pygame window
 
-
-
+        self.multiplayer_ = multiplayer
+        self.server_ = False #False = client, True = server
         self.local_player_ = local_player
         self.remote_player_ = remote_player
 
