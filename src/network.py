@@ -39,7 +39,7 @@ def MapListToStr(maplist: list):
                 if maplist[i][j].local_player_:  # if local player
                     sendlist.append("2")  # change to remoteplayer
                 else:  # if remoteplayer
-                    sendlist.append(1)  # change to local player
+                    sendlist.append("1")  # change to local player
 
             elif type(maplist[i][j]) == DefaultTile:  # if default tile
                 sendlist.append("3")
@@ -86,7 +86,6 @@ class Server:
 
 
         self.socket_ = socket.socket()  # create socket object
-        self.socket_.settimeout(2)
         self.port_ = port
 
         self.socket_.settimeout(5)  # timeout 5 second
@@ -100,32 +99,80 @@ class Server:
         try:
             self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
             self.connected_ = True
+            self.client_.settimeout(0.01)
         except:
             self.connected_ = False
 
+
+        self.data_ = None #received messages
+        self.data_type_ = None
+        self.round_number_ = 0 #if message is map
+
+        #data_type_: "map","readytostart","gameexit",None, "other"
+
+        #data_:
+        #map = str
+        #readytostart = str
+        #gameexit = None
+        #other = str
+        #None = None
 
 
 
     def Read(self):
 
-        data = self.client_.recv(1024).decode() #lukee saapuneita viestejä
+        try:
+            data = self.client_.recv(1024).decode() #read messages
 
-        return data
+            if len(data) == 0: #if no message or message is empty
+                self.data_ = None
+                self.data_type_ = None
+            else:
+                # exmine message data type and set data
+                if data[0:4] == "map:":  # if message is map
+
+                    index = data.find(":", 5) +1
+                    self.round_number_ = data[4:index-1]  # round counter
+                    self.data_type_ = "map"
+                    self.data_ = data[index:] #read the rest of message
 
 
-    def SendMap(self,maplist:list):
+                elif data[0:13] == "readytostart:": #if message is "readytostart"
+                    self.data_type_ = "readytostart"
+                    self.data_ = data[13:] #read check_number
+        except TimeoutError:
+            self.data_ = None
+            self.data_type_ = None
 
+        return self.data_
+
+
+    def SendMap(self,maplist:list,round_number:int):
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = "map:" + mapstr
-
+        message = f"map:{str(round_number)}:{mapstr}"
         self.client_.send(message.encode())  #send message
 
 
-    def SendStartInfo(self):
-        pass
+    def SendStartInfo(self,map_height:int,map_width:int):
 
-    def SendGameExit(self,win = False): #if game exit
-        pass
+        '''
+        a message about the start of the game
+        send map size y,z
+        '''
+
+        message = "startinfo:" + str(map_height) + "," + str(map_width)
+
+        self.client_.send(message.encode())  # send message
+
+
+    def SendGameExit(self,win:bool = False): #if game exit
+        #win False = game over, True = level complete
+        message = "gameexit:" + str(win)
+        self.client_.send(message.encode())  # send message
+
+    def CloseSocket(self):
+        self.socket_.close()
+
 
 
 class Client:
@@ -137,20 +184,76 @@ class Client:
 
         try:
             self.socket_.connect((ipaddress, port))  #connect to server
+            self.socket_.settimeout(0.01)  # set new timeout
             self.connected_ = True
         except:
             self.connected_ = False
 
 
+        self.data_ = None #received messages
+        self.data_type_ = None
+        self.round_number_ = 0 #if message is map
+
+        #data_type_: "map","startinfo","gameexit",None, "other"
+
+        #data_:
+        #map = str
+        #startinfo = tuple (map_height,map_width)
+        #gameexit = bool
+        #other = str
+        #None = None
+
+
     def Read(self):
 
-        data = self.socket_.recv(1024).decode()
+        try:
+            data = self.socket_.recv(1024).decode() #read socket
 
-        return data
+            #exmine message data type and set data
+            if data[0:4] == "map:": #if message is map
 
-    def SendMap(self,maplist:list):
+                index = data.find(":", 4) +1
+                self.round_number_ = data[4:index-1]  # round counter
+                self.data_type_ = "map"
+                self.data_ = data[index:] #read the rest of message
+
+
+            elif data[0:10] == "startinfo:": #if message is startinfo
+                y_x_list = data[10:].split(',') #set map size
+                map_height = int(y_x_list[0])  #map size y
+                map_width = int(y_x_list[1])  #map size x
+
+                self.data_ = (map_height,map_width)
+                self.data_type_ = "startinfo"
+
+            elif data[0:9] == "gameexit:": #if message is gameexit
+                self.data_type_ = "gameexit"
+                self.data_ = eval(data[9:]) #strin to boolean
+
+        except TimeoutError:
+            self.data_ = None
+            self.data_type_ = None
+
+
+        return self.data_
+
+
+    def SendReadyToStart(self,check_number:str):
+        message = f"readytostart:{check_number}"
+        self.socket_.send(message.encode())  # send message
+
+
+
+    def SendMap(self,maplist:list,round_number:int):
 
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = "map:" + mapstr
+        message = f"map:{str(round_number)}:{mapstr}"
 
         self.socket_.send(message.encode())  #send message
+
+    def SenGameExit(self):
+        pass
+
+
+    def CloseSocket(self):
+        self.socket_.close()
