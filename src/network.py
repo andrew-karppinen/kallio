@@ -1,5 +1,5 @@
 import socket
-from src.objects import *
+from src import *
 
 
 def MapListToStr(maplist: list):
