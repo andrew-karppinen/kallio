@@ -43,3 +43,45 @@ lähetettävä merkkijonon ensimmäiset kaksi lukua kertoo kartan sijainnin x,y 
 sen jälkeen kartta vasemmalta oikealle ja ylhäältä alas
 
 
+Paketit:
+
+readytostart:
+client lähettää serverille tiedon että on valmis aloittamaan pelin
+lisäksi client lähettää 5 numeroa pitkän numerosarjan jonka pitää olla oikea
+
+näyttää tältä:
+"readytostart:01234"
+
+
+
+startinfo:
+serveri lähettää clientille
+tieto pelin aloituksesta ja kartan koko y,x suunnissa
+(ehkä muita tietoja?)
+esimerkki:
+"startinfo:12,10"
+
+heti tämän perään server lähettää clientille kartan
+
+map:
+esimerkki:
+"map:kierrosluku:3,3,3,3,3,3,3,3,3,3,3,3,33,3,2,3,3,3,3,10,10,3,3,3"
+
+kierrosluku on kokonaisluku jota server kasvattaa joka kerta yhdellä kun se lähettää kartan clientille
+client ei tätä lukua kasvata vaan saa sen serveriltä
+client tosin myös katsoo että saapuva kartta on korkeintaa yhden numeron verran isompi kuin edellinen
+tästä kierrosluku jutusta todennäköisesti luovutaan
+
+
+gameexit:
+tieto pelin lopetuksesta,
+
+server lähettää myös tiedon päästiinkö maaliin vai loppuuko muuten vain
+client voi lähettää ainoastaan tiedon että poistui pelistä
+
+
+esimerkki:
+"gameexit:True"
+True = kartta läpi
+False = ei läpi
+
