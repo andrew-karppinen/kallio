@@ -1,6 +1,6 @@
 
 import pygame
-
+from src import *
 
 class GameData:
     '''
@@ -16,10 +16,14 @@ class GameData:
         self.multiplayer_ = multiplayer
         self.server_ = False #False = client, True = server
         self.local_player_ = local_player
+
+
         self.remote_player_ = remote_player
-
-
         self.tile_size_ = 50 #tilesize y*x
+
+        self.collision_objects_ = [Player,Stone,Tnt]
+        self.pushing_objects_ = [Stone, Tnt]
+        self.gravity_objects_ = [Stone,Tnt]
 
 
         self.map_width_ = 0 #x
