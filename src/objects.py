@@ -6,6 +6,8 @@ class Player:
         self.image_ = image
         self.local_player_ = local_player
 
+        self.position_y_ = None
+        self.position_x_ = None
 
 
 class DefaultTile:
