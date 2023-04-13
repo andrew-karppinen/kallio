@@ -35,10 +35,19 @@ def SetMap(gamedata:object,mapstr:str):
 
     number = ""
 
+    y = 0
+    x = 0
+
+
     #numbers to objects
     mapsymbols = {"0":None,"1":gamedata.local_player_,"2":gamedata.remote_player_,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"6":Diamond(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),"12":Monster(1),"13":Monster(2),"14":Monster(3),"15":Monster(4)}
     for i in range(len(mapstr)):
 
+
+        if x == gamedata.map_width_:
+            y += 1
+
+            x = 0
 
 
         if mapstr[i] != ",":
@@ -46,22 +55,23 @@ def SetMap(gamedata:object,mapstr:str):
             number += mapstr[i]
 
         if i + 1 == len(mapstr):  # if map end
-            maplist.append(mapsymbols[number])  # convert numbers to objects
-
+            maplist2d[y][x] = mapsymbols[number]  # convert numbers to objects
+            if number == "1": #if local player
+                gamedata.local_player_.position_y_ = y #set player position
+                gamedata.local_player_.position_x_ = x
 
         if mapstr[i] == ",": #if ","
-            maplist.append(mapsymbols[number]) #convert numbers to objects
+            maplist2d[y][x] = mapsymbols[number] #convert numbers to objects
+            if number == "1": #if local player
+                gamedata.local_player_.position_y_ = y #set player position
+                gamedata.local_player_.position_x_ = x
 
             number = ""
+            x += 1
 
 
 
-    #1d array to 2d array
-    counter = 0
-    for y in range(gamedata.map_height_):
-        for x in range(gamedata.map_width_):
-            maplist2d[y][x] = maplist[counter]
-            counter += 1
+
 
 
     gamedata.current_map_ = maplist2d #set maplist to gamedata object
