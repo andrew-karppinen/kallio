@@ -1,7 +1,7 @@
 import pygame
 from src.objects import *
 
-
+from copy import deepcopy
 
 def SetMap(gamedata:object,mapstr:str):
     '''
@@ -20,6 +20,7 @@ def SetMap(gamedata:object,mapstr:str):
     9 = tnt joka putoamassa
     10 = kivi joka ei putoamassa
     11 = kivi joka putoamassa
+    12 = räjähdys
     14 = vihollinen joka katsoo oikealle
     15 = vihollinen joka katsoo alas
     16 = vihollinen joka katsoo vasemmalle
@@ -40,13 +41,12 @@ def SetMap(gamedata:object,mapstr:str):
 
 
     #numbers to objects
-    mapsymbols = {"0":None,"1":gamedata.local_player_,"2":gamedata.remote_player_,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"6":Diamond(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),"12":Monster(1),"13":Monster(2),"14":Monster(3),"15":Monster(4)}
+    mapsymbols = {"0":None,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"6":Diamond(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),"12":Explosion(),"14":Monster(1),"15":Monster(2),"16":Monster(3),"17":Monster(4)}
     for i in range(len(mapstr)):
 
 
         if x == gamedata.map_width_:
             y += 1
-
             x = 0
 
 
@@ -55,16 +55,32 @@ def SetMap(gamedata:object,mapstr:str):
             number += mapstr[i]
 
         if i + 1 == len(mapstr):  # if map end
-            maplist2d[y][x] = mapsymbols[number]  # convert numbers to objects
-            if number == "1": #if local player
-                gamedata.local_player_.position_y_ = y #set player position
+            if number != "1" and number != "2":  # if no player
+
+                maplist2d[y][x] =  deepcopy(mapsymbols[number])  # convert numbers to objects
+
+            if number == "1":  # if local player
+                gamedata.local_player_.position_y_ = y  # set player position
                 gamedata.local_player_.position_x_ = x
+                maplist2d[y][x] = gamedata.local_player_
+
+            elif number == "2":  # if remote player
+                maplist2d[y][x] = gamedata.remote_player_
+
 
         if mapstr[i] == ",": #if ","
-            maplist2d[y][x] = mapsymbols[number] #convert numbers to objects
+            if number != "1" and number != "2": #if no player
+
+                maplist2d[y][x] = deepcopy(mapsymbols[number]) #convert numbers to objects
+
+
             if number == "1": #if local player
                 gamedata.local_player_.position_y_ = y #set player position
                 gamedata.local_player_.position_x_ = x
+                maplist2d[y][x] = gamedata.local_player_
+
+            elif number == "2": #if remote player
+                maplist2d[y][x] = gamedata.remote_player_
 
             number = ""
             x += 1
