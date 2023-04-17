@@ -21,10 +21,13 @@ class GameData:
         self.remote_player_ = remote_player
         self.tile_size_ = 50 #tilesize y*x
 
+        self.required_points_ = 0
         self.collision_objects_ = [Player,Stone,Tnt]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt]
 
+        self.pushing_right_ = 0
+        self.pushing_left_ = 0
 
         self.map_width_ = 0 #x
         self.map_height_ = 0 #y
@@ -36,15 +39,29 @@ class GameData:
 
     def DrawMap(self):
         #draw current map
-        #first version
-        self.screen_.fill((0, 0, 0))  #asetetaan taustan väriksi musta
-        for y in range(self.map_height_):
-            for x in range(self.map_width_):
+        #camera follow player test
+        y = -1
+        self.screen_.fill((0, 0, 0))  #set backcolor
+        for i in range(self.local_player_.position_y_-8,self.local_player_.position_y_+9):
+            x = -1
+            y += 1
+            for j in range(self.local_player_.position_x_-12,self.local_player_.position_x_+13):
 
-                if self.current_map_[y][x] == None: #if empty
-                    pass
-                else:
-                    self.screen_.blit(self.current_map_[y][x].image_,(x*self.tile_size_,y*self.tile_size_))
+                x += 1
 
 
-        pygame.display.flip()
+                if i >= 0 and j >= 0: #if map not end
+                    if i < self.map_height_ and j < self.map_width_:
+
+                        if self.current_map_[i][j] == None: #if empty
+                            pass
+                        else:
+                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_,y*self.tile_size_))
+
+
+
+
+
+
+
+        pygame.display.flip() #update screen
