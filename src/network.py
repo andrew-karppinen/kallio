@@ -2,6 +2,14 @@ import socket
 from src import *
 
 
+
+
+# Todo check the correctness of the message
+
+
+
+
+
 def MapListToStr(maplist: list):
     '''
     send map data
@@ -17,6 +25,7 @@ def MapListToStr(maplist: list):
     9 = tnt joka putoamassa
     10 = kivi joka ei putoamassa
     11 = kivi joka putoamassa
+    12 = räjähdys
     14 =  vihollinen joka katsoo oikealle
     15 = vihollinen joka katsoo alas
     16 = vihollinen joka katsoo vasemmalle
@@ -65,8 +74,11 @@ def MapListToStr(maplist: list):
                 else:  # no currently dropping
                     sendlist.append("10")
 
-            elif type(maplist[i][j]) == Monster:  # if monster
+            elif type(maplist[i][j]) == Explosion: #if explosion
+                sendlist.append("12")
 
+
+            elif type(maplist[i][j]) == Monster:  # if monster
                 if maplist[i][j].direction_ == 1:  # right
                     sendlist.append("14")
                 elif maplist[i][j].direction_ == 2:  # down
@@ -88,7 +100,7 @@ class Server:
         self.socket_ = socket.socket()  # create socket object
         self.port_ = port
 
-        self.socket_.settimeout(5)  # timeout 5 second
+        self.socket_.settimeout(20)  # timeout 5 second
 
         self.socket_.bind(('', port))
         print("socket binded to %s" % (port))  # set port
@@ -99,7 +111,7 @@ class Server:
         try:
             self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
             self.connected_ = True
-            self.client_.settimeout(0.01)
+            self.client_.settimeout(0.1) #set new timeout
         except:
             self.connected_ = False
 
@@ -120,9 +132,10 @@ class Server:
 
 
     def Read(self):
+        #read socket message
 
         try:
-            data = self.client_.recv(1024).decode() #read messages
+            data = self.client_.recv(10000).decode() #read messages
 
             if len(data) == 0: #if no message or message is empty
                 self.data_ = None
@@ -132,7 +145,7 @@ class Server:
                 if data[0:4] == "map:":  # if message is map
 
                     index = data.find(":", 5) +1
-                    self.round_number_ = data[4:index-1]  # round counter
+                    self.round_number_ = data[4:index-1]  #round counter
                     self.data_type_ = "map"
                     self.data_ = data[index:] #read the rest of message
 
@@ -140,6 +153,12 @@ class Server:
                 elif data[0:13] == "readytostart:": #if message is "readytostart"
                     self.data_type_ = "readytostart"
                     self.data_ = data[13:] #read check_number
+
+                else: #other
+                    self.data_type_ = "other"
+                    self.data_ = data
+
+
         except TimeoutError:
             self.data_ = None
             self.data_type_ = None
@@ -184,7 +203,7 @@ class Client:
 
         try:
             self.socket_.connect((ipaddress, port))  #connect to server
-            self.socket_.settimeout(0.01)  # set new timeout
+            self.socket_.settimeout(0.1)  # set new timeout
             self.connected_ = True
         except:
             self.connected_ = False
@@ -205,9 +224,9 @@ class Client:
 
 
     def Read(self):
-
+        #read socket message
         try:
-            data = self.socket_.recv(1024).decode() #read socket
+            data = self.socket_.recv(10000).decode() #read socket
 
             #exmine message data type and set data
             if data[0:4] == "map:": #if message is map
@@ -229,6 +248,11 @@ class Client:
             elif data[0:9] == "gameexit:": #if message is gameexit
                 self.data_type_ = "gameexit"
                 self.data_ = eval(data[9:]) #strin to boolean
+
+
+            else:  # other
+                self.data_type_ = "other"
+                self.data_ = data
 
         except TimeoutError:
             self.data_ = None

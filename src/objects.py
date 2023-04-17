@@ -46,6 +46,16 @@ class Tnt:
 
 
 
+class Explosion:
+    image = None
+
+    def __init__(self,counter:int = 0):
+        self.counter_ = counter #1,2
+
+    @property
+    def image_(self):
+        return (Explosion.image)
+
 class Bedrock:
     image = None
 

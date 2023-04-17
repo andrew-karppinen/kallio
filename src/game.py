@@ -22,13 +22,19 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         #pushing objects
         if gamedata.local_player_.position_x_+2 < gamedata.map_width_: #if map not end
             if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]) in pushing:
+
+                #the player moves slower if it pushes a rock
                 if gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] == None:
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
+                    if gamedata.pushing_right_ == 0:
+                        gamedata.pushing_right_ = 1
+                    elif gamedata.pushing_right_ == 1:
+                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]
+                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
+                        gamedata.pushing_right_ = 0
 
         #collision check
         if gamedata.local_player_.position_x_ + 1 < gamedata.map_width_:  # if map not end
-            if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions:   #collision check
+            if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions: #collision check
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_x_ += 1
 
@@ -39,9 +45,14 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         if gamedata.local_player_.position_x_-2 >= 0: #if map not end
             if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) in pushing:
                 if gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] == None:
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] = None
 
+                    #the player moves slower if it pushes a rock
+                    if gamedata.pushing_left_ == 0:
+                        gamedata.pushing_left_ = 1
+                    elif gamedata.pushing_left_ == 1:
+                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]
+                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] = None
+                        gamedata.pushing_left_ = 0
 
         #collision check
         if gamedata.local_player_.position_x_-1 >= 0: #if map not end
@@ -74,14 +85,21 @@ def Gravity(gamedata):
     for y in range(gamedata.map_height_-1,0,-1):
         for x in range(gamedata.map_width_-1,0,-1):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
-                if gamedata.current_map_[y][x].drop_: #if stone currently drop
+                if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
                         if type(gamedata.current_map_[y+1][x]) == Player:
-                            print("pööö")
+                            CreateExplosion(gamedata,y+1,x) #create explosion
+                        elif type(gamedata.current_map_[y+1][x]) == Tnt: #if something falls on the tnt
+                            CreateExplosion(gamedata, y+1, x)
+
+                        if gamedata.current_map_[y+1][x] != None:
+                            if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
+                                CreateExplosion(gamedata,y,x) #create explosion
+
 
                 if y + 1 < gamedata.map_height_:  # if map not end
                     if gamedata.current_map_[y+1][x] == None:
-                        # move stone downwards
+                        #move downwards
                         gamedata.current_map_[y][x].drop_ = True
                         gamedata.current_map_[y+1][x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
@@ -93,8 +111,35 @@ def Gravity(gamedata):
 
 
 
-def Run(gamedata:object,multiplayer:bool,connection:object = None):
+def CreateExplosion(gamedata:object,y:int,x:int):
 
+
+    list1 = [0,0,0,1,1,1,-1,-1,-1] #y
+    list2 = [1,-1,0,1,-1,0,1,-1,0] #x
+
+    for i in range(len(list1)):
+
+        if y + list1[i] >= 0 and y + list1[i] < gamedata.map_height_: #if map not end
+            if x + list2[i] >= 0 and x + list2[i] < gamedata.map_width_:  # if map not end
+
+
+                gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
+
+
+
+def DeleteExplosion(gamedata:object):
+
+
+    for y in range(gamedata.map_height_):
+        for x in range(gamedata.map_width_):
+            if type(gamedata.current_map_[y][x]) == Explosion:
+                gamedata.current_map_[y][x].counter_ += 1
+                if gamedata.current_map_[y][x].counter_ > 15: #duration of the explosion
+                    gamedata.current_map_[y][x] = None
+
+
+
+def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
     clock = pygame.time.Clock()
     right = False
@@ -102,7 +147,8 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
     up = False
     down = False
 
-    movelimit = 0
+    movelimit = 0 #gravity
+    movelimit2 = 0 #player move
 
 
     while True:
@@ -114,11 +160,12 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
 
             if connection.data_type_ == "map": #if message is map
-
-
-                mapstr = connection.data_
-                SetMap(gamedata,mapstr) #set map
-
+                try:
+                    mapstr = connection.data_
+                    SetMap(gamedata,mapstr) #set map
+                except: #if incorrect socket message
+                    print(mapstr)
+                    print("incorrect socket message")
 
 
         for event in pygame.event.get(): #pygame event loop
@@ -158,13 +205,17 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
             movelimit = pygame.time.get_ticks()
             Gravity(gamedata)
 
-        if [right, left, up, down].count(True) == 1:  # can only move in one direction at a time
-            Move(gamedata,right,left,up,down)
-            if multiplayer:
-                connection.SendMap(gamedata.current_map_,0)  #send map
+
+        if pygame.time.get_ticks() > movelimit2 + 80:
+            movelimit2 = pygame.time.get_ticks()
+            if [right, left, up, down].count(True) == 1:  # can only move in one direction at a time
+                Move(gamedata,right,left,up,down)
+                if multiplayer:
+                    connection.SendMap(gamedata.current_map_,0)  #send map
+
 
         gamedata.DrawMap()  #draw map
 
+        DeleteExplosion(gamedata)
 
-
-        clock.tick(15)
+        clock.tick(30) #fps limit

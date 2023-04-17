@@ -26,6 +26,7 @@ koska toisella tietokoneella roolit on tietenkin päinvastaiset
 9 = tnt joka putoamassa
 10 = kivi joka ei putoamassa
 11 = kivi joka putoamassa
+12 = räjähdys
 14 =  vihollinen joka katsoo oikealle 
 15 = vihollinen joka katsoo alas
 16 = vihollinen joka katsoo vasemmalle

@@ -8,6 +8,7 @@ def SetMap(gamedata:object,mapstr:str):
     Convert mapstr to map list
     set maplist to gamedata object
 
+
     0 = tyhjä
     1 = paikallinen pelaaja
     2 = toisen tietokoneen pelaaja
@@ -28,8 +29,12 @@ def SetMap(gamedata:object,mapstr:str):
     '''
 
 
-    number = ""
 
+    #check mapstr correctness #Todo update this
+    if mapstr.count(",") != gamedata.map_width_ * gamedata.map_height_ -1:
+        raise Exception('incorrect mapstr')
+
+    number = ""
 
     maplist = []
     maplist2d = [['' for i in range(gamedata.map_width_)] for j in range(gamedata.map_height_)] #create 2d array
@@ -69,6 +74,7 @@ def SetMap(gamedata:object,mapstr:str):
 
 
         if mapstr[i] == ",": #if ","
+
             if number != "1" and number != "2": #if no player
 
                 maplist2d[y][x] = deepcopy(mapsymbols[number]) #convert numbers to objects
@@ -84,7 +90,6 @@ def SetMap(gamedata:object,mapstr:str):
 
             number = ""
             x += 1
-
 
 
 
@@ -114,7 +119,7 @@ def ReadMapFile(file_path:str):
     tiedosto.close()
 
 
-    mjono = rivit[0] #first line
+    mjono = rivit[0] #eka rivi
 
     #Luodaan y_ja_x-lista-muuttuja joka katkaisee merkkijonon siihen syötetyn pilkun kohdalta
     y_ja_x = mjono.split(',')

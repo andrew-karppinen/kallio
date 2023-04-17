@@ -1,16 +1,14 @@
 
-
 from src import *
 
 import pygame
-
 
 import time
 
 
 
 
-naytto = pygame.display.set_mode((950, 800)) #create window
+naytto = pygame.display.set_mode((1250, 850)) #create window
 
 
 #initialize
@@ -20,8 +18,14 @@ hiekkakuva = pygame.image.load("media/hiekka.png")
 ukkeli = pygame.image.load("media/ukkeli.png")
 kivikuva = pygame.image.load("media/kivi.png")
 tntkuva = pygame.image.load("media/tnt.png")
+rajahdyskuva = pygame.image.load("media/räjähdys.png")
+pisetekuva = pygame.image.load("media/piste.png")
+maalikuva = pygame.image.load("media/maali.png")
 
 #set images
+Goal.image = maalikuva
+Diamond.image = pisetekuva
+Explosion.image = rajahdyskuva
 Tnt.image = tntkuva
 DefaultTile.image = hiekkakuva
 Stone.image = kivikuva
@@ -39,11 +43,11 @@ if 0: #client
     pygame.display.set_caption('client')
     gamedata = GameData(local_player, True, remote_player, screen=naytto)
 
-    connection = Client("localhost", 1234)
+    connection = Client("localhost", 1234) #tähän ip osoite!!!
 
 
     if connection.connected_:
-        connection.SendReadyToStart("01234")
+        connection.SendReadyToStart("05664")
         connection.Read() #read messages
         print("tässä1",connection.data_)
         if connection.data_type_ == "startinfo": #if start info
@@ -77,7 +81,7 @@ if 0: #server
 
         if connection.data_type_ == "readytostart": #if client ready to start the game
 
-            if connection.data_ == "01234":
+            if connection.data_ == "05664":
 
                 connection.SendStartInfo(gamedata.map_height_,gamedata.map_width_) #send start info
 
@@ -91,6 +95,7 @@ if 1: #if singleplayer
 
     mapstr,gamedata.map_height_,gamedata.map_width_ =ReadMapFile("testmap.txt")
     SetMap(gamedata,mapstr) #convert str to map list
+
 
     Run(gamedata,False)
 

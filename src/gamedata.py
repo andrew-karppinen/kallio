@@ -21,7 +21,7 @@ class GameData:
         self.remote_player_ = remote_player
         self.tile_size_ = 50 #tilesize y*x
 
-        self.required_points_ = 0
+        self.required_score_ = 0
         self.collision_objects_ = [Player,Stone,Tnt]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt]
@@ -42,16 +42,52 @@ class GameData:
         #camera follow player test
         y = -1
         self.screen_.fill((0, 0, 0))  #set backcolor
-        for i in range(self.local_player_.position_y_-8,self.local_player_.position_y_+9):
+
+
+
+        left = self.local_player_.position_x_ - 13
+        right = self.local_player_.position_x_+ 12
+
+        #set drawing area
+        while True:
+            if left < 0:
+                left += 1
+                right += 1
+
+            elif right > self.map_width_:
+                right -= 1
+                left -= 1
+
+            else:
+                break
+
+        up = self.local_player_.position_y_ - 8
+        down = self.local_player_.position_y_+9
+
+        #set drawing area
+        while True:
+            if up < 0:
+                up += 1
+                down += 1
+            elif down > self.map_height_:
+                down -= 1
+                up -= 1
+            else:
+                break
+
+
+
+        #draw tiles
+        for i in range(up,down):
             x = -1
             y += 1
-            for j in range(self.local_player_.position_x_-12,self.local_player_.position_x_+13):
+            for j in range(left,right):
 
                 x += 1
 
 
                 if i >= 0 and j >= 0: #if map not end
-                    if i < self.map_height_ and j < self.map_width_:
+                    if i < self.map_height_ and j < self.map_width_: #if map not end
 
                         if self.current_map_[i][j] == None: #if empty
                             pass
