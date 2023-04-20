@@ -1,6 +1,7 @@
 import socket
+import zlib
 from src import *
-
+import sys
 
 
 
@@ -94,13 +95,11 @@ def MapListToStr(maplist: list):
 
 
 class Server:
-    def __init__(self,port:int):
-
-
+    def __init__(self,port:int):#constructor
         self.socket_ = socket.socket()  # create socket object
         self.port_ = port
 
-        self.socket_.settimeout(20)  # timeout 5 second
+        self.socket_.settimeout(50)  # timeout 5 second
 
         self.socket_.bind(('', port))
         print("socket binded to %s" % (port))  # set port
@@ -135,7 +134,8 @@ class Server:
         #read socket message
 
         try:
-            data = self.client_.recv(10000).decode() #read messages
+            data = self.client_.recv(10000) #read messages
+            data = zlib.decompress(data).decode()  # decompress and decode
 
             if len(data) == 0: #if no message or message is empty
                 self.data_ = None
@@ -169,11 +169,12 @@ class Server:
     def SendMap(self,maplist:list,round_number:int):
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
         message = f"map:{str(round_number)}:{mapstr}"
-        self.client_.send(message.encode())  #send message
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+
+
 
 
     def SendStartInfo(self,map_height:int,map_width:int):
-
         '''
         a message about the start of the game
         send map size y,z
@@ -181,13 +182,13 @@ class Server:
 
         message = "startinfo:" + str(map_height) + "," + str(map_width)
 
-        self.client_.send(message.encode())  # send message
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
 
     def SendGameExit(self,win:bool = False): #if game exit
         #win False = game over, True = level complete
         message = "gameexit:" + str(win)
-        self.client_.send(message.encode())  # send message
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
     def CloseSocket(self):
         self.socket_.close()
@@ -203,7 +204,7 @@ class Client:
 
         try:
             self.socket_.connect((ipaddress, port))  #connect to server
-            self.socket_.settimeout(0.1)  # set new timeout
+            self.socket_.settimeout(0.1)  #set new timeout
             self.connected_ = True
         except:
             self.connected_ = False
@@ -226,7 +227,8 @@ class Client:
     def Read(self):
         #read socket message
         try:
-            data = self.socket_.recv(10000).decode() #read socket
+            data = self.socket_.recv(10000) #read socket
+            data = zlib.decompress(data).decode() #decompress and decode
 
             #exmine message data type and set data
             if data[0:4] == "map:": #if message is map
@@ -264,7 +266,7 @@ class Client:
 
     def SendReadyToStart(self,check_number:str):
         message = f"readytostart:{check_number}"
-        self.socket_.send(message.encode())  # send message
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
 
 
@@ -273,7 +275,7 @@ class Client:
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
         message = f"map:{str(round_number)}:{mapstr}"
 
-        self.socket_.send(message.encode())  #send message
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
     def SenGameExit(self):
         pass
