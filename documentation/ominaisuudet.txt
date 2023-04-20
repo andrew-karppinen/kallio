@@ -34,5 +34,5 @@ Räjäyttää 3x3 kokoisen alueelta kaiken muun kuin tilen jota ei voi tuhota
 
 MONINPELI:
 peli synkronoituu kahden tietokoneen välillä
-molempine pelaajien täytyy päästä maliin kun kaikki pisteet on kerätty
+molempine pelaajien täytyy päästä maaliin kun kaikki pisteet on kerätty
 Pelaajat tekee yhteistyötä

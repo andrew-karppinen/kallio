@@ -96,6 +96,10 @@ def Gravity(gamedata):
                             if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
                                 CreateExplosion(gamedata,y,x) #create explosion
 
+                    else: #if map end
+                        if type(gamedata.current_map_[y][x]) == Tnt:
+                            CreateExplosion(gamedata, y, x)
+
 
                 if y + 1 < gamedata.map_height_:  # if map not end
                     if gamedata.current_map_[y+1][x] == None:
@@ -139,6 +143,17 @@ def DeleteExplosion(gamedata:object):
 
 
 
+
+def ExitProgram(connection):
+    try: #if multiplayer
+        connection.CloseSocket()  # close socket
+    except:
+        pass
+
+    pygame.quit()
+    exit()
+
+
 def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
     clock = pygame.time.Clock()
@@ -158,7 +173,6 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
             connection.Read() #read socket
 
 
-
             if connection.data_type_ == "map": #if message is map
                 try:
                     mapstr = connection.data_
@@ -171,6 +185,10 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
         for event in pygame.event.get(): #pygame event loop
             #read keyboard
             if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_ESCAPE: #if esc is pressed
+                    ExitProgram(connection)
+
                 if event.key == pygame.K_LEFT:
                     left = True
                 if event.key == pygame.K_RIGHT:
@@ -196,9 +214,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
 
             if event.type == pygame.QUIT:  #exit program
-                if multiplayer:
-                    connection.CloseSocket() #close socket
-                exit()
+                ExitProgram(connection)
 
 
         if pygame.time.get_ticks() > movelimit + 140:

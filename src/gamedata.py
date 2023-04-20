@@ -37,16 +37,47 @@ class GameData:
 
 
 
+
+
+    def SetScreenSize(self,width:int,height:int):
+
+        '''
+        sets screen size and scales images
+        return True/False if resize succesful or unsuccesful
+        '''
+
+        tile_size_ = height // 18
+        print(tile_size_)
+        if width % tile_size_ != 0:
+            return(False)
+        else:
+            self.tile_size_ = tile_size_
+            self.screen_ = pygame.display.set_mode((width, height))  #update screen size
+
+            for i in [Goal,Diamond,Stone,Tnt,DefaultTile,Explosion]:
+                i.image = pygame.transform.scale(i.image,(tile_size_,tile_size_))
+            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size_,tile_size_))
+
+            if self.remote_player_ != None:
+                self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size_,tile_size_))
+
+            return(True)
+
     def DrawMap(self):
         #draw current map
-        #camera follow player test
+        #camera follow player
+        #Todo update this
+
         y = -1
         self.screen_.fill((0, 0, 0))  #set backcolor
 
 
 
-        left = self.local_player_.position_x_ - 13
-        right = self.local_player_.position_x_+ 12
+        #x = 32
+        #y = 18
+
+        left = self.local_player_.position_x_ - 16
+        right = self.local_player_.position_x_+ 16
 
         #set drawing area
         while True:
@@ -61,7 +92,7 @@ class GameData:
             else:
                 break
 
-        up = self.local_player_.position_y_ - 8
+        up = self.local_player_.position_y_ - 9
         down = self.local_player_.position_y_+9
 
         #set drawing area
@@ -93,8 +124,6 @@ class GameData:
                             pass
                         else:
                             self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_,y*self.tile_size_))
-
-
 
 
 

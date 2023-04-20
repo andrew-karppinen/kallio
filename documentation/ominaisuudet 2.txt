@@ -39,18 +39,15 @@ PELAAJA:
 kuva,
 paikallinen_pelaaja #onko tämän koneen hahmo vai toisen koneen
 
-ollaanko työntämässä #tnt ja kiven työntäminen vaatii 2 vuoroa joten pidetään tätä yllä
-ollaanko työntämässä
-jos niin vasemmalla vai oikealle
 
 
 
 GameData:
 #paikallisen tietokoneen pelitiedot
-self.player
-self.map
-self.server
-
+#sisältää kartan ja muita tietoja
+#sisältää myös tiedot onllaanko kiveä tms työntämässä
+#jne
+#metodi joka piirtää kartan
 
 
 KARTTA:
@@ -58,12 +55,11 @@ KARTTA:
 
 
 
-
 PIIRTÄMINEN:
 piirtämistoiminto toimii niin että sillä on edellisen vuoron kartta,
 sekä uudempi kartta jossa palikat on liikkunut korkeintaan yhden alkion verran
 
-piirtämistoiminto vertailee näitä ja animoi liikkumisen(lisätään myöhemmin)
+piirtämistoiminto vertailee näitä ja animoi liikkumisen(lisätään myöhemmin?)
 
 
 
@@ -72,8 +68,6 @@ siirrettävät tiedot:
 kartta lista siirretään numeropohjaisesti samalla tavalla kuin karttaa luodessa
 kartan koko
 
-
-räjähdyksen tiedot, siirretään myös tieto onko räjähdys alkamassa vai loppumassa
 kaikki muut objektit luodaan vastaanottajakoneessa uudestaan paitsi pelaajan oliot!!! (tämä pitäisi ehkä muuttaa optimaalisemmaksi???)
 
 
@@ -84,11 +78,8 @@ kun kartta on saatu toiselta koneelta ladattu tutkitaan omat liikkeet ja sen jä
 
 
 KIVEN PUTOMISTOINNOT 
-jos toinen pelaaja poistaa tilen kiven alta samalla kun toinen pelaaja työntämässä tileä kivi saadaan työnnettyä
 jos kivi putoaa tnt päälle tnt räjähtää
 
-jos kivi on putoamassa etäpelaajan päälle ei paikallinen tietokone ota siihen kantaa,
-paikallinen tietokone hoitaa oman pelaajan päälle puotoavien kivien seurannan
 
 TNT PUTAOMISTOIMINTO JA RÄJÄTYSTOIMINTO
 tnt räjäyttää 3x3 alueen ja pysyy siinä seuraavan vuoron ajan jos räjähdyaluella on pelaaja tai sinne menee pelaaja peli loppuu
