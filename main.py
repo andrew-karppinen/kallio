@@ -5,8 +5,7 @@ import pygame
 import time
 from pygame.locals import *
 pygame.init()
-naytto = pygame.display.set_mode((1250, 700))  #create window
-#pygame.display.toggle_fullscreen()
+
 
 
 #initialize
@@ -78,7 +77,7 @@ if 1:  # if singleplayer
 
     gamedata = GameData(local_player, False, remote_player, screen=None)  # create gamedata
 
-    gamedata.SetScreenSize(1280,720)
+    gamedata.SetScreenSize(1920,1080) #set screen size
 
     mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
     SetMap(gamedata, mapstr)  # convert str to map list
