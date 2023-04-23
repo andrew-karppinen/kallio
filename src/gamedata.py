@@ -12,6 +12,8 @@ class GameData:
 
 
         self.screen_ = screen #pygame window
+        self.draw_area_x_ = 32
+        self.draw_area_y_ = 18
 
         self.multiplayer_ = multiplayer
         self.server_ = False #False = client, True = server
@@ -36,30 +38,49 @@ class GameData:
         self.current_map_ = []
 
 
+    def ReturnResolutions(self):
+
+        x = 16
+        y = 9
+        resolutions = []
+
+        for i in range(200):
+            if x % self.draw_area_x_ == 0:
+                if y % self.draw_area_y_ == 0:
+                    resolutions.append((x,y))
+            y += 9
+            x += 16
 
 
+        return(resolutions)
 
-    def SetScreenSize(self,width:int,height:int):
+    def SetScreenSize(self,resolution:tuple):
 
         '''
         sets screen size and scales images
         return True/False if resize succesful or unsuccesful
         '''
 
-        tile_size_ = height // 18
-        print(tile_size_)
-        if width % tile_size_ != 0:
+
+        width = resolution[0]
+        height = resolution[1]
+
+
+        tile_size = height // self.draw_area_y_
+        print(tile_size)
+        if width % tile_size != 0:
+            raise
             return(False)
         else:
-            self.tile_size_ = tile_size_
+            self.tile_size_ = tile_size
             self.screen_ = pygame.display.set_mode((width, height))  #update screen size
 
             for i in [Goal,Diamond,Stone,Tnt,DefaultTile,Explosion]:
-                i.image = pygame.transform.scale(i.image,(tile_size_,tile_size_))
-            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size_,tile_size_))
+                i.image = pygame.transform.scale(i.image,(tile_size,tile_size))
+            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size,tile_size))
 
             if self.remote_player_ != None:
-                self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size_,tile_size_))
+                self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size,tile_size))
 
             return(True)
 
@@ -68,13 +89,16 @@ class GameData:
         #camera follow player
         #Todo update this
 
+        #Drawing area:
+        #x = 32
+        #y = 18
+
         y = -1
         self.screen_.fill((0, 0, 0))  #set backcolor
 
 
 
-        #x = 32
-        #y = 18
+
 
         left = self.local_player_.position_x_ - 16
         right = self.local_player_.position_x_+ 16

@@ -232,6 +232,6 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
         gamedata.DrawMap()  #draw map
 
-        DeleteExplosion(gamedata)
+        DeleteExplosion(gamedata) #delete exlplosions
 
         clock.tick(30) #fps limit

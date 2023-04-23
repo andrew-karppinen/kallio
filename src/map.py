@@ -9,23 +9,23 @@ def SetMap(gamedata:object,mapstr:str):
     set maplist to gamedata object
 
 
-    0 = tyhjä
-    1 = paikallinen pelaaja
-    2 = toisen tietokoneen pelaaja
-    3 = perustile
-    4 = tile joka voidaan räjäyttää
-    5 = tile jota ei voida räjäyttää
-    6 = piste
-    7 = maali
-    8 = tnt joka ei putoamassa
-    9 = tnt joka putoamassa
-    10 = kivi joka ei putoamassa
-    11 = kivi joka putoamassa
-    12 = räjähdys
-    14 = vihollinen joka katsoo oikealle
-    15 = vihollinen joka katsoo alas
-    16 = vihollinen joka katsoo vasemmalle
-    17 = vihollinen joka katsoo ylös
+    0 = empty
+    1 = local player
+    2 = remote player
+    3 = default tile
+    4 = tile that can be destroyed
+    5 = tile that cannot be destroyed
+    6 = diamond
+    7 = goal
+    8 not a falling tnt
+    9 = falling tnt
+    10 = not a falling stone
+    11 = falling stone
+    12 = Explosion
+    14 =  monster which looking to right
+    15 = monster which looking to down
+    16 = monster which looking to left
+    17 = monster which looking to up
     '''
 
 

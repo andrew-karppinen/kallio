@@ -32,8 +32,7 @@ local_player = Player(ukkeli)
 remote_player = Player(ukkeli, False)
 
 if 0:  # client
-    pygame.display.set_caption('client')
-    gamedata = GameData(local_player, True, remote_player, screen=naytto)
+    gamedata = GameData(local_player, True, remote_player, screen=None)
 
     connection = Client("localhost", 1234)  # tähän ip osoite!!!
 
@@ -50,14 +49,14 @@ if 0:  # client
             print("tässä2", connection.data_)
             if connection.data_type_ == "map":  # if message is map
                 SetMap(gamedata, connection.data_)  # set map
+                gamedata.SetScreenSize((1920,1080))  # set screen size
                 Run(gamedata, True, connection)  # start game
                 print("tässä3", connection.data_)
 
 
 
 if 0:  # server
-    # pygame.display.set_caption('server')
-    gamedata = GameData(local_player, True, remote_player, screen=naytto)  # create gamedata
+    gamedata = GameData(local_player, True, remote_player)  # create gamedata
     gamedata.server_ = True
     connection = Server(1234)
 
@@ -71,13 +70,14 @@ if 0:  # server
                 connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_)  # send start info
 
                 connection.SendMap(gamedata.current_map_, 0)  # and send map
+                gamedata.SetScreenSize((1920,1080))  # set screen size
                 Run(gamedata, True, connection)
 
 if 1:  # if singleplayer
 
-    gamedata = GameData(local_player, False, remote_player, screen=None)  # create gamedata
+    gamedata = GameData(local_player, False, remote_player)  # create gamedata
 
-    gamedata.SetScreenSize(1920,1080) #set screen size
+    gamedata.SetScreenSize((1920,1080)) #set screen size
 
     mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
     SetMap(gamedata, mapstr)  # convert str to map list
