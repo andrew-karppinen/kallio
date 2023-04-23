@@ -132,17 +132,18 @@ def CreateExplosion(gamedata:object,y:int,x:int):
 
 
 def DeleteExplosion(gamedata:object):
+    #return true if explosion removed, else false
 
-
+    removed = False
     for y in range(gamedata.map_height_):
         for x in range(gamedata.map_width_):
             if type(gamedata.current_map_[y][x]) == Explosion:
                 gamedata.current_map_[y][x].counter_ += 1
                 if gamedata.current_map_[y][x].counter_ > 15: #duration of the explosion
                     gamedata.current_map_[y][x] = None
+                    removed = True #if explosion removed
 
-
-
+    return removed
 
 def ExitProgram(connection):
     try: #if multiplayer
@@ -232,6 +233,9 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
 
         gamedata.DrawMap()  #draw map
 
-        DeleteExplosion(gamedata) #delete exlplosions
+        if DeleteExplosion(gamedata): #delete exlplosions
+            #if explosion removed
+            if multiplayer: #if multiplayer
+                connection.SendMap(gamedata.current_map_, 0)  # send map
 
         clock.tick(30) #fps limit
