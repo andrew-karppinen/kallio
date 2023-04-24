@@ -4,7 +4,7 @@ import socket
 import random
 from src import *
 from threading import Thread
-
+import os
 
 #initialize
 
@@ -41,19 +41,22 @@ class StartData:
         self.server_ip_ = ""  #client
         self.port_ = 1234 #client adn server default port
         self.gameid_ = "" #server or client
-
+        self.timeout_ = 10 #server, socket timeout
 
         self.fullscreen_ = False
         self.resolution_ = (1600,900) #deafult resolution
 
-        self.map_file_path_ = "testmap.txt"  #if server or singleplayer
+        self.map_file_path_ = "maps/testmap.txt"  #mapfile path  #if server or singleplayer
 
     def SetIpaddress(self, ip: str):
         self.server_ip_ = ip
 
-    def SetPort(self,port):
-        self.port_ = int(port)
 
+    def SetPort(self,port):
+        try:
+            self.port_ = int(port)
+        except:
+            pass
     def SetGameid(self,id:str = ""):
         self.gameid_ = ""
 
@@ -64,12 +67,33 @@ class StartData:
             self.gameid_ = id
 
 
-
+    def SetTimeout(self,timeout):
+        try:
+            self.timeout_ = int(timeout)
+        except:
+            pass
     def SetResolution(self,useless_argument=None,resolution:tuple = (1280,720)):
         self.resolution_ = resolution
 
     def SetFullscreen(self,fullscreen:bool):
         self.fullscreen_ = fullscreen
+
+    def SetMapFilepath(self,useless_argument,path:str):
+        self.map_file_path_ = path
+
+
+def ReturnMaps():
+    #return maps for \maps folder
+    #set maps folder path
+    path = directory = os.getcwd()
+    path += "\maps"
+
+
+    maplist = []
+    for i in  os.listdir(path):
+        maplist.append((str(i),f"maps\{i}"))
+
+    return(maplist) #return maps
 
 def ServerMenu(startdata):
 
@@ -78,9 +102,9 @@ def ServerMenu(startdata):
 
         gamedata = GameData(local_player, True, remote_player)  # create gamedata
         gamedata.server_ = True
-        connection = Server(startdata.port_,12) #create connection object 12 sec timeout
+        connection = Server(startdata.port_,startdata.timeout_) #create connection object 12 sec timeout
 
-        mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
+        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = ReadMapFile(startdata.map_file_path_)
         SetMap(gamedata, mapstr)  # convert str to map list
 
         if connection.connected_: #if someone connected
@@ -93,15 +117,15 @@ def ServerMenu(startdata):
                     gamedata.SetScreenSize(startdata.resolution_)  # set screen size
                     if startdata.fullscreen_:  # if fullscreen
                         pygame.display.toggle_fullscreen()  # set fullscreen
+                    gamedata.SetDrawarea()
                     Run(gamedata, True, connection) #start game
 
         #if the connection failed
         menu.clear()
-        menu.add.label("no one connected")
+        menu.add.label("no one connected!")
         menu.add.label(f"server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
-        menu.add.label(f"gameid: {startdata.gameid_}") #print gameid
+        menu.add.label(f"join nubmer: {startdata.gameid_}") #print gameid
         menu.add.label(f"port: {connection.port_}")  # print port
-
         menu.add.button("try again",StartServer,startdata)
         menu.add.button("back to main menu",MainMenu)
 
@@ -111,8 +135,10 @@ def ServerMenu(startdata):
     startdata.SetGameid()#generate random gameid
     menu.add.label(f"your ip address:")
     menu.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
+    menu.add.selector("map:", ReturnMaps(), onchange=startdata.SetMapFilepath) #select map
     menu.add.text_input('port:', default=f"{str(startdata.port_)}",onchange=startdata.SetPort)
-    menu.add.text_input('id:', default= startdata.gameid_,onchange=startdata.SetGameid)
+    menu.add.text_input('join number:', default= startdata.gameid_,onchange=startdata.SetGameid)
+    menu.add.text_input('timeout:', default="10", onchange=startdata.SetTimeout)
     menu.add.button("start server", StartServer,startdata)
     menu.add.button("back", MainMenu)
 
@@ -132,7 +158,7 @@ def ClientMenu(startdata):
             print("tässä1", connection.data_)
             if connection.data_type_ == "startinfo":  #if start info
 
-                gamedata.map_height_, gamedata.map_width_ = connection.data_ #set map size
+                gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = connection.data_ #set map size and required_score
 
                 connection.Read()  # read messages
                 print("tässä2", connection.data_)
@@ -141,12 +167,13 @@ def ClientMenu(startdata):
                     gamedata.SetScreenSize(startdata.resolution_)  # set screen size
                     if startdata.fullscreen_:  # if fullscreen
                         pygame.display.toggle_fullscreen()  # set fullscreen
+                    gamedata.SetDrawarea()
                     Run(gamedata, True, connection)  # start game
                     print("tässä3", connection.data_)
 
         #if the connection failed
         menu.clear()
-        menu.add.label("connection fail")
+        menu.add.label("Connection Failed!")
         menu.add.button("try again",StartClient,startdata)
         menu.add.button("back to main menu",MainMenu)
 
@@ -170,15 +197,17 @@ def SinglePlayerMenu(startdata):
         if startdata.fullscreen_: #if fullscreen
             pygame.display.toggle_fullscreen() #set fullscreen
 
-        mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
+        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = ReadMapFile(startdata.map_file_path_)
         SetMap(gamedata, mapstr)  # convert str to map list
+        gamedata.SetDrawarea()
         Run(gamedata,False)
 
 
 
     menu.clear()
-    menu.add.button("play",StartSingleplayer,startdata)
-    menu.add.button("back", MainMenu)
+    menu.add.button("Play",StartSingleplayer,startdata)
+    menu.add.selector("map:", ReturnMaps(), onchange=startdata.SetMapFilepath) #map select
+    menu.add.button("Back", MainMenu)
 
 
 
@@ -203,10 +232,11 @@ def MainMenu():
 
 
 
+#GLOBAL SCOPE
 #create menu theme
 font8bit = pygame_menu.font.FONT_8BIT
 font = pygame_menu.font.FONT_FRANCHISE
-mytheme = pygame_menu.Theme(background_color=(0,0,0),title_background_color=(178, 29, 29),widget_font_color=(255,255,255),widget_padding=8,widget_font_size = 38,title_font=font,title_font_size=65)
+mytheme = pygame_menu.Theme(background_color=(0,0,0),title_background_color=(178, 29, 29),widget_font_color=(255,255,255),widget_padding=6,widget_font_size = 38,title_font=font,title_font_size=65)
 
 
 startdata = StartData()  # create data obeject
