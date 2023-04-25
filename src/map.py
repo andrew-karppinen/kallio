@@ -62,12 +62,19 @@ def SetMap(gamedata:object,mapstr:str):
         if i + 1 == len(mapstr):  # if map end
             if number != "1" and number != "2":  # if no player
 
-                maplist2d[y][x] =  deepcopy(mapsymbols[number])  # convert numbers to objects
+                maplist2d[y][x] = deepcopy(mapsymbols[number])  #convert numbers to objects
 
-            if number == "1":  # if local player
-                gamedata.local_player_.position_y_ = y  # set player position
-                gamedata.local_player_.position_x_ = x
-                maplist2d[y][x] = gamedata.local_player_
+            elif number == "1":  # if local player
+                if gamedata.local_player_position_y_ == None: #if the local player does not have a location yet
+                    #this scope run only in beginning the game
+
+                    gamedata.local_player_.position_y_ = y  # set player position
+                    gamedata.local_player_.position_x_ = x
+                    maplist2d[y][x] = gamedata.local_player_
+                else:
+                    #the localplayer's location already exists
+                    maplist2d[y][x] = None
+                    maplist2d[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_
 
             elif number == "2":  # if remote player
                 maplist2d[y][x] = gamedata.remote_player_
@@ -80,10 +87,16 @@ def SetMap(gamedata:object,mapstr:str):
                 maplist2d[y][x] = deepcopy(mapsymbols[number]) #convert numbers to objects
 
 
-            if number == "1": #if local player
-                gamedata.local_player_.position_y_ = y #set player position
-                gamedata.local_player_.position_x_ = x
-                maplist2d[y][x] = gamedata.local_player_
+            elif number == "1": #if local player
+                if gamedata.local_player_.position_y_ == None: #if the local player does not have a location yet
+                    #this scope run only in beginning the game
+                    gamedata.local_player_.position_y_ = y  # set player position
+                    gamedata.local_player_.position_x_ = x
+                    maplist2d[y][x] = gamedata.local_player_
+                else:
+                    #the localplayer's location already exists
+                    maplist2d[y][x] = None
+                    maplist2d[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_
 
             elif number == "2": #if remote player
                 maplist2d[y][x] = gamedata.remote_player_
@@ -106,7 +119,7 @@ def ReadMapFile(file_path:str):
     the first line specifies map size
     returns the end of the file as a string
 
-    return map:str height:int,width:int
+    return map:str height:int,width:int,required_score:int
     '''
 
 
@@ -118,8 +131,8 @@ def ReadMapFile(file_path:str):
     #Suljetaan tiedosto
     tiedosto.close()
 
-
-    mjono = rivit[0] #eka rivi
+    vaaditut_pisteet = rivit[0]
+    mjono = rivit[1] #toka rivi
 
     #Luodaan y_ja_x-lista-muuttuja joka katkaisee merkkijonon siihen syötetyn pilkun kohdalta
     y_ja_x = mjono.split(',')
@@ -128,12 +141,12 @@ def ReadMapFile(file_path:str):
     y = int(y_ja_x[0])
     x = int(y_ja_x[1])
 
-    #muunnetaan lista merkkijonoksi
+    #muunnetaan lista merkkijonoksi alkaen riviltä 3
     kartta = ''
-    for i in rivit[1:]:
+    for i in rivit[2:]:
         kartta += i
 
     kartta = kartta.replace('\n', ',') #korvaa rivinvaihto merkit pilkuilla
 
 
-    return kartta,y, x
+    return kartta,y, x,vaaditut_pisteet
