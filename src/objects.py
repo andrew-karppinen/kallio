@@ -1,4 +1,4 @@
-
+import pygame
 
 
 class Player:
@@ -26,11 +26,26 @@ class Stone:
 
     def __init__(self,drop:bool=False):
         self.drop_ = drop  # if currently dropping
-
+        self.angle_ = 0
 
     @property
     def image_(self):
-        return (Stone.image)
+
+        return pygame.transform.rotate(Stone.image,self.angle_) #Rotate the image and return it
+
+
+
+    def Rotate(self,direction:int):
+        #direction = 1 or 2
+        #1 = clockwise
+        #2 = counterclockwise
+
+        if direction == 1:
+            self.angle_ -= 90
+        if direction == 2:
+            self.angle_ += 90
+
+
 
 
 class Tnt:
