@@ -94,8 +94,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
 
 def Gravity(gamedata):
 
-    for y in range(gamedata.map_height_-1,0,-1):
-        for x in range(gamedata.map_width_-1,0,-1):
+    for y in range(gamedata.map_height_-1,-1,-1):
+        for x in range(gamedata.map_width_-1,-1,-1):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
                 if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
@@ -114,12 +114,30 @@ def Gravity(gamedata):
 
 
                 if y + 1 < gamedata.map_height_:  # if map not end
-                    if gamedata.current_map_[y+1][x] == None:
+                    if gamedata.current_map_[y+1][x] == None: #if below is empty
                         #move downwards
                         gamedata.current_map_[y][x].drop_ = True
                         gamedata.current_map_[y+1][x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
                     else:
+
+                        if type(gamedata.current_map_[y][x]) in [Stone,Diamond]: #if stone or diamond
+                            if type(gamedata.current_map_[y+1][x]) in [Stone,Diamond]: #if below is stone or diamond
+
+                                if x +1 < gamedata.map_width_:
+                                    if gamedata.current_map_[y][x+1] == None and gamedata.current_map_[y+1][x+1] == None: #if empty on the right
+                                        gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x] #move stone to right
+                                        gamedata.current_map_[y][x].Rotate(2)
+                                        gamedata.current_map_[y][x] = None
+                                        return
+
+                                if x-1 >= 0: #if map not end
+                                    if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
+                                        gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move stone to left
+                                        gamedata.current_map_[y][x] = None
+                                        return
+
+
                         gamedata.current_map_[y][x].drop_ = False
                 else:
                     gamedata.current_map_[y][x].drop_ = False
@@ -138,8 +156,8 @@ def CreateExplosion(gamedata:object,y:int,x:int):
         if y + list1[i] >= 0 and y + list1[i] < gamedata.map_height_: #if map not end
             if x + list2[i] >= 0 and x + list2[i] < gamedata.map_width_:  # if map not end
 
-
-                gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
+                if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
+                    gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
 
 
 
