@@ -28,6 +28,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                     if gamedata.pushing_right_ == 0:
                         gamedata.pushing_right_ = 1
                     elif gamedata.pushing_right_ == 1:
+                        if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]) == Stone: #if stone
+                            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1].Rotate(1)
                         gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]
                         gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
                         gamedata.pushing_right_ = 0
@@ -35,6 +37,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         #collision check
         if gamedata.local_player_.position_x_ + 1 < gamedata.map_width_:  # if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions: #collision check
+                if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1]) == Diamond: #if diamnod
+                    gamedata.points_collected_ += 1
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_x_ += 1
 
@@ -50,6 +54,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                     if gamedata.pushing_left_ == 0:
                         gamedata.pushing_left_ = 1
                     elif gamedata.pushing_left_ == 1:
+                        if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) == Stone: #if stone
+                            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1].Rotate(2)
                         gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]
                         gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] = None
                         gamedata.pushing_left_ = 0
@@ -57,22 +63,28 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         #collision check
         if gamedata.local_player_.position_x_-1 >= 0: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) in collisions:  # collision check
+                if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ -1]) == Diamond: #if diamnod
+                    gamedata.points_collected_ += 1
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_x_ -= 1
 
 
 
     elif up:
-        if gamedata.local_player_.position_y_ - 1 >= 0:
+        if gamedata.local_player_.position_y_ - 1 >= 0: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) in collisions:  # collision check
+                if type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) == Diamond: #if diamnod
+                    gamedata.points_collected_ += 1
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_y_ -= 1
 
 
 
     elif down:
-        if gamedata.local_player_.position_y_ +1 <gamedata.map_height_:
+        if gamedata.local_player_.position_y_ +1 <gamedata.map_height_: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_ ]) in collisions:  # collision check
+                if type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_]) == Diamond: #if diamnod
+                    gamedata.points_collected_ += 1
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_y_ += 1
 
@@ -155,7 +167,7 @@ def ExitProgram(connection):
     exit()
 
 
-def Run(gamedata:object,multiplayer:bool,connection:object = None):
+def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main loop
 
     clock = pygame.time.Clock()
     right = False
@@ -178,6 +190,8 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
                 try:
                     mapstr = connection.data_
                     SetMap(gamedata,mapstr) #set map
+                    gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+
                 except: #if incorrect socket message
                     print(mapstr)
                     print("incorrect socket message")
@@ -228,7 +242,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
             if [right, left, up, down].count(True) == 1:  # can only move in one direction at a time
                 Move(gamedata,right,left,up,down)
                 if multiplayer:
-                    connection.SendMap(gamedata.current_map_,0)  #send map
+                    connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 
         gamedata.DrawMap()  #draw map
@@ -236,6 +250,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None):
         if DeleteExplosion(gamedata): #delete exlplosions
             #if explosion removed
             if multiplayer: #if multiplayer
-                connection.SendMap(gamedata.current_map_, 0)  # send map
+                connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  # send map
+
 
         clock.tick(30) #fps limit
