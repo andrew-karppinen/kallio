@@ -12,8 +12,13 @@ class GameData:
 
 
         self.screen_ = screen #pygame window
-        self.draw_area_x_ = 32
+        self.tile_size_ = 50 #tilesize y*x
+        self.draw_area_x_ = 32 #default drawing area size
         self.draw_area_y_ = 18
+
+        self.margin_x = 0
+        self.margin_y = 0
+
 
         self.multiplayer_ = multiplayer
         self.server_ = False #False = client, True = server
@@ -21,12 +26,19 @@ class GameData:
 
 
         self.remote_player_ = remote_player
-        self.tile_size_ = 50 #tilesize y*x
+
+
+
 
         self.required_score_ = 0
-        self.collision_objects_ = [Player,Stone,Tnt]
+        self.points_collected_ = 0 #local player Points collected
+        self.total_points_collected_ = 0
+
+        self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick]
         self.pushing_objects_ = [Stone, Tnt]
-        self.gravity_objects_ = [Stone,Tnt]
+        self.gravity_objects_ = [Stone,Tnt,Diamond]
+        self.explosive_ = [Tnt,Monster,Player] #causing new explosion if explose
+
 
         self.pushing_right_ = 0
         self.pushing_left_ = 0
@@ -36,6 +48,36 @@ class GameData:
 
         self.previous_map_ = []
         self.current_map_ = []
+
+
+
+
+
+
+
+    def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
+
+        self.draw_area_x_ = draw_area_x #set draw area
+        self.draw_area_y_ = draw_area_y
+
+
+        if self.map_width_ < self.draw_area_x_: #if map size < drawing area size
+            self.draw_area_x_ = self.map_width_ #set drawing area size to map size
+
+            x, y = self.screen_.get_size()
+            margin_x = self.map_width_ * self.tile_size_
+            margin_x = x //2 - margin_x //2
+            self.margin_x = margin_x
+
+
+        if self.map_height_ < self.draw_area_y_: #if map size < drawing area size
+            self.draw_area_y_ = self.map_height_ #set drawing area size to map size
+
+            x, y = self.screen_.get_size()
+            margin_y = self.map_height_ * self.tile_size_
+            margin_y = y // 2 - margin_y //2
+            self.margin_y = margin_y
+
 
 
     def ReturnResolutions(self):
@@ -82,12 +124,14 @@ class GameData:
             if self.remote_player_ != None:
                 self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size,tile_size))
 
+            pygame.display.set_caption('py-boulderdash') #name window
             return(True)
 
     def DrawMap(self):
         #draw current map
         #camera follow player
-        #Todo update this
+        #Todo update this, center draw area
+
 
         #Drawing area:
         #x = 32
@@ -99,11 +143,11 @@ class GameData:
 
 
 
+        left = self.local_player_.position_x_ - self.draw_area_x_ // 2
+        right = self.local_player_.position_x_+ self.draw_area_x_ // 2
 
-        left = self.local_player_.position_x_ - 16
-        right = self.local_player_.position_x_+ 16
 
-        #set drawing area
+        #move draw area
         while True:
             if left < 0:
                 left += 1
@@ -116,10 +160,12 @@ class GameData:
             else:
                 break
 
-        up = self.local_player_.position_y_ - 9
-        down = self.local_player_.position_y_+9
 
-        #set drawing area
+
+        up = self.local_player_.position_y_ - self.draw_area_y_ // 2
+        down = self.local_player_.position_y_ + self.draw_area_y_ //2
+
+        #move draw area
         while True:
             if up < 0:
                 up += 1
@@ -133,10 +179,10 @@ class GameData:
 
 
         #draw tiles
-        for i in range(up,down):
+        for i in range(up,down): #y
             x = -1
             y += 1
-            for j in range(left,right):
+            for j in range(left,right): #x
 
                 x += 1
 
@@ -147,7 +193,7 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_,y*self.tile_size_))
+                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_+self.margin_x,y*self.tile_size_+self.margin_y))
 
 
 
