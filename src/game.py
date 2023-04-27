@@ -157,7 +157,12 @@ def CreateExplosion(gamedata:object,y:int,x:int):
             if x + list2[i] >= 0 and x + list2[i] < gamedata.map_width_:  # if map not end
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
+                    if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt,player, monster...
+                        gamedata.current_map_[y + list1[i]][x + list2[i]] = Explosion()
+                        CreateExplosion(gamedata,y+list1[i],x+list2[i]) #create new explosion
+
                     gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
+
 
 
 
@@ -221,7 +226,6 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
 
                 if event.key == pygame.K_ESCAPE: #if esc is pressed
                     ExitProgram(connection)
-
                 if event.key == pygame.K_LEFT:
                     left = True
                 if event.key == pygame.K_RIGHT:
@@ -268,7 +272,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
         if DeleteExplosion(gamedata): #delete exlplosions
             #if explosion removed
             if multiplayer: #if multiplayer
-                connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  # send map
+                connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 
         clock.tick(30) #fps limit
