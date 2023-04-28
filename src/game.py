@@ -8,6 +8,8 @@ import time
 
 
 
+
+
 def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     '''
     move local player
@@ -37,8 +39,7 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         #collision check
         if gamedata.local_player_.position_x_ + 1 < gamedata.map_width_:  # if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions: #collision check
-                if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1]) == Diamond: #if diamnod
-                    gamedata.points_collected_ += 1
+                CollectPoints(gamedata, gamedata.local_player_.position_y_, gamedata.local_player_.position_x_+1) #try collect point
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_x_ += 1
 
@@ -63,8 +64,7 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         #collision check
         if gamedata.local_player_.position_x_-1 >= 0: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) in collisions:  # collision check
-                if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ -1]) == Diamond: #if diamnod
-                    gamedata.points_collected_ += 1
+                CollectPoints(gamedata, gamedata.local_player_.position_y_, gamedata.local_player_.position_x_-1) #try collect point
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_x_ -= 1
 
@@ -73,8 +73,7 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     elif up:
         if gamedata.local_player_.position_y_ - 1 >= 0: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) in collisions:  # collision check
-                if type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) == Diamond: #if diamnod
-                    gamedata.points_collected_ += 1
+                CollectPoints(gamedata, gamedata.local_player_.position_y_ - 1, gamedata.local_player_.position_x_) #try collect point
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_y_ -= 1
 
@@ -83,14 +82,53 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     elif down:
         if gamedata.local_player_.position_y_ +1 <gamedata.map_height_: #if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_ ]) in collisions:  # collision check
-                if type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_]) == Diamond: #if diamnod
-                    gamedata.points_collected_ += 1
+                CollectPoints(gamedata,gamedata.local_player_.position_y_ +1,gamedata.local_player_.position_x_) #try collect point
+
                 gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
                 gamedata.local_player_.position_y_ += 1
 
 
     gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_ #set player new position
 
+
+def CollectPoints(gamedata:object,y:int,x:int):
+    #try collect point from given location
+    if type(gamedata.current_map_[y][x]) == Diamond:
+        gamedata.current_map_[y][x] = None
+        gamedata.points_collected_ += 1
+
+def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
+    '''
+    remove tile in left,right,up or down
+    '''
+
+    if right:
+        if gamedata.local_player_.position_x_ +1 < gamedata.map_width_: #if map not end
+            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
+            CollectPoints(gamedata,gamedata.local_player_.position_y_,gamedata.local_player_.position_x_+1)
+
+
+    elif left:
+        if gamedata.local_player_.position_x_ -1 >= 0:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] = None
+
+            CollectPoints(gamedata,gamedata.local_player_.position_y_,gamedata.local_player_.position_x_-1)
+
+    elif up:
+        if gamedata.local_player_.position_y_ - 1 >= 0:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_] = None
+
+            CollectPoints(gamedata,gamedata.local_player_.position_y_-1,gamedata.local_player_.position_x_)
+
+    elif down:
+        if gamedata.local_player_.position_y_ + 1 < gamedata.map_height_:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_.position_y_+1][gamedata.local_player_.position_x_]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_.position_y_+1][gamedata.local_player_.position_x_] = None
+
+            CollectPoints(gamedata,gamedata.local_player_.position_y_+1,gamedata.local_player_.position_x_)
 
 def Gravity(gamedata):
 
@@ -197,6 +235,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
     left = False
     up = False
     down = False
+    space = False
 
     movelimit = 0 #gravity
     movelimit2 = 0 #player move
@@ -236,6 +275,8 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
 
                 if event.key == pygame.K_DOWN:
                     down = True
+                if event.key == pygame.K_SPACE:
+                    space = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -246,6 +287,8 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
                     up = False
                 if event.key == pygame.K_DOWN:
                     down = False
+                if event.key == pygame.K_SPACE:
+                    space = False
 
 
 
@@ -261,8 +304,11 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
 
         if pygame.time.get_ticks() > movelimit2 + 80:
             movelimit2 = pygame.time.get_ticks()
-            if [right, left, up, down].count(True) == 1:  # can only move in one direction at a time
-                Move(gamedata,right,left,up,down)
+            if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
+                if space: #if space pressed
+                    Eat(gamedata,right,left,up,down) #remove tile in left,right,up or down
+                else:
+                    Move(gamedata,right,left,up,down) #move player
                 if multiplayer:
                     connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
