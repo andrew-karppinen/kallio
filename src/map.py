@@ -15,7 +15,6 @@ def SetMap(gamedata:object,mapstr:str):
     3 = default tile
     4 = tile that can be destroyed
     5 = tile that cannot be destroyed
-    6 = diamond
     7 = goal
     8 not a falling tnt
     9 = falling tnt
@@ -26,6 +25,13 @@ def SetMap(gamedata:object,mapstr:str):
     15 = monster which looking to down
     16 = monster which looking to left
     17 = monster which looking to up
+    18 = not a falling diamond
+    19 = falling diamond
+
+    20 Door up
+    21 Door right
+    22 door down
+    23 door left
     '''
 
 
@@ -46,7 +52,8 @@ def SetMap(gamedata:object,mapstr:str):
 
 
     #numbers to objects
-    mapsymbols = {"0":None,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"6":Diamond(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),"12":Explosion(),"14":Monster(1),"15":Monster(2),"16":Monster(3),"17":Monster(4)}
+    mapsymbols = {"0":None,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),
+                  "12":Explosion(),"14":Monster(1),"15":Monster(2),"16":Monster(3),"17":Monster(4),"18":Diamond(False),"19":Diamond(True),"20":Door(1),"21":Door(2),"22":Door(3),"23":Door(4)}
     for i in range(len(mapstr)):
 
 
@@ -60,6 +67,8 @@ def SetMap(gamedata:object,mapstr:str):
             number += mapstr[i]
 
         if i + 1 == len(mapstr):  # if map end
+
+
             if number != "1" and number != "2":  # if no player
 
                 maplist2d[y][x] = deepcopy(mapsymbols[number])  #convert numbers to objects
