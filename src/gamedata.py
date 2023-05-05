@@ -8,7 +8,7 @@ class GameData:
     '''
 
 
-    def __init__(self,local_player:object,multiplayer:bool = False,remote_player:object = None,screen:pygame.surface = None):
+    def __init__(self,local_player:object,multiplayer:bool = False,server:bool = False,remote_player:object = None,screen:pygame.surface = None):
 
 
         self.screen_ = screen #pygame window
@@ -21,7 +21,7 @@ class GameData:
 
 
         self.multiplayer_ = multiplayer
-        self.server_ = False #False = client, True = server
+        self.server_ = server #False = client, True = server
         self.local_player_ = local_player
 
 
@@ -37,6 +37,7 @@ class GameData:
         self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt,Diamond]
+        self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
         self.explosive_ = [Tnt,Monster,Player] #causing new explosion if explose
 
 
@@ -48,8 +49,6 @@ class GameData:
 
         self.previous_map_ = []
         self.current_map_ = []
-
-
 
 
 
@@ -107,20 +106,21 @@ class GameData:
         width = resolution[0]
         height = resolution[1]
 
-
         tile_size = height // self.draw_area_y_
-        print(tile_size)
+
         if width % tile_size != 0:
-            raise
-            return(False)
+            raise Exception("invalid screen size")
+
         else:
             self.tile_size_ = tile_size
             self.screen_ = pygame.display.set_mode((width, height))  #update screen size
 
-            for i in [Goal,Diamond,Stone,Tnt,DefaultTile,Explosion]:
+            #scale tile images
+            for i in [Goal,Diamond,Stone,Tnt,DefaultTile,Explosion,Brick,Bedrock]:
                 i.image = pygame.transform.scale(i.image,(tile_size,tile_size))
-            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size,tile_size))
 
+            #scale player image size
+            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size,tile_size))
             if self.remote_player_ != None:
                 self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size,tile_size))
 
@@ -130,7 +130,6 @@ class GameData:
     def DrawMap(self):
         #draw current map
         #camera follow player
-        #Todo update this, center draw area
 
 
         #Drawing area:

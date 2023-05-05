@@ -36,7 +36,7 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                         gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
                         gamedata.pushing_right_ = 0
 
-        #collision check
+
         if gamedata.local_player_.position_x_ + 1 < gamedata.map_width_:  # if map not end
             if not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions: #collision check
                 CollectPoints(gamedata, gamedata.local_player_.position_y_, gamedata.local_player_.position_x_+1) #try collect point
@@ -120,7 +120,6 @@ def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         if gamedata.local_player_.position_y_ - 1 >= 0:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_] = None
-
             CollectPoints(gamedata,gamedata.local_player_.position_y_-1,gamedata.local_player_.position_x_)
 
     elif down:
@@ -140,7 +139,7 @@ def Gravity(gamedata):
                         if type(gamedata.current_map_[y+1][x]) == Player:
                             CreateExplosion(gamedata,y+1,x) #create explosion
                         elif type(gamedata.current_map_[y+1][x]) == Tnt: #if something falls on the tnt
-                            CreateExplosion(gamedata, y+1, x)
+                            CreateExplosion(gamedata, y+1, x) #create explosion
 
                         if gamedata.current_map_[y+1][x] != None:
                             if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
@@ -160,7 +159,7 @@ def Gravity(gamedata):
                     else:
 
                         if type(gamedata.current_map_[y][x]) in [Stone,Diamond]: #if stone or diamond
-                            if type(gamedata.current_map_[y+1][x]) in [Stone,Diamond]: #if below is stone or diamond
+                            if type(gamedata.current_map_[y+1][x]) in gamedata.gravity_objects_2_: #if below is stone or diamond
 
                                 if x +1 < gamedata.map_width_:
                                     if gamedata.current_map_[y][x+1] == None and gamedata.current_map_[y+1][x+1] == None: #if empty on the right
@@ -179,7 +178,6 @@ def Gravity(gamedata):
                         gamedata.current_map_[y][x].drop_ = False
                 else:
                     gamedata.current_map_[y][x].drop_ = False
-
 
 
 
