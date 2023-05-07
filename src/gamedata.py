@@ -34,7 +34,7 @@ class GameData:
         self.points_collected_ = 0 #local player Points collected
         self.total_points_collected_ = 0
 
-        self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick]
+        self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick,Door]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt,Diamond]
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
