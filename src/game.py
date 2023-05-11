@@ -230,7 +230,7 @@ def ExitProgram(connection):
     exit()
 
 
-def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main loop
+def Run(gamedata:object,connection:object = None): #game main function
 
     clock = pygame.time.Clock()
     right = False
@@ -243,9 +243,9 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
     movelimit2 = 0 #player move
 
 
-    while True:
+    while True: #game main loop
 
-        if multiplayer:
+        if gamedata.multiplayer_:
 
             connection.Read() #read socket
 
@@ -311,7 +311,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
                     Eat(gamedata,right,left,up,down) #remove tile in left,right,up or down
                 else:
                     Move(gamedata,right,left,up,down) #move player
-                if multiplayer:
+                if gamedata.multiplayer_:
                     connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 
@@ -319,7 +319,7 @@ def Run(gamedata:object,multiplayer:bool,connection:object = None): #game main l
 
         if DeleteExplosion(gamedata): #delete exlplosions
             #if explosion removed
-            if multiplayer: #if multiplayer
+            if gamedata.multiplayer_: #if multiplayer
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 

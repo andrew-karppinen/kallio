@@ -3,17 +3,39 @@
 
 ENNEN PELIÄ:
 
-Ennen pelin alkua pitää alustaa seuraavat asiat:
+Ennen kuin peli pyörii se vaatii alustamista:
 
-lataa tilejen kuvat
-asettaa kuvat
-ikkunan koko ja kuvien koko täytyy säätää
+importtaa src kansio:
+from src import *
+
+Lataa kuvat ja aseta ne luokkiin
+esim:
+Tnt.image = kuva (pygame surface)
+
+luo pelaajat:
+local_player = Player(playerimage) #nämä koodi esimerkit saattavat muuttua!
+remote_player = Player(playerimage2, False)
 
 
+luo gamedata olio:
+gamedata = Gamedata(local_player:object,multiplayer:bool = False,server:bool = False,remote_player:object = None):
+
+lue kartan tiedot:
+mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = ReadMapFile (moninpelissä client saa nämä tiedot socketin kautta)
+
+aseta mapstr gamedata olioon:
+SetMap(gamedata, mapstr) #muuttaa merkkijonon pelin kartaksi ja asettaa sen gamedata olioon
+
+
+tämän jälkeen peli voidaan aloittaa mikäli se on yksinpeli:
+Run(gamedata:object,connection:object = None)
+
+
+moninpelissä pitää viellä tehdä asioita:
 
 
 CLIENT:
-luo gamedata olion oikeilla arvoilla
+
 luo Clien olion verkkoyhteyttä varten
 
 
@@ -30,7 +52,6 @@ tämän jälkeen peli alkaa
 SERVER:
 lataa kartta
 
-luo gamedata olion oikeilla arvoilla
 luo SERVER olion verkkoyhteyttä varten
 
 odottaa että clien yhdistää

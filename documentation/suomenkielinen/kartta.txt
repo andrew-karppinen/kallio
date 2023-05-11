@@ -1,0 +1,24 @@
+
+
+Tiedosto on seuraavanlainen:
+ensimmäinen rivi on "True" tai "False" True kertoo että kartta on tarkotus pelata moninpelinä
+
+toisella rivillä on luku joka kertoo vaadittavien pisteiden määrän
+
+tiedoston kolmannella rivillä on pilkuilla eroteltuna kaksi lukua
+ensimmäinen luku on kartan koko y suunnassa ja toinen kartan koko x suunnassa
+
+
+
+ESIMERKKITIEDOSTO:
+True
+5
+8,14
+1,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,3

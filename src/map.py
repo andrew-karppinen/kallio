@@ -37,6 +37,7 @@ def SetMap(gamedata:object,mapstr:str):
 
 
     #check mapstr correctness #Todo update this
+    print(mapstr.count(","))
     if mapstr.count(",") != gamedata.map_width_ * gamedata.map_height_ -1:
         raise Exception('incorrect mapstr')
 
@@ -128,7 +129,7 @@ def ReadMapFile(file_path:str):
     the first line specifies map size
     returns the end of the file as a string
 
-    return map:str height:int,width:int,required_score:int
+    return map:str height:int,width:int,required_score:int,multiplayer:bool
     '''
 
 
@@ -140,8 +141,9 @@ def ReadMapFile(file_path:str):
     #Suljetaan tiedosto
     tiedosto.close()
 
-    vaaditut_pisteet = rivit[0]
-    mjono = rivit[1] #toka rivi
+    multiplayer = rivit[0] #eka riv
+    vaaditut_pisteet = rivit[1] #toka rivi
+    mjono = rivit[2] #kolmas rivi
 
     #Luodaan y_ja_x-lista-muuttuja joka katkaisee merkkijonon siihen syötetyn pilkun kohdalta
     y_ja_x = mjono.split(',')
@@ -150,12 +152,12 @@ def ReadMapFile(file_path:str):
     y = int(y_ja_x[0])
     x = int(y_ja_x[1])
 
-    #muunnetaan lista merkkijonoksi alkaen riviltä 3
+    #muunnetaan lista merkkijonoksi alkaen riviltä 4
     kartta = ''
-    for i in rivit[2:]:
+    for i in rivit[3:]:
         kartta += i
 
     kartta = kartta.replace('\n', ',') #korvaa rivinvaihto merkit pilkuilla
 
 
-    return kartta,y, x,vaaditut_pisteet
+    return kartta,y, x,vaaditut_pisteet,multiplayer

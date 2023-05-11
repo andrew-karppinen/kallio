@@ -10,29 +10,38 @@ pygame.init()
 
 #initialize
 
+#initialize
+
 #load images
-hiekkakuva = pygame.image.load("media/sand.png")
-ukkeli = pygame.image.load("media/player.png")
-kivikuva = pygame.image.load("media/stone.png")
-tntkuva = pygame.image.load("media/tnt.png")
-rajahdyskuva = pygame.image.load("media/explosion.png")
-pisetekuva = pygame.image.load("media/diamond.png")
-maalikuva = pygame.image.load("media/goal.png")
+sandimage = pygame.image.load("media/sand.png")
+playerimage = pygame.image.load("media/player.png")
+playerimage2 = pygame.image.load("media/player2.png")
+stoneimage = pygame.image.load("media/stone.png")
+tntimage = pygame.image.load("media/tnt.png")
+explosionimage = pygame.image.load("media/explosion.png")
+diamondimage = pygame.image.load("media/diamond.png")
+goalimage = pygame.image.load("media/goal.png")
+bedrockimage = pygame.image.load("media/bedrock.png")
+brickimage = pygame.image.load("media/brick.png")
+doorimage = pygame.image.load("media/door.png")
 
-# set images
-Goal.image = maalikuva
-Diamond.image = pisetekuva
-Explosion.image = rajahdyskuva
-Tnt.image = tntkuva
-DefaultTile.image = hiekkakuva
-Stone.image = kivikuva
+#set images
+Goal.image = goalimage
+Diamond.image = diamondimage
+Explosion.image = explosionimage
+Tnt.image = tntimage
+DefaultTile.image = sandimage
+Stone.image = stoneimage
+Bedrock.image = bedrockimage
+Brick.image = brickimage
+Door.Setimage(doorimage)
 
-# create players
-local_player = Player(ukkeli)
-remote_player = Player(ukkeli, False)
+#create players
+local_player = Player(playerimage)
+remote_player = Player(playerimage2, False)
 
-if 0:  # client
-    gamedata = GameData(local_player, True, remote_player, screen=None)
+if 1:  # client
+    gamedata = GameData(local_player, True, False,remote_player) #create gamedata object
 
     connection = Client("localhost", 1234)  # tähän ip osoite!!!
 
@@ -41,45 +50,45 @@ if 0:  # client
         connection.Read()  # read messages
         print("tässä1", connection.data_)
         if connection.data_type_ == "startinfo":  # if start info
-            # set map size
 
-            gamedata.map_height_, gamedata.map_width_ = connection.data_
+            #set map size and required score
+            gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = connection.data_
 
             connection.Read()  # read messages
             print("tässä2", connection.data_)
             if connection.data_type_ == "map":  # if message is map
                 SetMap(gamedata, connection.data_)  # set map
                 gamedata.SetScreenSize((1920,1080))  # set screen size
-                Run(gamedata, True, connection)  # start game
+                Run(gamedata, connection)  # start game
                 print("tässä3", connection.data_)
 
 
 
-if 0:  # server
-    gamedata = GameData(local_player, True, remote_player)  # create gamedata
-    gamedata.server_ = True
-    connection = Server(1234)
+if 1:  # server
+    gamedata = GameData(local_player, True,True, remote_player)  # create gamedata
 
-    mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
+
+    connection = Server(1234) #create server object
+
+    mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
     SetMap(gamedata, mapstr)  # convert str to map list
 
     if connection.connected_:
         connection.Read()  # read messages
         if connection.data_type_ == "readytostart":  # if client ready to start the game
             if connection.data_ == "05664":
-                connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_)  # send start info
+                connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  #send start info
 
                 connection.SendMap(gamedata.current_map_, 0)  # and send map
                 gamedata.SetScreenSize((1920,1080))  # set screen size
-                Run(gamedata, True, connection)
+                Run(gamedata, connection)
 
 if 1:  # if singleplayer
 
-    gamedata = GameData(local_player, False, remote_player)  # create gamedata
+    gamedata = GameData(local_player, False, False)  # create gamedata
 
     gamedata.SetScreenSize((1920,1080)) #set screen size
-
-    mapstr, gamedata.map_height_, gamedata.map_width_ = ReadMapFile("testmap.txt")
+    mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
     SetMap(gamedata, mapstr)  # convert str to map list
 
-    Run(gamedata, False)
+    Run(gamedata, False) #start game

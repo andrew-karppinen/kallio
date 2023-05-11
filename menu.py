@@ -6,16 +6,21 @@ from src import *
 from threading import Thread
 import os
 
+
 #initialize
 
 #load images
 sandimage = pygame.image.load("media/sand.png")
 playerimage = pygame.image.load("media/player.png")
+playerimage2 = pygame.image.load("media/player2.png")
 stoneimage = pygame.image.load("media/stone.png")
 tntimage = pygame.image.load("media/tnt.png")
 explosionimage = pygame.image.load("media/explosion.png")
 diamondimage = pygame.image.load("media/diamond.png")
 goalimage = pygame.image.load("media/goal.png")
+bedrockimage = pygame.image.load("media/bedrock.png")
+brickimage = pygame.image.load("media/brick.png")
+doorimage = pygame.image.load("media/door.png")
 
 #set images
 Goal.image = goalimage
@@ -24,10 +29,13 @@ Explosion.image = explosionimage
 Tnt.image = tntimage
 DefaultTile.image = sandimage
 Stone.image = stoneimage
+Bedrock.image = bedrockimage
+Brick.image = brickimage
+Door.Setimage(doorimage)
 
 #create players
 local_player = Player(playerimage)
-remote_player = Player(playerimage, False)
+remote_player = Player(playerimage2, False)
 
 
 
@@ -85,29 +93,28 @@ class StartData:
 def ReturnMaps():
     #return maps for \maps folder
     #set maps folder path
-    path = directory = os.getcwd()
-    path += "\maps"
+    path = os.getcwd()
+    path += "/maps"
 
 
     maplist = []
     for i in  os.listdir(path):
-        maplist.append((str(i),f"maps\{i}"))
+        maplist.append((str(i),f"maps/{i}"))
 
     return(maplist) #return maps
 
 def ServerMenu(startdata):
 
     def StartServer(startdata):
-
-
-        gamedata = GameData(local_player, True, remote_player)  # create gamedata
+        gamedata = GameData(local_player, True,True, remote_player)  # create gamedata
         gamedata.server_ = True
         connection = Server(startdata.port_,startdata.timeout_) #create connection object 12 sec timeout
 
-        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = ReadMapFile(startdata.map_file_path_)
+        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile(startdata.map_file_path_) #read map file
         SetMap(gamedata, mapstr)  # convert str to map list
 
         if connection.connected_: #if someone connected
+
             connection.Read()  # read messages
             if connection.data_type_ == "readytostart":  # if client ready to start the game
                 if connection.data_ == startdata.gameid_:
@@ -118,7 +125,7 @@ def ServerMenu(startdata):
                     if startdata.fullscreen_:  # if fullscreen
                         pygame.display.toggle_fullscreen()  # set fullscreen
                     gamedata.SetDrawarea()
-                    Run(gamedata, True, connection) #start game
+                    Run(gamedata, connection) #start game
 
         #if the connection failed
         menu.clear()
@@ -148,7 +155,7 @@ def ClientMenu(startdata):
     def StartClient(startdata):
         #try connect to server
 
-        gamedata = GameData(local_player, True, remote_player, screen=None) #create gamedata
+        gamedata = GameData(local_player, True,False, remote_player, screen=None) #create gamedata
         connection = Client(startdata.server_ip_, startdata.port_)  #create connection object
 
 
@@ -168,7 +175,7 @@ def ClientMenu(startdata):
                     if startdata.fullscreen_:  # if fullscreen
                         pygame.display.toggle_fullscreen()  # set fullscreen
                     gamedata.SetDrawarea()
-                    Run(gamedata, True, connection)  # start game
+                    Run(gamedata, connection)  # start game
                     print("tässä3", connection.data_)
 
         #if the connection failed
@@ -182,31 +189,31 @@ def ClientMenu(startdata):
     menu.clear()
     menu.add.text_input('server ip:', default='localhost', onchange=startdata.SetIpaddress)
     menu.add.text_input('port:', default='1234', onchange=startdata.SetPort)
-    menu.add.text_input('gameid:', default='', onchange=startdata.SetGameid)
+    menu.add.text_input('Join number:', default='', onchange=startdata.SetGameid)
     menu.add.button("Connect",StartClient,startdata)
-    menu.add.button("back", MainMenu)
+    menu.add.button("Back", MainMenu)
 
 
 def SinglePlayerMenu(startdata):
 
     def StartSingleplayer(startdata):
-        gamedata = GameData(local_player, False, remote_player, screen=None)  # create gamedata
+        gamedata = GameData(local_player, False,False, remote_player)  # create gamedata
         gamedata.SetScreenSize(startdata.resolution_)  #set screen size
 
 
         if startdata.fullscreen_: #if fullscreen
             pygame.display.toggle_fullscreen() #set fullscreen
 
-        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = ReadMapFile(startdata.map_file_path_)
+        mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile(startdata.map_file_path_) #read map file
         SetMap(gamedata, mapstr)  # convert str to map list
         gamedata.SetDrawarea()
-        Run(gamedata,False)
+        Run(gamedata) #start game
 
 
 
     menu.clear()
     menu.add.button("Play",StartSingleplayer,startdata)
-    menu.add.selector("map:", ReturnMaps(), onchange=startdata.SetMapFilepath) #map select
+    menu.add.selector("map:", ReturnMaps(), onchange=startdata.SetMapFilepath,default=1) #map select
     menu.add.button("Back", MainMenu)
 
 
@@ -223,7 +230,7 @@ def SettingsMenu(stratdata):
 def MainMenu():
     menu.clear()
     menu.add.button('Singleplayer', SinglePlayerMenu, startdata)
-    menu.add.button('Client', ClientMenu, startdata)
+    menu.add.button('Join game', ClientMenu, startdata)
     menu.add.button('Server', ServerMenu, startdata)
     menu.add.button("settings",SettingsMenu,startdata)
 
