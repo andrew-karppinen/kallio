@@ -22,7 +22,6 @@ def MapListToStr(maplist: list):
     3 = default tile
     4 = tile that can be destroyed
     5 = tile that cannot be destroyed
-    6 = diamond
     7 = goal
     8 not a falling tnt
     9 = falling tnt
@@ -33,6 +32,8 @@ def MapListToStr(maplist: list):
     15 = monster which looking to down
     16 = monster which looking to left
     17 = monster which looking to up
+    18 = not a falling diamond
+    19 = falling diamond
     '''
 
     sendlist = []
@@ -57,8 +58,6 @@ def MapListToStr(maplist: list):
                 sendlist.append("4")
             elif type(maplist[i][j]) == Bedrock:  # cannot explode tile
                 sendlist.append("5")
-            elif type(maplist[i][j]) == Diamond:
-                sendlist.append("6")
             elif type(maplist[i][j]) == Goal:
                 sendlist.append("7")
 
@@ -89,6 +88,22 @@ def MapListToStr(maplist: list):
                 elif maplist[i][j].direction_ == 4:  # up
                     sendlist.append("17")
 
+            elif type(maplist[i][j]) == Diamond: #if diamond
+                if maplist[i][j].drop_:  # if currently dropping
+                    sendlist.append("19")
+                else:# no currently dropping
+                    sendlist.append("18")
+
+            elif type(maplist[i][j]) == Door:  # if door
+                if maplist[i][j].direction_ == 1: #up
+                    sendlist.append("20")
+                elif maplist[i][j].direction_ == 2: #right
+                    sendlist.append("21")
+                elif maplist[i][j].direction_ == 3: #down
+                    sendlist.append("22")
+                elif maplist[i][j].direction_ == 4: #left
+                    sendlist.append("23")
+
     sendstr = ",".join(sendlist) #convert list to string
 
     return (sendstr)
@@ -117,12 +132,13 @@ class Server:
 
         self.data_ = None #received messages
         self.data_type_ = None
-        self.round_number_ = 0 #if message is map
+        self.points_collected_ = 0 #if message is map
 
         #data_type_: "map","readytostart","gameexit",None, "other"
 
         #data_:
         #map = str
+        #points_collected_ = int
         #readytostart = str
         #gameexit = None
         #other = str
@@ -145,7 +161,7 @@ class Server:
                 if data[0:4] == "map:":  # if message is map
 
                     index = data.find(":", 5) +1
-                    self.round_number_ = data[4:index-1]  #round counter
+                    self.points_collected_ = int(data[4:index-1])  #points collected
                     self.data_type_ = "map"
                     self.data_ = data[index:] #read the rest of message
 
@@ -166,21 +182,21 @@ class Server:
         return self.data_
 
 
-    def SendMap(self,maplist:list,round_number:int):
+    def SendMap(self,maplist:list,points_collected:int):
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = f"map:{str(round_number)}:{mapstr}"
+        message = f"map:{str(points_collected)}:{mapstr}"
         self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
 
 
 
-    def SendStartInfo(self,map_height:int,map_width:int):
+    def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0):
         '''
         a message about the start of the game
-        send map size y,z
+        send map size y,z and required_score
         '''
 
-        message = "startinfo:" + str(map_height) + "," + str(map_width)
+        message = f"startinfo:{str(map_height)},{str(map_width)},{str(required_score)}"
 
         self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
@@ -212,12 +228,13 @@ class Client:
 
         self.data_ = None #received messages
         self.data_type_ = None
-        self.round_number_ = 0 #if message is map
+        self.points_collected_ = 0 #if message is map
 
         #data_type_: "map","startinfo","gameexit",None, "other"
 
         #data_:
         #map = str
+        #points_collected_ = int
         #startinfo = tuple (map_height,map_width)
         #gameexit = bool
         #other = str
@@ -234,7 +251,7 @@ class Client:
             if data[0:4] == "map:": #if message is map
 
                 index = data.find(":", 4) +1
-                self.round_number_ = data[4:index-1]  # round counter
+                self.points_collected_ = int(data[4:index-1])  #points_collected_
                 self.data_type_ = "map"
                 self.data_ = data[index:] #read the rest of message
 
@@ -243,8 +260,9 @@ class Client:
                 y_x_list = data[10:].split(',') #set map size
                 map_height = int(y_x_list[0])  #map size y
                 map_width = int(y_x_list[1])  #map size x
+                required_score = int(y_x_list[1]) #required_score
 
-                self.data_ = (map_height,map_width)
+                self.data_ = (map_height,map_width,required_score)
                 self.data_type_ = "startinfo"
 
             elif data[0:9] == "gameexit:": #if message is gameexit
@@ -270,10 +288,10 @@ class Client:
 
 
 
-    def SendMap(self,maplist:list,round_number:int):
+    def SendMap(self,maplist:list,points_collected:int):
 
         mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = f"map:{str(round_number)}:{mapstr}"
+        message = f"map:{str(points_collected)}:{mapstr}"
 
         self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
