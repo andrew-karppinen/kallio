@@ -15,85 +15,85 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
 
 
     if right:
-        if gamedata.local_player_.position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ +1]) in collisions:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_.position_y_, gamedata.local_player_.position_x_+1) #try collect point
-            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-            gamedata.local_player_.position_x_ += 1 #move player
+        if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in collisions:  #if map not end and if no collision
+            CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_+1) #try collect point
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+            gamedata.local_player_position_x_ += 1 #move player
 
         #if no default tile or diamond
-        elif gamedata.local_player_.position_x_+2 < gamedata.map_width_ and gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] == None: #if map not end and if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]) in pushing: #if pushing objects
+        elif gamedata.local_player_position_x_+2 < gamedata.map_width_ and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 2] == None: #if map not end and if index is empty
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) in pushing: #if pushing objects
                 if gamedata.pushing_right_ == 0: #the player moves slower if it pushes a rock
                     gamedata.pushing_right_ = 1
                 elif gamedata.pushing_right_ == 1:
-                    if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]) == Stone: #if stone
-                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1].Rotate(1) #rotate image
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] #set stone new position
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_x_ += 1  # move player
+                    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Stone: #if stone
+                        gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1].Rotate(1) #rotate image
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1] #set stone new position
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_x_ += 1  # move player
                     gamedata.pushing_right_ = 0
 
             #if door
-            elif type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1]) == Door: #if door
-                if gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_x_ += 2 #move player
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
+                if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_x_ += 2 #move player
 
 
     if left:
-        if gamedata.local_player_.position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) in collisions:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_.position_y_, gamedata.local_player_.position_x_-1) #try collect point
-            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-            gamedata.local_player_.position_x_ -= 1 #move player
+        if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in collisions:  #if map not end and if no collision
+            CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_-1) #try collect point
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+            gamedata.local_player_position_x_ -= 1 #move player
 
         #if pushing objects
-        elif gamedata.local_player_.position_x_-2 >= 0 and gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] == None: #if map not end if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) in pushing: #if pushing objects
+        elif gamedata.local_player_position_x_-2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] == None: #if map not end if index is empty
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in pushing: #if pushing objects
                 if gamedata.pushing_left_ == 0: #the player moves slower if it pushes a rock
                     gamedata.pushing_left_ = 1
                 elif gamedata.pushing_left_ == 1:
-                    if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) == Stone: #if stone
-                        gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1].Rotate(2) #rotate image
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] #set stone new position
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_x_ -= 1 #move player
+                    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Stone: #if stone
+                        gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].Rotate(2) #rotate image
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1] #set stone new position
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_x_ -= 1 #move player
                     gamedata.pushing_left_ = 0
 
             #if door
-            elif type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) == Door: #if door
-                if gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_x_ -= 2 #move player
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
+                if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_x_ -= 2 #move player
 
 
     if up:
-        if gamedata.local_player_.position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) in collisions:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_.position_y_ - 1, gamedata.local_player_.position_x_) #try collect point
-            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-            gamedata.local_player_.position_y_ -= 1
+        if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in collisions:  #if map not end and if no collision
+            CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+            gamedata.local_player_position_y_ -= 1
 
         #if door
-        elif gamedata.local_player_.position_y_ - 2 >= 0 and gamedata.current_map_[gamedata.local_player_.position_y_-2][gamedata.local_player_.position_x_] == None: #if map not end and if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_ -1][gamedata.local_player_.position_x_]) == Door: #if door
-                if gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_].direction_ == 1: #if the direction of the door is to the up
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_y_ -= 2 #move player
+        elif gamedata.local_player_position_y_ - 2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_-2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
+            if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == Door: #if door
+                if gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_].direction_ == 1: #if the direction of the door is to the up
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_y_ -= 2 #move player
 
 
     if down:
-        if gamedata.local_player_.position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_ ]) in collisions:  #if map not end and if no collision
-            CollectPoints(gamedata,gamedata.local_player_.position_y_ +1,gamedata.local_player_.position_x_) #try collect point
-            gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-            gamedata.local_player_.position_y_ += 1
+        if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in collisions:  #if map not end and if no collision
+            CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+            gamedata.local_player_position_y_ += 1
         #if door
-        elif gamedata.local_player_.position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_.position_y_+2][gamedata.local_player_.position_x_] == None: #if map not end and if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_]) == Door: #if door
-                if gamedata.current_map_[gamedata.local_player_.position_y_ +1][gamedata.local_player_.position_x_].direction_ == 3:  # if the direction of the door is to the down
-                    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = None
-                    gamedata.local_player_.position_y_ += 2  # move player
+        elif gamedata.local_player_position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_position_y_+2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
+            if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
+                if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
+                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
+                    gamedata.local_player_position_y_ += 2  # move player
 
 
-    gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_ #set player to map list
+    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
 
 def CollectPoints(gamedata:object,y:int,x:int):
     #try collect point from given location
@@ -107,31 +107,31 @@ def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     '''
 
     if right:
-        if gamedata.local_player_.position_x_ +1 < gamedata.map_width_: #if map not end
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_+1]) == DefaultTile:
-                gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ + 1] = None
-            CollectPoints(gamedata,gamedata.local_player_.position_y_,gamedata.local_player_.position_x_+1)
+        if gamedata.local_player_position_x_ +1 < gamedata.map_width_: #if map not end
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1] = None
+            CollectPoints(gamedata,gamedata.local_player_position_y_,gamedata.local_player_position_x_+1)
 
 
     elif left:
-        if gamedata.local_player_.position_x_ -1 >= 0:  # if map not end
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1]) == DefaultTile:
-                gamedata.current_map_[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_ - 1] = None
+        if gamedata.local_player_position_x_ -1 >= 0:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1] = None
 
-            CollectPoints(gamedata,gamedata.local_player_.position_y_,gamedata.local_player_.position_x_-1)
+            CollectPoints(gamedata,gamedata.local_player_position_y_,gamedata.local_player_position_x_-1)
 
     elif up:
-        if gamedata.local_player_.position_y_ - 1 >= 0:  # if map not end
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_]) == DefaultTile:
-                gamedata.current_map_[gamedata.local_player_.position_y_-1][gamedata.local_player_.position_x_] = None
-            CollectPoints(gamedata,gamedata.local_player_.position_y_-1,gamedata.local_player_.position_x_)
+        if gamedata.local_player_position_y_ - 1 >= 0:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_] = None
+            CollectPoints(gamedata,gamedata.local_player_position_y_-1,gamedata.local_player_position_x_)
 
     elif down:
-        if gamedata.local_player_.position_y_ + 1 < gamedata.map_height_:  # if map not end
-            if type(gamedata.current_map_[gamedata.local_player_.position_y_+1][gamedata.local_player_.position_x_]) == DefaultTile:
-                gamedata.current_map_[gamedata.local_player_.position_y_+1][gamedata.local_player_.position_x_] = None
+        if gamedata.local_player_position_y_ + 1 < gamedata.map_height_:  # if map not end
+            if type(gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_]) == DefaultTile:
+                gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_] = None
 
-            CollectPoints(gamedata,gamedata.local_player_.position_y_+1,gamedata.local_player_.position_x_)
+            CollectPoints(gamedata,gamedata.local_player_position_y_+1,gamedata.local_player_position_x_)
 
 def Gravity(gamedata):
 

@@ -75,16 +75,16 @@ def SetMap(gamedata:object,mapstr:str):
                 maplist2d[y][x] = deepcopy(mapsymbols[number])  #convert numbers to objects
 
             elif number == "1":  # if local player
-                if gamedata.local_player_position_y_ == None: #if the local player does not have a location yet
+                if gamedata.local_player_position_y_: #if the local player does not have a location yet
                     #this scope run only in beginning the game
 
-                    gamedata.local_player_.position_y_ = y  # set player position
-                    gamedata.local_player_.position_x_ = x
+                    gamedata.local_player_position_y_ = y  # set player position
+                    gamedata.local_player_position_x_ = x
                     maplist2d[y][x] = gamedata.local_player_
                 else:
                     #the localplayer's location already exists
                     maplist2d[y][x] = None
-                    maplist2d[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_
+                    maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
 
             elif number == "2":  # if remote player
                 maplist2d[y][x] = gamedata.remote_player_
@@ -98,15 +98,15 @@ def SetMap(gamedata:object,mapstr:str):
 
 
             elif number == "1": #if local player
-                if gamedata.local_player_.position_y_ == None: #if the local player does not have a location yet
+                if gamedata.local_player_position_y_ == None: #if the local player does not have a location yet
                     #this scope run only in beginning the game
-                    gamedata.local_player_.position_y_ = y  # set player position
-                    gamedata.local_player_.position_x_ = x
+                    gamedata.local_player_position_y_ = y  # set player position
+                    gamedata.local_player_position_x_ = x
                     maplist2d[y][x] = gamedata.local_player_
                 else:
                     #the localplayer's location already exists
                     maplist2d[y][x] = None
-                    maplist2d[gamedata.local_player_.position_y_][gamedata.local_player_.position_x_] = gamedata.local_player_
+                    maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
 
             elif number == "2": #if remote player
                 maplist2d[y][x] = gamedata.remote_player_

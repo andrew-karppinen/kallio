@@ -24,9 +24,11 @@ class GameData:
         self.server_ = server #False = client, True = server
         self.local_player_ = local_player
 
+        self.local_player_position_x_= None
+        self.local_player_position_y_ = None
+
 
         self.remote_player_ = remote_player
-
 
 
 
@@ -142,8 +144,8 @@ class GameData:
 
 
 
-        left = self.local_player_.position_x_ - self.draw_area_x_ // 2
-        right = self.local_player_.position_x_+ self.draw_area_x_ // 2
+        left = self.local_player_position_x_ - self.draw_area_x_ // 2
+        right = self.local_player_position_x_+ self.draw_area_x_ // 2
 
 
         #move draw area
@@ -161,8 +163,8 @@ class GameData:
 
 
 
-        up = self.local_player_.position_y_ - self.draw_area_y_ // 2
-        down = self.local_player_.position_y_ + self.draw_area_y_ //2
+        up = self.local_player_position_y_ - self.draw_area_y_ // 2
+        down = self.local_player_position_y_ + self.draw_area_y_ //2
 
         #move draw area
         while True:
