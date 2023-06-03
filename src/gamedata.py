@@ -49,11 +49,13 @@ class GameData:
         self.map_width_ = 0 #x
         self.map_height_ = 0 #y
 
+        self.original_mapstr_ = ""
+
         self.previous_map_ = []
         self.current_map_ = []
 
 
-
+        self.menudata_ = None
 
 
     def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
@@ -126,7 +128,12 @@ class GameData:
             if self.remote_player_ != None:
                 self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size,tile_size))
 
-            pygame.display.set_caption('py-boulderdash') #name window
+            if self.server_:
+                name = "server"
+            else:
+                name = "client"
+
+            pygame.display.set_caption(name) #name window
             return(True)
 
     def DrawMap(self):
@@ -179,7 +186,7 @@ class GameData:
 
 
 
-        #draw tiles
+        #draw map
         for i in range(up,down): #y
             x = -1
             y += 1
@@ -194,7 +201,7 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_+self.margin_x,y*self.tile_size_+self.margin_y))
+                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_+self.margin_x,y*self.tile_size_+self.margin_y)) #draw tiles
 
 
 

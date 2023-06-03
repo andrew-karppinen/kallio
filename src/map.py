@@ -3,11 +3,12 @@ from src.objects import *
 
 from copy import deepcopy
 
-def SetMap(gamedata:object,mapstr:str):
+def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     '''
     Convert mapstr to map list
     set maplist to gamedata object
 
+    "initial" parameter must be true, If the level is started from the beginning
 
     0 = empty
     1 = local player
@@ -41,8 +42,10 @@ def SetMap(gamedata:object,mapstr:str):
     if mapstr.count(",") != gamedata.map_width_ * gamedata.map_height_ -1:
         raise Exception('incorrect mapstr')
 
-    number = ""
+    if initial == True:
+        gamedata.original_mapstr_ = mapstr
 
+    number = ""
     maplist = []
     maplist2d = [['' for i in range(gamedata.map_width_)] for j in range(gamedata.map_height_)] #create 2d array
 
@@ -75,7 +78,7 @@ def SetMap(gamedata:object,mapstr:str):
                 maplist2d[y][x] = deepcopy(mapsymbols[number])  #convert numbers to objects
 
             elif number == "1":  # if local player
-                if gamedata.local_player_position_y_: #if the local player does not have a location yet
+                if initial == True:
                     #this scope run only in beginning the game
 
                     gamedata.local_player_position_y_ = y  # set player position
@@ -98,7 +101,7 @@ def SetMap(gamedata:object,mapstr:str):
 
 
             elif number == "1": #if local player
-                if gamedata.local_player_position_y_ == None: #if the local player does not have a location yet
+                if initial == True:
                     #this scope run only in beginning the game
                     gamedata.local_player_position_y_ = y  # set player position
                     gamedata.local_player_position_x_ = x

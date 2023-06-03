@@ -134,13 +134,14 @@ class Server:
         self.data_type_ = None
         self.points_collected_ = 0 #if message is map
 
-        #data_type_: "map","readytostart","gameexit",None, "other"
+        #data_type_: "map","readytostart","gameexit","restartlevel",None, "other"
 
         #data_:
         #map = str
         #points_collected_ = int
         #readytostart = str
         #gameexit = None
+        #restartlevel = None
         #other = str
         #None = None
 
@@ -169,6 +170,15 @@ class Server:
                 elif data[0:13] == "readytostart:": #if message is "readytostart"
                     self.data_type_ = "readytostart"
                     self.data_ = data[13:] #read check_number
+
+                elif data[0:9] == "gameexit:":  # if message is gameexit
+                    self.data_type_ = "gameexit"
+                    self.data_ = eval(data[9:])  # string to boolean
+
+                elif data[0:13] == "restartlevel":
+                    self.data_type_ = "restartlevel"
+                    self.data_ = None
+
 
                 else: #other
                     self.data_type_ = "other"
@@ -206,6 +216,10 @@ class Server:
         message = "gameexit:" + str(win)
         self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
+    def SendRestartLevel(self):
+        message = "restartlevel"
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+
     def CloseSocket(self):
         self.socket_.close()
 
@@ -230,15 +244,17 @@ class Client:
         self.data_type_ = None
         self.points_collected_ = 0 #if message is map
 
-        #data_type_: "map","startinfo","gameexit",None, "other"
+        #data_type_: "map","startinfo","gameexit","restartlevel",None, "other"
 
         #data_:
         #map = str
         #points_collected_ = int
         #startinfo = tuple (map_height,map_width)
         #gameexit = bool
+        #restartlevel = None
         #other = str
         #None = None
+
 
 
     def Read(self):
@@ -269,6 +285,9 @@ class Client:
                 self.data_type_ = "gameexit"
                 self.data_ = eval(data[9:]) #strin to boolean
 
+            elif data[0:13] == "restartlevel":
+                self.data_type_ = "restartlevel"
+                self.data_ = None
 
             else:  # other
                 self.data_type_ = "other"
@@ -295,8 +314,15 @@ class Client:
 
         self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
-    def SenGameExit(self):
-        pass
+    def SendGameExit(self,win:bool = False): #if game exit
+        #win False = game over, True = level complete
+        message = "gameexit:" + str(win)
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+
+
+    def SendRestartLevel(self):
+        message = "restartlevel"
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
 
     def CloseSocket(self):

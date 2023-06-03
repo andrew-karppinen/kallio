@@ -40,7 +40,7 @@ Door.Setimage(doorimage)
 local_player = Player(playerimage)
 remote_player = Player(playerimage2, False)
 
-if 1:  # client
+if 0:  # client
     gamedata = GameData(local_player, True, False,remote_player) #create gamedata object
 
     connection = Client("localhost", 1234)  # tähän ip osoite!!!
@@ -57,21 +57,21 @@ if 1:  # client
             connection.Read()  # read messages
             print("tässä2", connection.data_)
             if connection.data_type_ == "map":  # if message is map
-                SetMap(gamedata, connection.data_)  # set map
+                SetMap(gamedata, connection.data_,True)  # set map
                 gamedata.SetScreenSize((1920,1080))  # set screen size
                 Run(gamedata, connection)  # start game
                 print("tässä3", connection.data_)
 
 
 
-if 1:  # server
+if 0:  # server
     gamedata = GameData(local_player, True,True, remote_player)  # create gamedata
 
 
     connection = Server(1234) #create server object
 
     mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
-    SetMap(gamedata, mapstr)  # convert str to map list
+    SetMap(gamedata, mapstr,True)  # convert str to map list
 
     if connection.connected_:
         connection.Read()  # read messages
@@ -89,6 +89,6 @@ if 1:  # if singleplayer
 
     gamedata.SetScreenSize((1920,1080)) #set screen size
     mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
-    SetMap(gamedata, mapstr)  # convert str to map list
+    SetMap(gamedata, mapstr,True)  # convert str to map list
 
     Run(gamedata, False) #start game

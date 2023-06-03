@@ -220,14 +220,8 @@ def DeleteExplosion(gamedata:object):
 
     return removed
 
-def ExitProgram(connection):
-    try: #if multiplayer
-        connection.CloseSocket()  # close socket
-    except:
-        pass
 
-    pygame.quit()
-    exit()
+
 
 
 def Run(gamedata:object,connection:object = None): #game main function
@@ -246,19 +240,31 @@ def Run(gamedata:object,connection:object = None): #game main function
     while True: #game main loop
 
         if gamedata.multiplayer_:
+            if connection.connected_ == True:
 
-            connection.Read() #read socket
-
-
-            if connection.data_type_ == "map": #if message is map
                 try:
-                    mapstr = connection.data_
-                    SetMap(gamedata,mapstr) #set map
-                    gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+                    connection.Read()  # read socket
+                except:
+                    print("connection problem")
 
-                except: #if incorrect socket message
-                    print(mapstr)
-                    print("incorrect socket message")
+
+                try:
+                    if connection.data_type_ == "map": #if message is map
+                            mapstr = connection.data_
+                            SetMap(gamedata,mapstr) #set map
+                            gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+
+                    elif connection.data_type_ == "gameexit":
+                        connection.CloseSocket()  # close socket
+                        pygame.display.quit()  # close screen
+                        return #back to menu
+
+                    elif connection.data_type_ == "restartlevel":
+                        SetMap(gamedata, gamedata.original_mapstr_, True)  # restart level
+
+                except Exception as error_message:
+                    print(error_message)
+
 
 
         for event in pygame.event.get(): #pygame event loop
@@ -266,7 +272,10 @@ def Run(gamedata:object,connection:object = None): #game main function
             if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_ESCAPE: #if esc is pressed
-                    ExitProgram(connection)
+                    SetMap(gamedata, gamedata.original_mapstr_, True) #restart level
+                    if gamedata.multiplayer_: #if multiplayer
+                        connection.SendRestartLevel()
+
                 if event.key == pygame.K_LEFT:
                     left = True
                 if event.key == pygame.K_RIGHT:
@@ -296,7 +305,11 @@ def Run(gamedata:object,connection:object = None): #game main function
 
 
             if event.type == pygame.QUIT:  #exit program
-                ExitProgram(connection)
+                if gamedata.multiplayer_:
+                    connection.SendGameExit(False)
+                    connection.CloseSocket()  # close socket
+                pygame.display.quit()  # close screen
+                return #back to menu
 
 
         if pygame.time.get_ticks() > movelimit + 140:
@@ -321,6 +334,5 @@ def Run(gamedata:object,connection:object = None): #game main function
             #if explosion removed
             if gamedata.multiplayer_: #if multiplayer
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
-
 
         clock.tick(30) #fps limit
