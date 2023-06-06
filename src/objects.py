@@ -10,6 +10,7 @@ class Player:
 
 
 class DefaultTile:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -23,12 +24,12 @@ class DefaultTile:
 
 
 class Stone:
+    #class variables:
     image_left = None
     image_right = None
     image_up = None
     image_down = None
     image = None
-
 
     def SetImage(image:pygame.surface):
         Stone.image = image
@@ -37,6 +38,7 @@ class Stone:
         Stone.image_up = pygame.transform.rotate(Stone.image_right,90)
         Stone.image_left = pygame.transform.rotate(Stone.image_right,180)
         Stone.image_down = pygame.transform.rotate(Stone.image_right,270)
+
 
     def __init__(self, drop:bool):
         self.drop_ = drop
@@ -49,15 +51,17 @@ class Stone:
         #2 = counterclockwise
 
         if direction == 1:
+            if self.direction_ == 4:
+                self.direction_ = 1
+            else:
+                self.direction_ += 1
+
+        elif direction == 2:
             if self.direction_ == 1:
                 self.direction_ = 4
             else:
                 self.direction_ -= 1
-        if direction == 2:
-            if self.direction_ == 4:
-                self.direction_ == 1
-            else:
-                self.direction_ += 1
+
 
     @property
     def image_(self):
@@ -73,19 +77,25 @@ class Stone:
 
 
 class Diamond:
+    #class variables:
+    image_left = None
+    image_right = None
+    image_up = None
+    image_down = None
     image = None
 
     def SetImage(image:pygame.surface):
         Diamond.image = image
-    def __init__(self,drop:bool=False):
-        self.drop_ = drop  # if currently dropping
-        self.angle_ = 0
+        #rotate images
+        Diamond.image_right = image
+        Diamond.image_up = pygame.transform.rotate(Diamond.image_right,90)
+        Diamond.image_left = pygame.transform.rotate(Diamond.image_right,180)
+        Diamond.image_down = pygame.transform.rotate(Diamond.image_right,270)
 
 
-
-    @property
-    def image_(self):
-        return pygame.transform.rotate(Diamond.image, self.angle_)  # Rotate the image and return it
+    def __init__(self, drop:bool):
+        self.drop_ = drop
+        self.direction_ = 1  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
     def Rotate(self,direction:int):
@@ -94,13 +104,33 @@ class Diamond:
         #2 = counterclockwise
 
         if direction == 1:
-            self.angle_ -= 90
+            if self.direction_ == 4:
+                self.direction_ = 1
+            else:
+                self.direction_ += 1
+
         if direction == 2:
-            self.angle_ += 90
+            if self.direction_ == 1:
+                self.direction_ = 4
+            else:
+                self.direction_ -= 1
+
+
+    @property
+    def image_(self):
+        if self.direction_ == 1:
+            return(Diamond.image_up)
+        elif self.direction_ == 2:
+            return(Diamond.image_right)
+        elif self.direction_ == 3:
+            return (Diamond.image_down)
+        elif self.direction_ == 4:
+            return(Diamond.image_left)
 
 
 
 class Tnt:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -117,6 +147,7 @@ class Tnt:
 
 
 class Explosion:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -130,6 +161,7 @@ class Explosion:
         return (Explosion.image)
 
 class Bedrock:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -142,6 +174,7 @@ class Bedrock:
         return (Bedrock.image)
 
 class Brick:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -156,6 +189,7 @@ class Brick:
 
 
 class Goal:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
@@ -173,6 +207,7 @@ class Goal:
 
 
 class Monster:
+    #class variables:
     image = None
 
     def SetImage(image:pygame.surface):
