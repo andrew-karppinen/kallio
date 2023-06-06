@@ -120,8 +120,8 @@ class GameData:
             self.screen_ = pygame.display.set_mode((width, height))  #update screen size
 
             #scale tile images
-            for i in [Goal,Diamond,Stone,Tnt,DefaultTile,Explosion,Brick,Bedrock]:
-                i.image = pygame.transform.scale(i.image,(tile_size,tile_size))
+            for i in [Goal,Diamond,Tnt,Stone,Door,DefaultTile,Explosion,Brick,Bedrock]:
+                i.SetImage(pygame.transform.scale(i.image,(tile_size,tile_size)))
 
             #scale player image size
             self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size,tile_size))

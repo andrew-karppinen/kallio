@@ -26,15 +26,18 @@ brickimage = pygame.image.load("media/brick.png")
 doorimage = pygame.image.load("media/door.png")
 
 #set images
-Goal.image = goalimage
-Diamond.image = diamondimage
-Explosion.image = explosionimage
-Tnt.image = tntimage
-DefaultTile.image = sandimage
-Stone.image = stoneimage
-Bedrock.image = bedrockimage
-Brick.image = brickimage
-Door.Setimage(doorimage)
+#set images
+Diamond.SetImage(diamondimage)
+Goal.SetImage(goalimage)
+Explosion.SetImage(explosionimage)
+Tnt.SetImage(tntimage)
+DefaultTile.SetImage(sandimage)
+Bedrock.SetImage(bedrockimage)
+Brick.SetImage(brickimage)
+
+#set images
+Stone.SetImage(stoneimage)
+Door.SetImage(doorimage)
 
 #create players
 local_player = Player(playerimage)

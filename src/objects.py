@@ -12,6 +12,8 @@ class Player:
 class DefaultTile:
     image = None
 
+    def SetImage(image:pygame.surface):
+        DefaultTile.image = image
     def __init__(self):
         pass
 
@@ -21,17 +23,24 @@ class DefaultTile:
 
 
 class Stone:
+    image_left = None
+    image_right = None
+    image_up = None
+    image_down = None
     image = None
 
-    def __init__(self,drop:bool=False):
-        self.drop_ = drop  # if currently dropping
-        self.angle_ = 0
 
-    @property
-    def image_(self):
+    def SetImage(image:pygame.surface):
+        Stone.image = image
+        #rotate images
+        Stone.image_right = image
+        Stone.image_up = pygame.transform.rotate(Stone.image_right,90)
+        Stone.image_left = pygame.transform.rotate(Stone.image_right,180)
+        Stone.image_down = pygame.transform.rotate(Stone.image_right,270)
 
-        return pygame.transform.rotate(Stone.image,self.angle_) #Rotate the image and return it
-
+    def __init__(self, drop:bool):
+        self.drop_ = drop
+        self.direction_ = 1  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
     def Rotate(self,direction:int):
@@ -40,16 +49,34 @@ class Stone:
         #2 = counterclockwise
 
         if direction == 1:
-            self.angle_ -= 90
+            if self.direction_ == 1:
+                self.direction_ = 4
+            else:
+                self.direction_ -= 1
         if direction == 2:
-            self.angle_ += 90
+            if self.direction_ == 4:
+                self.direction_ == 1
+            else:
+                self.direction_ += 1
 
+    @property
+    def image_(self):
+        if self.direction_ == 1:
+            return(Stone.image_up)
+        elif self.direction_ == 2:
+            return(Stone.image_right)
+        elif self.direction_ == 3:
+            return (Stone.image_down)
+        elif self.direction_ == 4:
+            return(Stone.image_left)
 
 
 
 class Diamond:
     image = None
 
+    def SetImage(image:pygame.surface):
+        Diamond.image = image
     def __init__(self,drop:bool=False):
         self.drop_ = drop  # if currently dropping
         self.angle_ = 0
@@ -75,6 +102,9 @@ class Diamond:
 
 class Tnt:
     image = None
+
+    def SetImage(image:pygame.surface):
+        Tnt.image = image
     def __init__(self,drop:bool=False):
         self.drop_ = drop  # if currently dropping
 
@@ -89,6 +119,9 @@ class Tnt:
 class Explosion:
     image = None
 
+    def SetImage(image:pygame.surface):
+        Explosion.image = image
+
     def __init__(self,counter:int = 0):
         self.counter_ = counter #1,2
 
@@ -99,6 +132,8 @@ class Explosion:
 class Bedrock:
     image = None
 
+    def SetImage(image:pygame.surface):
+        Bedrock.image = image
     def __init__(self):
         pass
 
@@ -109,7 +144,8 @@ class Bedrock:
 class Brick:
     image = None
 
-
+    def SetImage(image:pygame.surface):
+        Brick.image = image
 
     def __init__(self):
         pass
@@ -121,6 +157,9 @@ class Brick:
 
 class Goal:
     image = None
+
+    def SetImage(image:pygame.surface):
+        Goal.image = image
 
     def __init__(self):
         pass
@@ -135,6 +174,9 @@ class Goal:
 
 class Monster:
     image = None
+
+    def SetImage(image:pygame.surface):
+        Monster.image = image
 
     def __init__(self,direction):
         self.direction_ = direction
@@ -151,9 +193,10 @@ class Door:
     image_right = None
     image_up = None
     image_down = None
+    image = None
 
-
-    def Setimage(image:pygame.surface):
+    def SetImage(image:pygame.surface):
+        Door.image = image
         #rotate images
         Door.image_right = image
         Door.image_up = pygame.transform.rotate(Door.image_right,90)
@@ -166,11 +209,11 @@ class Door:
 
     @property
     def image_(self):
-        if self.direction_ == 2:
+        if self.direction_ == 1:
+            return(Door.image_up)
+        elif self.direction_ == 2:
             return(Door.image_right)
         elif self.direction_ == 3:
             return (Door.image_down)
         elif self.direction_ == 4:
             return(Door.image_left)
-        elif self.direction_ == 1:
-            return(Door.image_up)
