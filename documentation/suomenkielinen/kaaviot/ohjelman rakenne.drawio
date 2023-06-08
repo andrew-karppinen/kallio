@@ -1,0 +1,30 @@
+<mxfile host="app.diagrams.net" modified="2023-05-16T10:19:54.313Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0" etag="i4eCCW-MWaEykh9kCNXl" version="21.3.2" type="device">
+  <diagram name="Sivu-1" id="QFLmfZph3ILsJsqs9CBh">
+    <mxGraphModel dx="2074" dy="1113" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="MTwqg-qkcCI7eOKgRPlY-1" value="&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;GAMEDATA&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 15px;&quot;&gt;pelin tietoja esim pelin kartta ja joitain toimintoja näihin tietohin liittyen&lt;/div&gt;&lt;div style=&quot;font-size: 15px;&quot;&gt;kuten kartan piirtäminen ja näytön resoluution asettaminen&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="370" width="460" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="MTwqg-qkcCI7eOKgRPlY-2" value="&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;GAME&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;joukko funktioita, toteuttaa itse pelin pyörimisen kuten hahmojen liikkumisen yms&amp;nbsp; &lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="70" y="670" width="360" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="MTwqg-qkcCI7eOKgRPlY-3" value="&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;Network&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;Server ja Clien luokat jotka toteuttaa internet toiminnot&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;kuten kartan ja muiden viestejen lähetyksen&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;nbsp;ja viestien vastaanottamisen&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;sisältää funktion joka muuttaa kartan teksti muotoon&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="690" y="380" width="420" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="MTwqg-qkcCI7eOKgRPlY-5" value="&lt;div&gt;&lt;b&gt;MAP&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;sisältää funktion joka muuttaa tekstimuotoisen kartan pelin kartaksi&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;sisältää funktion joka lukee kartan tekstimuotoon tiedostosta&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="690" y="650" width="420" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="jIL7zpXCT9-kcBdeqUW4-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jIL7zpXCT9-kcBdeqUW4-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247.5" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jIL7zpXCT9-kcBdeqUW4-2" value="&lt;div&gt;&lt;b&gt;MenuData&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;pelin alustukseen ja valikkoon liittyviä tietoja&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;säilötään pelin ajaksi gamedata olioon&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="65" y="90" width="365" height="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
