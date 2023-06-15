@@ -161,20 +161,20 @@ def Gravity(gamedata):
                         gamedata.current_map_[y+1][x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
                     else:
-
                         if type(gamedata.current_map_[y][x]) in [Stone,Diamond]: #if stone or diamond
                             if type(gamedata.current_map_[y+1][x]) in gamedata.gravity_objects_2_: #if below is stone or diamond
 
                                 if x +1 < gamedata.map_width_:
                                     if gamedata.current_map_[y][x+1] == None and gamedata.current_map_[y+1][x+1] == None: #if empty on the right
                                         gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x] #move stone to right
-                                        gamedata.current_map_[y][x].Rotate(2)
+                                        gamedata.current_map_[y][x].Rotate(1)
                                         gamedata.current_map_[y][x] = None
                                         return
 
                                 if x-1 >= 0: #if map not end
                                     if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
                                         gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move stone to left
+                                        gamedata.current_map_[y][x].Rotate(2)
                                         gamedata.current_map_[y][x] = None
                                         return
 

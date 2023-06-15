@@ -23,17 +23,22 @@ def MapListToStr(maplist: list):
     4 = tile that can be destroyed
     5 = tile that cannot be destroyed
     7 = goal
-    8 not a falling tnt
+    8 = not a falling tnt
     9 = falling tnt
     10 = not a falling stone
     11 = falling stone
     12 = Explosion
-    14 =  monster which looking to right
+    14 = monster which looking to right
     15 = monster which looking to down
     16 = monster which looking to left
     17 = monster which looking to up
     18 = not a falling diamond
     19 = falling diamond
+
+    20 Door up
+    21 Door right
+    22 door down
+    23 door left
     '''
 
     sendlist = []
@@ -64,15 +69,29 @@ def MapListToStr(maplist: list):
             elif type(maplist[i][j]) == Tnt:  # if tnt
                 if maplist[i][j].drop_:  # if currently dropping
                     sendlist.append("9")
-                else:  # no currently dropping
+                else:  #no currently dropping
                     sendlist.append("8")
 
             elif type(maplist[i][j]) == Stone:  # if stone
                 if maplist[i][j].drop_:  # if currently dropping
-                    sendlist.append("11")
+                    if maplist[i][j].direction_ == 1:
+                        sendlist.append("11 1")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("11 2")
+                    elif maplist[i][j].direction_ == 3:
+                        sendlist.append("11 3")
+                    elif maplist[i][j].direction_ == 4:
+                        sendlist.append("11 4")
 
                 else:  # no currently dropping
-                    sendlist.append("10")
+                    if maplist[i][j].direction_ == 1:
+                        sendlist.append("10 1")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("10 2")
+                    elif maplist[i][j].direction_ == 3:
+                        sendlist.append("10 3")
+                    elif maplist[i][j].direction_ == 4:
+                        sendlist.append("10 4")
 
             elif type(maplist[i][j]) == Explosion: #if explosion
                 sendlist.append("12")
@@ -232,11 +251,13 @@ class Client:
         self.ipaddress_ = ipaddress
         self.port_ = port
 
-        try:
+        try: #Todo connection timeout not working
             self.socket_.connect((ipaddress, port))  #connect to server
             self.socket_.settimeout(0.1)  #set new timeout
             self.connected_ = True
-        except:
+        except Exception as a:
+            print(a)
+
             self.connected_ = False
 
 

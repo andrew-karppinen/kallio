@@ -40,9 +40,9 @@ class Stone:
         Stone.image_down = pygame.transform.rotate(Stone.image_right,270)
 
 
-    def __init__(self, drop:bool):
+    def __init__(self, drop:bool,direction:int = 1):
         self.drop_ = drop
-        self.direction_ = 1  # 1 = up, 2 = right, 3 = down, 4 = left
+        self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
     def Rotate(self,direction:int):
@@ -93,9 +93,9 @@ class Diamond:
         Diamond.image_down = pygame.transform.rotate(Diamond.image_right,270)
 
 
-    def __init__(self, drop:bool):
+    def __init__(self, drop:bool,direction:int = 1):
         self.drop_ = drop
-        self.direction_ = 1  # 1 = up, 2 = right, 3 = down, 4 = left
+        self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
     def Rotate(self,direction:int):

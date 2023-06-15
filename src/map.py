@@ -3,6 +3,7 @@ from src.objects import *
 
 from copy import deepcopy
 
+
 def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     '''
     Convert mapstr to map list
@@ -22,7 +23,7 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     10 = not a falling stone
     11 = falling stone
     12 = Explosion
-    14 =  monster which looking to right
+    14 = monster which looking to right
     15 = monster which looking to down
     16 = monster which looking to left
     17 = monster which looking to up
@@ -45,8 +46,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     if initial == True:
         gamedata.original_mapstr_ = mapstr
 
-    number = ""
-    maplist = []
     maplist2d = [['' for i in range(gamedata.map_width_)] for j in range(gamedata.map_height_)] #create 2d array
 
     number = ""
@@ -55,9 +54,8 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     x = 0
 
 
+
     #numbers to objects
-    mapsymbols = {"0":None,"3":DefaultTile(),"4":Brick(),"5":Bedrock(),"7":Goal(),"8":Tnt(False),"9":Tnt(True),"10":Stone(False),"11":Stone(True),
-                  "12":Explosion(),"14":Monster(1),"15":Monster(2),"16":Monster(3),"17":Monster(4),"18":Diamond(False),"19":Diamond(True),"20":Door(1),"21":Door(2),"22":Door(3),"23":Door(4)}
     for i in range(len(mapstr)):
 
 
@@ -75,7 +73,7 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
             if number != "1" and number != "2":  # if no player
 
-                maplist2d[y][x] = deepcopy(mapsymbols[number])  #convert numbers to objects
+                exec(f"maplist2d[y][x] = {gamedata.mapsymbols_[number]['command']}")  #convert numbers to objects
 
             elif number == "1":  # if local player
                 if initial == True:
@@ -97,7 +95,7 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
             if number != "1" and number != "2": #if no player
 
-                maplist2d[y][x] = deepcopy(mapsymbols[number]) #convert numbers to objects
+                exec(f"maplist2d[y][x] = {gamedata.mapsymbols_[number]['command']}") #convert numbers to objects
 
 
             elif number == "1": #if local player
