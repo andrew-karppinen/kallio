@@ -20,7 +20,11 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_x_ += 1 #move player
 
+            if gamedata.local_player_.animated_ == True: #if player is animated
+                gamedata.local_player_.AnimateToRight() #animate player image
+
         #if no default tile or diamond
+        #if pushing objects
         elif gamedata.local_player_position_x_+2 < gamedata.map_width_ and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 2] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) in pushing: #if pushing objects
                 if gamedata.pushing_right_ == 0: #the player moves slower if it pushes a rock
@@ -32,6 +36,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                     gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ += 1  # move player
                     gamedata.pushing_right_ = 0
+                    if gamedata.local_player_.animated_ == True:  # if player is animated
+                        gamedata.local_player_.AnimateToRight() #animate player image
 
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
@@ -46,6 +52,9 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_x_ -= 1 #move player
 
+            if gamedata.local_player_.animated_ == True: #if player is animated
+                gamedata.local_player_.AnimateToLeft() #animate player image
+
         #if pushing objects
         elif gamedata.local_player_position_x_-2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] == None: #if map not end if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in pushing: #if pushing objects
@@ -58,6 +67,8 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                     gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ -= 1 #move player
                     gamedata.pushing_left_ = 0
+                    if gamedata.local_player_.animated_ == True:  # if player is animated
+                        gamedata.local_player_.AnimateToLeft() #animate player image
 
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
@@ -70,7 +81,10 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
-            gamedata.local_player_position_y_ -= 1
+            gamedata.local_player_position_y_ -= 1 #move player
+
+            if gamedata.local_player_.animated_ == True: #if player is animated
+                gamedata.local_player_.AnimateToHorizontal() #animate player image
 
         #if door
         elif gamedata.local_player_position_y_ - 2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_-2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
@@ -84,7 +98,10 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
         if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
-            gamedata.local_player_position_y_ += 1
+            gamedata.local_player_position_y_ += 1 #move player
+
+            if gamedata.local_player_.animated_ == True:  # if player is animated
+                gamedata.local_player_.AnimateToHorizontal() #animate player image
         #if door
         elif gamedata.local_player_position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_position_y_+2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
@@ -326,7 +343,10 @@ def Run(gamedata:object,connection:object = None): #game main function
                     Move(gamedata,right,left,up,down) #move player
                 if gamedata.multiplayer_:
                     connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
-
+            else: #no move
+                #set player image to defaultimage
+                if gamedata.local_player_.animated_ == True:
+                    gamedata.local_player_.image_number_ = 0
 
         gamedata.DrawMap()  #draw map
 
@@ -335,4 +355,6 @@ def Run(gamedata:object,connection:object = None): #game main function
             if gamedata.multiplayer_: #if multiplayer
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
+
+        print(gamedata.points_collected_)
         clock.tick(30) #fps limit

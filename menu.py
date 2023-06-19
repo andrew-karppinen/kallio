@@ -13,6 +13,7 @@ import os
 sandimage = pygame.image.load("media/sand.png")
 playerimage = pygame.image.load("media/player.png")
 playerimage2 = pygame.image.load("media/player2.png")
+playerimage3 = pygame.image.load("media/player3.png")
 stoneimage = pygame.image.load("media/stone.png")
 tntimage = pygame.image.load("media/tnt.png")
 explosionimage = pygame.image.load("media/explosion.png")
@@ -36,12 +37,14 @@ Stone.SetImage(stoneimage)
 Door.SetImage(doorimage)
 
 #create players
-local_player = Player(playerimage)
-remote_player = Player(playerimage2, False)
+local_player = Player()
+remote_player = Player(False)
 
+#set players images
+local_player.SetImage(playerimage,playerimage2,playerimage3)
+remote_player.SetImage(playerimage,playerimage2,playerimage3)
 
-
-pygame.init()
+pygame.init() #inti pygame module
 
 
 def ReturnMaps():

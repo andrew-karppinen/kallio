@@ -130,9 +130,9 @@ class GameData:
                 i.SetImage(pygame.transform.scale(i.image,(tile_size,tile_size)))
 
             #scale player image size
-            self.local_player_.image_ = pygame.transform.scale(self.local_player_.image_,(tile_size,tile_size))
-            if self.remote_player_ != None:
-                self.remote_player_.image_ = pygame.transform.scale(self.remote_player_.image_,(tile_size,tile_size))
+            self.local_player_.ScaleImages(tile_size)
+            if self.remote_player_ != None: #if remoteplayer exist
+                self.remote_player_.ScaleImages(tile_size)
 
             if self.server_:
                 name = "server"

@@ -2,9 +2,69 @@ import pygame
 
 
 class Player:
-    def __init__(self, image,local_player:bool = True):
-        self.image_ = image
+    def __init__(self,local_player:bool = True):
+        self.images_ = []
         self.local_player_ = local_player
+        self.animated_ = False
+        self.image_number_ = 0
+        #0 = no move,1 left1, 2 = left2, 3 = right1, 4 = right2
+
+    def SetImage(self,nomove,move1 = None,move2 = None):
+        '''
+        in the pictures the character is moving to the right!
+
+        automatically create a mirror images
+
+        images must be pygame surface object!
+        '''
+
+        if move1 != None and move2 != None:
+            move3 = pygame.transform.flip(move1,True,False)
+            move4 = pygame.transform.flip(move2,True,False)
+            self.images_ = [nomove,move1,move2,move3,move4]
+            self.animated_ = True
+        else:
+            self.images_ = [nomove, move1, move2]
+            self.animated_ = False
+    def ScaleImages(self,tile_size=50):
+        self.images_[0] = pygame.transform.scale(self.images_[0],(tile_size,tile_size))
+
+        if self.images_[1] != None:
+            self.images_[1] = pygame.transform.scale(self.images_[1], (tile_size, tile_size))
+            self.images_[3] = pygame.transform.scale(self.images_[3], (tile_size, tile_size))
+        if self.images_[2] != None:
+            self.images_[2] = pygame.transform.scale(self.images_[2], (tile_size, tile_size))
+            self.images_[4] = pygame.transform.scale(self.images_[4], (tile_size, tile_size))
+
+
+    def AnimateToRight(self):
+        if self.image_number_ == 1:
+            self.image_number_ = 2
+        else:
+            self.image_number_ = 1
+
+    def AnimateToLeft(self):
+        if self.image_number_ == 3:
+            self.image_number_ = 4
+        else:
+            self.image_number_ = 3
+
+    def AnimateToHorizontal(self):
+
+        if self.image_number_ == 0 or self.image_number_ == 1 or self.image_number_ == 2:
+            self.AnimateToRight()
+        else:
+            self.AnimateToLeft()
+
+
+    @property
+    def image_(self):
+
+        if self.images_[self.image_number_] != None:
+            return(self.images_[self.image_number_])
+
+        else:
+            return self.images_[0] #if no animation
 
 
 
