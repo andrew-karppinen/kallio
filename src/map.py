@@ -39,7 +39,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
 
     #check mapstr correctness #Todo update this
-    print(mapstr.count(","))
     if mapstr.count(",") != gamedata.map_width_ * gamedata.map_height_ -1:
         raise Exception('incorrect mapstr')
 
@@ -71,15 +70,15 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
         if i + 1 == len(mapstr):  # if map end
 
 
-            if number != "1" and number != "2":  # if no player
+            if number != "1":  # if no local player
 
-                exec(f"maplist2d[y][x] = {gamedata.mapsymbols_[number]['command']}")  #convert numbers to objects
+                exec(gamedata.mapsymbols_[number]['command'])  #convert numbers to objects
 
             elif number == "1":  # if local player
                 if initial == True:
                     #this scope run only in beginning the game
 
-                    gamedata.local_player_position_y_ = y  # set player position
+                    gamedata.local_player_position_y_ = y  #set player position
                     gamedata.local_player_position_x_ = x
                     maplist2d[y][x] = gamedata.local_player_
                 else:
@@ -87,15 +86,14 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
                     maplist2d[y][x] = None
                     maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
 
-            elif number == "2":  # if remote player
-                maplist2d[y][x] = gamedata.remote_player_
+
 
 
         if mapstr[i] == ",": #if ","
 
-            if number != "1" and number != "2": #if no player
+            if number != "1": #if no player
 
-                exec(f"maplist2d[y][x] = {gamedata.mapsymbols_[number]['command']}") #convert numbers to objects
+                exec(gamedata.mapsymbols_[number]['command']) #convert numbers to objects
 
 
             elif number == "1": #if local player
@@ -109,8 +107,7 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
                     maplist2d[y][x] = None
                     maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
 
-            elif number == "2": #if remote player
-                maplist2d[y][x] = gamedata.remote_player_
+
 
             number = ""
             x += 1

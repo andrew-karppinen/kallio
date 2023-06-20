@@ -51,10 +51,19 @@ def MapListToStr(maplist: list):
             if maplist[i][j] == None:  # if none
                 sendlist.append("0")
 
-            elif type(maplist[i][j]) == Player:  # if player
-                if maplist[i][j].local_player_:  # if local player
-                    sendlist.append("2")  # change to remoteplayer
-                else:  # if remoteplayer
+            elif type(maplist[i][j]) == Player:  #if player
+                if maplist[i][j].local_player_:  #if local player, change to remoteplayer
+                    if maplist[i][j].image_number_ == 0:
+                        sendlist.append("2 1")
+                    elif maplist[i][j].image_number_ == 1:
+                        sendlist.append("2 2")
+                    elif maplist[i][j].image_number_ == 2:
+                        sendlist.append("2 3")
+                    elif maplist[i][j].image_number_ == 3:
+                        sendlist.append("2 4")
+                    elif maplist[i][j].image_number_ == 4:
+                        sendlist.append("2 5")
+                else:  #if remoteplayer
                     sendlist.append("1")  # change to local player
 
             elif type(maplist[i][j]) == DefaultTile:  # if default tile
@@ -73,7 +82,7 @@ def MapListToStr(maplist: list):
                     sendlist.append("8")
 
             elif type(maplist[i][j]) == Stone:  # if stone
-                if maplist[i][j].drop_:  # if currently dropping
+                if maplist[i][j].drop_:  #if currently dropping
                     if maplist[i][j].direction_ == 1:
                         sendlist.append("11 1")
                     elif maplist[i][j].direction_ == 2:

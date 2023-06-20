@@ -324,8 +324,8 @@ def Run(gamedata:object,connection:object = None): #game main function
             if event.type == pygame.QUIT:  #exit program
                 if gamedata.multiplayer_:
                     connection.SendGameExit(False)
-                    connection.CloseSocket()  # close socket
-                pygame.display.quit()  # close screen
+                    connection.CloseSocket()  #close socket
+                pygame.display.quit()  #close screen
                 return #back to menu
 
 
@@ -346,7 +346,10 @@ def Run(gamedata:object,connection:object = None): #game main function
             else: #no move
                 #set player image to defaultimage
                 if gamedata.local_player_.animated_ == True:
-                    gamedata.local_player_.image_number_ = 0
+                    if gamedata.local_player_.image_number_ != 0:
+                        gamedata.local_player_.image_number_ = 0
+                        if gamedata.multiplayer_ == True:
+                            connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
         gamedata.DrawMap()  #draw map
 
