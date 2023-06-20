@@ -2,6 +2,10 @@
 
 Multiplayer boulder dash game
 
+required librarys:
+pygame 
+pygame-menu 
+
 controls:
 move: arrows keys
 

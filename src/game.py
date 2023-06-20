@@ -241,6 +241,59 @@ def DeleteExplosion(gamedata:object):
 
 
 
+def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
+    '''
+    return exitgame:bool,restat_level:bool
+    #1 = back to game, 2 = restart level, 3 = exit level
+    '''
+
+    font = gamedata.font_
+
+    head_text = font.render('Pause Menu', True, (255, 255, 255))
+
+
+    #the selected text is drawn in black
+    if pausemenu_number == 1:
+        text1 = font.render('Back', True, (0, 0, 0))
+    else:
+        text1 = font.render('Back', True, (255, 255, 255))
+    if pausemenu_number == 2:
+        text2 = font.render('restart level', True, (0, 0, 0))
+    else:
+        text2 = font.render('restart level', True, (255, 255, 255))
+    if pausemenu_number == 3:
+        text3 = font.render('exit level', True, (0, 0, 0))
+    else:
+        text3 = font.render('exit level', True, (255, 255, 255))
+
+    x, y = gamedata.screen_.get_size() #get screen size
+
+    pygame.draw.rect(gamedata.screen_, (50, 50, 50), pygame.Rect(x // 2 - 200, y // 2 - 200, 400, 400))  #draw a box in the center of the screen
+
+    #centering the text position
+    text1_x = x // 2
+    text1_x -= text1.get_width() // 2
+    text1_y = y // 2
+
+    text2_x = x // 2
+    text2_x -= text2.get_width() // 2
+    text2_y = y // 2
+
+    text3_x = x // 2
+    text3_x -= text3.get_width() // 2
+    text3_y = y // 2
+
+    head_x = x // 2
+    head_x -= head_text.get_width() // 2
+    head_y = y // 2 - 190
+
+    # draw the texts:
+    gamedata.screen_.blit(head_text, (head_x, head_y))  # draw title
+    gamedata.screen_.blit(text1, (text1_x, text1_y))
+    gamedata.screen_.blit(text2, (text2_x, text2_y - 50))
+    gamedata.screen_.blit(text3, (text3_x, text3_y - 100))
+
+
 def Run(gamedata:object,connection:object = None): #game main function
 
     clock = pygame.time.Clock()
@@ -249,6 +302,10 @@ def Run(gamedata:object,connection:object = None): #game main function
     up = False
     down = False
     space = False
+    enter = False
+
+    pausemenu_is_active = False
+    pausemenu_number = 1  #1 = back to game, 2 = restart level, 3 = exit level
 
     movelimit = 0 #gravity
     movelimit2 = 0 #player move
@@ -289,9 +346,11 @@ def Run(gamedata:object,connection:object = None): #game main function
             if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_ESCAPE: #if esc is pressed
-                    SetMap(gamedata, gamedata.original_mapstr_, True) #restart level
-                    if gamedata.multiplayer_: #if multiplayer
-                        connection.SendRestartLevel()
+                    pausemenu_is_active = True
+
+
+                if event.key == pygame.K_RETURN:
+                    enter = True
 
                 if event.key == pygame.K_LEFT:
                     left = True
@@ -307,6 +366,8 @@ def Run(gamedata:object,connection:object = None): #game main function
                     space = True
 
             if event.type == pygame.KEYUP:
+                if event.key == pygame.K_RETURN:
+                    enter = False
                 if event.key == pygame.K_LEFT:
                     left = False
                 if event.key == pygame.K_RIGHT:
@@ -328,8 +389,24 @@ def Run(gamedata:object,connection:object = None): #game main function
                 pygame.display.quit()  #close screen
                 return #back to menu
 
+        if enter == True:
+            if pausemenu_is_active == True:
+                if pausemenu_number == 1: #exit pause menu
+                    pausemenu_is_active = False
+                elif pausemenu_number == 2: #restart level
+                    SetMap(gamedata, gamedata.original_mapstr_, True) #restart level
+                    if gamedata.multiplayer_: #if multiplayer
+                        connection.SendRestartLevel()
+                    pausemenu_is_active = False
+                elif pausemenu_number == 3: #exit level
+                    if gamedata.multiplayer_:
+                        connection.SendGameExit(False)
+                        connection.CloseSocket()  # close socket
+                    pygame.display.quit()  # close screen
+                    return  # back to menu
 
-        if pygame.time.get_ticks() > movelimit + 140:
+
+        if pygame.time.get_ticks() > movelimit + 140: #gravity
             movelimit = pygame.time.get_ticks()
             Gravity(gamedata)
 
@@ -337,12 +414,26 @@ def Run(gamedata:object,connection:object = None): #game main function
         if pygame.time.get_ticks() > movelimit2 + 80:
             movelimit2 = pygame.time.get_ticks()
             if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
-                if space: #if space pressed
-                    Eat(gamedata,right,left,up,down) #remove tile in left,right,up or down
-                else:
-                    Move(gamedata,right,left,up,down) #move player
-                if gamedata.multiplayer_:
-                    connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
+                if pausemenu_is_active == False:
+                    if space: #if space pressed
+                        Eat(gamedata,right,left,up,down) #remove tile in left,right,up or down
+                    else:
+                        Move(gamedata,right,left,up,down) #move player
+                    if gamedata.multiplayer_:
+                        connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
+
+                else: #pause menu is active
+                    if up:
+                        if pausemenu_number != 3:
+                            pausemenu_number += 1
+                        else:
+                            pausemenu_number = 1
+                    elif down:
+                        if pausemenu_number != 1:
+                            pausemenu_number -= 1
+                        else:
+                            pausemenu_number = 3
+
             else: #no move
                 #set player image to defaultimage
                 if gamedata.local_player_.animated_ == True:
@@ -351,7 +442,8 @@ def Run(gamedata:object,connection:object = None): #game main function
                         if gamedata.multiplayer_ == True:
                             connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
-        gamedata.DrawMap()  #draw map
+
+
 
         if DeleteExplosion(gamedata): #delete exlplosions
             #if explosion removed
@@ -359,5 +451,11 @@ def Run(gamedata:object,connection:object = None): #game main function
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 
-        print(gamedata.points_collected_)
+
+        gamedata.screen_.fill((0, 0, 0))  # set backcolor
+        gamedata.DrawMap()  #draw map
+        if pausemenu_is_active == True: #if pausemenu is active
+            DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
+        pygame.display.flip()  #update screen
+
         clock.tick(30) #fps limit

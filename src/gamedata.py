@@ -13,6 +13,7 @@ class GameData:
 
 
         self.screen_ = screen #pygame window
+        self.font_ = self.font_ = pygame.font.SysFont('', 30) #load font
         self.tile_size_ = 50 #tilesize y*x
         self.draw_area_x_ = 32 #default drawing area size
         self.draw_area_y_ = 18
@@ -152,7 +153,7 @@ class GameData:
         #y = 18
 
         y = -1
-        self.screen_.fill((0, 0, 0))  #set backcolor
+
 
 
 
@@ -213,4 +214,3 @@ class GameData:
 
 
 
-        pygame.display.flip() #update screen
