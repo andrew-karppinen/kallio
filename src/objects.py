@@ -75,6 +75,10 @@ class DefaultTile:
 
     def SetImage(image:pygame.surface):
         DefaultTile.image = image
+
+    def ScaleImages(tile_size:int):
+        DefaultTile.image = pygame.transform.scale(DefaultTile.image, (tile_size, tile_size))
+
     def __init__(self):
         pass
 
@@ -99,7 +103,11 @@ class Stone:
         Stone.image_left = pygame.transform.rotate(Stone.image_right,180)
         Stone.image_down = pygame.transform.rotate(Stone.image_right,270)
 
-
+    def ScaleImages(tile_size:int):
+        Stone.image_left = pygame.transform.scale(Stone.image_left, (tile_size, tile_size))
+        Stone.image_right = pygame.transform.scale(Stone.image_right, (tile_size, tile_size))
+        Stone.image_up = pygame.transform.scale(Stone.image_up, (tile_size, tile_size))
+        Stone.image_down = pygame.transform.scale(Stone.image_down, (tile_size, tile_size))
     def __init__(self, drop:bool,direction:int = 1):
         self.drop_ = drop
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
@@ -142,7 +150,7 @@ class Diamond:
     image_right = None
     image_up = None
     image_down = None
-    image = None
+
 
     def SetImage(image:pygame.surface):
         Diamond.image = image
@@ -152,6 +160,11 @@ class Diamond:
         Diamond.image_left = pygame.transform.rotate(Diamond.image_right,180)
         Diamond.image_down = pygame.transform.rotate(Diamond.image_right,270)
 
+    def ScaleImages(tile_size:int):
+        Diamond.image_left = pygame.transform.scale(Diamond.image_left, (tile_size, tile_size))
+        Diamond.image_right = pygame.transform.scale(Diamond.image_right, (tile_size, tile_size))
+        Diamond.image_up = pygame.transform.scale(Diamond.image_up, (tile_size, tile_size))
+        Diamond.image_down = pygame.transform.scale(Diamond.image_down, (tile_size, tile_size))
 
     def __init__(self, drop:bool,direction:int = 1):
         self.drop_ = drop
@@ -195,6 +208,8 @@ class Tnt:
 
     def SetImage(image:pygame.surface):
         Tnt.image = image
+    def ScaleImages(tile_size:int):
+        Tnt.image = pygame.transform.scale(Tnt.image, (tile_size, tile_size))
     def __init__(self,drop:bool=False):
         self.drop_ = drop  # if currently dropping
 
@@ -213,6 +228,8 @@ class Explosion:
     def SetImage(image:pygame.surface):
         Explosion.image = image
 
+    def ScaleImages(tile_size:int):
+        Explosion.image = pygame.transform.scale(Explosion.image, (tile_size, tile_size))
     def __init__(self,counter:int = 0):
         self.counter_ = counter #1,2
 
@@ -226,6 +243,10 @@ class Bedrock:
 
     def SetImage(image:pygame.surface):
         Bedrock.image = image
+
+    def ScaleImages(tile_size:int):
+        Bedrock.image = pygame.transform.scale(Bedrock.image, (tile_size, tile_size))
+
     def __init__(self):
         pass
 
@@ -239,6 +260,9 @@ class Brick:
 
     def SetImage(image:pygame.surface):
         Brick.image = image
+
+    def ScaleImages(tile_size:int):
+        Brick.image = pygame.transform.scale(Brick.image, (tile_size, tile_size))
 
     def __init__(self):
         pass
@@ -255,6 +279,9 @@ class Goal:
     def SetImage(image:pygame.surface):
         Goal.image = image
 
+    def ScaleImages(tile_size:int):
+        Goal.image = pygame.transform.scale(Goal.image, (tile_size, tile_size))
+
     def __init__(self):
         pass
 
@@ -268,18 +295,29 @@ class Goal:
 
 class Monster:
     #class variables:
-    image = None
+    image1 = None
+    image2 = None
+    def SetImage(image1:pygame.surface,image2:pygame.surface=None):
+        Monster.image = image1
+        Monster.image1 = image1
+        Monster.image2 = image2
 
-    def SetImage(image:pygame.surface):
-        Monster.image = image
+    def ScaleImages(tile_size:int):
+        Monster.image1 = pygame.transform.scale(Monster.image1,(tile_size,tile_size))
+        if Monster.image2 != None: #if image 2 is exist
+            Monster.image2 = pygame.transform.scale(Monster.image2, (tile_size, tile_size))
 
     def __init__(self,direction):
         self.direction_ = direction
+        self.image_number_ = 1 #1, 2
 
 
     @property
     def image_(self):
-        return (Monster.image)
+        if self.image_number_ == 1:
+            return(Monster.image1)
+        elif self.image_number_ == 2:
+            return (Monster.image2)
 
 
 
@@ -288,7 +326,7 @@ class Door:
     image_right = None
     image_up = None
     image_down = None
-    image = None
+
 
     def SetImage(image:pygame.surface):
         Door.image = image
@@ -297,6 +335,12 @@ class Door:
         Door.image_up = pygame.transform.rotate(Door.image_right,90)
         Door.image_left = pygame.transform.rotate(Door.image_right,180)
         Door.image_down = pygame.transform.rotate(Door.image_right,270)
+
+    def ScaleImages(tile_size:int):
+        Door.image_left = pygame.transform.scale(Door.image_left, (tile_size, tile_size))
+        Door.image_right = pygame.transform.scale(Door.image_right, (tile_size, tile_size))
+        Door.image_up = pygame.transform.scale(Door.image_up, (tile_size, tile_size))
+        Door.image_down = pygame.transform.scale(Door.image_down, (tile_size, tile_size))
 
     def __init__(self, direction):
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
