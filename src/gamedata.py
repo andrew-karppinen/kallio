@@ -42,7 +42,8 @@ class GameData:
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt,Diamond]
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
-        self.explosive_ = [Tnt,Monster,Player] #causing new explosion if explose
+        self.explosive_ = [Tnt,Monster,Player,Monster] #causing new explosion if explose
+        self.explosive2_ = [Tnt,Player,Monster] #explosive if something falls on it
 
 
         self.pushing_right_ = 0

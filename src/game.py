@@ -120,7 +120,7 @@ def CollectPoints(gamedata:object,y:int,x:int):
 
 def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     '''
-    remove tile in left,right,up or down
+    remove tile next to player
     '''
 
     if right:
@@ -157,10 +157,9 @@ def Gravity(gamedata):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
                 if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
-                        if type(gamedata.current_map_[y+1][x]) == Player:
+                        if type(gamedata.current_map_[y+1][x]) in gamedata.explosive2_: #if something falls on this tile
                             CreateExplosion(gamedata,y+1,x) #create explosion
-                        elif type(gamedata.current_map_[y+1][x]) == Tnt: #if something falls on the tnt
-                            CreateExplosion(gamedata, y+1, x) #create explosion
+
 
                         if gamedata.current_map_[y+1][x] != None:
                             if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
@@ -243,8 +242,8 @@ def DeleteExplosion(gamedata:object):
 
 def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
     '''
-    return exitgame:bool,restat_level:bool
-    #1 = back to game, 2 = restart level, 3 = exit level
+    pausemenu_number
+    1 = back to game, 2 = restart level, 3 = exit level
     '''
 
     font = gamedata.font_
@@ -296,7 +295,7 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 
 def Run(gamedata:object,connection:object = None): #game main function
 
-    clock = pygame.time.Clock()
+
     right = False
     left = False
     up = False
@@ -307,9 +306,10 @@ def Run(gamedata:object,connection:object = None): #game main function
     pausemenu_is_active = False
     pausemenu_number = 1  #1 = back to game, 2 = restart level, 3 = exit level
 
+
+    clock = pygame.time.Clock()
     movelimit = 0 #gravity
     movelimit2 = 0 #player move
-
 
     while True: #game main loop
 
@@ -441,8 +441,6 @@ def Run(gamedata:object,connection:object = None): #game main function
                         gamedata.local_player_.image_number_ = 0
                         if gamedata.multiplayer_ == True:
                             connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
-
-
 
 
         if DeleteExplosion(gamedata): #delete exlplosions
