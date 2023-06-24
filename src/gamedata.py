@@ -9,7 +9,7 @@ class GameData:
     '''
 
 
-    def __init__(self,local_player:object,multiplayer:bool = False,server:bool = False,remote_player:object = None,screen:pygame.surface = None):
+    def __init__(self,multiplayer:bool = False,server:bool = False,screen:pygame.surface = None):
 
 
         self.screen_ = screen #pygame window
@@ -24,13 +24,13 @@ class GameData:
 
         self.multiplayer_ = multiplayer
         self.server_ = server #False = client, True = server
-        self.local_player_ = local_player
 
         self.local_player_position_x_= None
         self.local_player_position_y_ = None
 
-
-        self.remote_player_ = remote_player
+        # create players
+        self.local_player_ = Player()
+        self.remote_player_ = Player(False)
 
 
 
@@ -64,6 +64,9 @@ class GameData:
 
         self.menudata_ = None
 
+        self.SetImages() #set tile images
+
+
 
     def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
 
@@ -89,6 +92,47 @@ class GameData:
             self.margin_y = margin_y
 
 
+
+
+    def SetImages(self):
+        # load images
+        sandimage = pygame.image.load("media/sand.png")
+        playerimage = pygame.image.load("media/player.png")
+        playerimage2 = pygame.image.load("media/player2.png")
+        playerimage3 = pygame.image.load("media/player3.png")
+        monsterimage1 = pygame.image.load("media/monster1.png")
+        stoneimage = pygame.image.load("media/stone.png")
+        tntimage = pygame.image.load("media/tnt.png")
+        explosionimage = pygame.image.load("media/explosion.png")
+        diamondimage = pygame.image.load("media/diamond.png")
+        goalimage = pygame.image.load("media/goal.png")
+        bedrockimage = pygame.image.load("media/bedrock.png")
+        brickimage = pygame.image.load("media/brick.png")
+
+        door_right_image = pygame.image.load("media/door right.png")
+        door_down_image = pygame.image.load("media/door down.png")
+        door_up_image = pygame.image.load("media/door up.png")
+        door_left_image = pygame.image.load("media/door left.png")
+
+        # set images
+        Diamond.SetImage(diamondimage)
+        Goal.SetImage(goalimage)
+        Explosion.SetImage(explosionimage)
+        Tnt.SetImage(tntimage)
+        DefaultTile.SetImage(sandimage)
+        Bedrock.SetImage(bedrockimage)
+        Brick.SetImage(brickimage)
+        Monster.SetImage(monsterimage1)
+
+        # set images
+        Stone.SetImage(stoneimage)
+        Door.SetImage(door_right_image, door_down_image, door_left_image, door_up_image)
+
+
+
+        # set players images
+        self.local_player_.SetImage(playerimage, playerimage2, playerimage3)
+        self.remote_player_.SetImage(playerimage, playerimage2, playerimage3)
 
     def ReturnResolutions(self):
 

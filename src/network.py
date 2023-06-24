@@ -103,8 +103,9 @@ def MapListToStr(maplist: list):
                         sendlist.append("10 4")
 
             elif type(maplist[i][j]) == Explosion: #if explosion
-                sendlist.append("12")
-
+                #sendlist.append("12")
+                #Todo delete this?
+                pass
 
             elif type(maplist[i][j]) == Monster:  # if monster
                 if maplist[i][j].direction_ == 1:  # right
@@ -118,9 +119,23 @@ def MapListToStr(maplist: list):
 
             elif type(maplist[i][j]) == Diamond: #if diamond
                 if maplist[i][j].drop_:  # if currently dropping
-                    sendlist.append("19")
+                    if maplist[i][j].direction_ == 1:
+                        sendlist.append("19 1")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("19 2")
+                    elif maplist[i][j].direction_ == 3:
+                        sendlist.append("19 3")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("19 4")
                 else:# no currently dropping
-                    sendlist.append("18")
+                    if maplist[i][j].direction_ == 1:
+                        sendlist.append("18 1")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("18 2")
+                    elif maplist[i][j].direction_ == 3:
+                        sendlist.append("18 3")
+                    elif maplist[i][j].direction_ == 2:
+                        sendlist.append("18 4")
 
             elif type(maplist[i][j]) == Door:  # if door
                 if maplist[i][j].direction_ == 1: #up
