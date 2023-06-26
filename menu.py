@@ -1,54 +1,20 @@
 import pygame
 import pygame_menu
-import socket
 import random
 from src import *
-from threading import Thread
 import os
 
 
-#initialize
 
-#load images
-sandimage = pygame.image.load("media/sand.png")
-playerimage = pygame.image.load("media/player.png")
-playerimage2 = pygame.image.load("media/player2.png")
-playerimage3 = pygame.image.load("media/player3.png")
-stoneimage = pygame.image.load("media/stone.png")
-tntimage = pygame.image.load("media/tnt.png")
-explosionimage = pygame.image.load("media/explosion.png")
-diamondimage = pygame.image.load("media/diamond.png")
-goalimage = pygame.image.load("media/goal.png")
-bedrockimage = pygame.image.load("media/bedrock.png")
-brickimage = pygame.image.load("media/brick.png")
-doorimage = pygame.image.load("media/door.png")
 
-#set images
-Diamond.SetImage(diamondimage)
-Goal.SetImage(goalimage)
-Explosion.SetImage(explosionimage)
-Tnt.SetImage(tntimage)
-DefaultTile.SetImage(sandimage)
-Bedrock.SetImage(bedrockimage)
-Brick.SetImage(brickimage)
 
-#set images
-Stone.SetImage(stoneimage)
-Door.SetImage(doorimage)
 
-#create players
-local_player = Player()
-remote_player = Player(False)
 
-#set players images
-local_player.SetImage(playerimage,playerimage2,playerimage3)
-remote_player.SetImage(playerimage,playerimage2,playerimage3)
-
-pygame.init() #inti pygame module
+pygame.init() #init pygame module
 
 
 def ReturnMaps():
-    # return maps for \maps folder
+    # return files from \maps folder
     # set maps folder path
     path = os.getcwd()
     path += "/maps"
@@ -81,7 +47,7 @@ class Menu:
         self.resolution_ = (1600,900) #deafult resolution
         self.resolution_index_ = 0
 
-        self.map_file_path_ = "maps/testmap.txt"  #mapfile path  #if server or singleplayer
+        self.map_file_path_ = ""  #mapfile path  #if server or singleplayer
 
     def SetIpaddress(self, ip: str):
         self.server_ip_ = ip
@@ -125,10 +91,10 @@ class Menu:
     def ServerMenu(self):
 
         def StartServer(self):
-            gamedata = GameData(local_player, True,True, remote_player)  # create gamedata
+            gamedata = GameData(True,True)  # create gamedata
             gamedata.server_ = True
             gamedata.menudata_ = self #save menudata for the duration of the game
-            mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile(self.map_file_path_) #read map file
+            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile(self.map_file_path_)  # read map file
             SetMap(gamedata, mapstr,True)  # convert str to map list
 
 
@@ -180,7 +146,7 @@ class Menu:
             print(self.gameid_)
             #try connect to server
 
-            gamedata = GameData(local_player, True,False, remote_player) #create gamedata
+            gamedata = GameData(True,False) #create gamedata
             connection = Client(self.server_ip_, self.port_)  #create connection object
             gamedata.menudata_ = self #save menudata for the duration of the game
 
@@ -226,7 +192,7 @@ class Menu:
     def SinglePlayerMenu(self):
 
         def StartSingleplayer(self):
-            gamedata = GameData(local_player, False,False, remote_player)  # create gamedata
+            gamedata = GameData(False,False)  # create gamedata
             gamedata.menudata_ = self #save menudata for the duration of the game
             gamedata.SetScreenSize(self.resolution_)  #set screen size
 
@@ -234,7 +200,7 @@ class Menu:
             if self.fullscreen_: #if fullscreen
                 pygame.display.toggle_fullscreen() #set fullscreen
 
-            mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile(self.map_file_path_) #read map file
+            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile(self.map_file_path_)  # read map file
             SetMap(gamedata, mapstr,True)  # convert str to map list
             gamedata.SetDrawarea()
             Run(gamedata) #start game

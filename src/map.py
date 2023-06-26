@@ -1,8 +1,8 @@
 import pygame
 from src.objects import *
 
-from copy import deepcopy
 
+import json
 
 def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     '''
@@ -11,29 +11,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
     "initial" parameter must be true, If the level is started from the beginning
 
-    0 = empty
-    1 = local player
-    2 = remote player
-    3 = default tile
-    4 = tile that can be destroyed
-    5 = tile that cannot be destroyed
-    7 = goal
-    8 not a falling tnt
-    9 = falling tnt
-    10 = not a falling stone
-    11 = falling stone
-    12 = Explosion
-    14 = monster which looking to right
-    15 = monster which looking to down
-    16 = monster which looking to left
-    17 = monster which looking to up
-    18 = not a falling diamond
-    19 = falling diamond
-
-    20 Door up
-    21 Door right
-    22 door down
-    23 door left
     '''
 
 
@@ -58,7 +35,7 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     for i in range(len(mapstr)):
 
 
-        if x == gamedata.map_width_:
+        if x == gamedata.map_width_: #next row
             y += 1
             x = 0
 
@@ -124,38 +101,34 @@ def ReadMapFile(file_path:str):
     '''
     read txt file
 
-    the first line specifies map size
-    returns the end of the file as a string
-
-    return map:str height:int,width:int,required_score:int,multiplayer:bool
+    return map:str height:int,width:int,required_score:int,time limit:int,multiplayer:bool
     '''
 
 
 
-    #Avataan tiedosto, josta rivit luetaan
-    tiedosto = open(file_path, 'r')
-    #rivi-muuttuja lukee tiedoston rivit
-    rivit = tiedosto.readlines()
-    #Suljetaan tiedosto
-    tiedosto.close()
+    #open file
+    file = open(file_path, 'r')
+    #read rows to list
+    rows = file.readlines()
+    #close file
+    file.close()
 
-    multiplayer = rivit[0] #eka riv
-    vaaditut_pisteet = rivit[1] #toka rivi
-    mjono = rivit[2] #kolmas rivi
+    multiplayer = rows[0] #row 1
+    required_score = rows[1] #row 2
+    time = rows[2] #row 3
+    mjono = rows[3] # row 4
 
-    #Luodaan y_ja_x-lista-muuttuja joka katkaisee merkkijonon siihen syötetyn pilkun kohdalta
-    y_ja_x = mjono.split(',')
+    #read map size:
+    y_and_x = mjono.split(',') #replace str
+    y = int(y_and_x[0]) #str to int
+    x = int(y_and_x[1])
 
-    #Muutetaan lista-muuttujan alkiot kokonaisluvuiksi
-    y = int(y_ja_x[0])
-    x = int(y_ja_x[1])
+    #read the remaining lines of the file
+    mapstr = ''
+    for i in rows[4:]: #change the remaining lines of the file to str
+        mapstr += i
 
-    #muunnetaan lista merkkijonoksi alkaen riviltä 4
-    kartta = ''
-    for i in rivit[3:]:
-        kartta += i
-
-    kartta = kartta.replace('\n', ',') #korvaa rivinvaihto merkit pilkuilla
+    mapstr = mapstr.replace('\n', ',') #newline to ","
 
 
-    return kartta,y, x,vaaditut_pisteet,multiplayer
+    return mapstr,y,x,multiplayer,required_score,time
