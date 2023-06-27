@@ -230,7 +230,7 @@ class Explosion:
 
     def ScaleImages(tile_size:int):
         Explosion.image = pygame.transform.scale(Explosion.image, (tile_size, tile_size))
-    def __init__(self,counter:int = 0):
+    def __init__(self,counter:int = 1):
         self.counter_ = counter #1,2
 
     @property
@@ -328,13 +328,11 @@ class Door:
     image_down = None
 
 
-    def SetImage(image:pygame.surface):
-        Door.image = image
-        #rotate images
-        Door.image_right = image
-        Door.image_up = pygame.transform.rotate(Door.image_right,90)
-        Door.image_left = pygame.transform.rotate(Door.image_right,180)
-        Door.image_down = pygame.transform.rotate(Door.image_right,270)
+    def SetImage(image_right,image_down,image_left,image_up):
+        Door.image_right = image_right
+        Door.image_up = image_up
+        Door.image_left = image_left
+        Door.image_down = image_down
 
     def ScaleImages(tile_size:int):
         Door.image_left = pygame.transform.scale(Door.image_left, (tile_size, tile_size))

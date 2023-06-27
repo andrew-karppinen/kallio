@@ -113,10 +113,10 @@ def ReadMapFile(file_path:str):
     #close file
     file.close()
 
-    multiplayer = rows[0] #row 1
-    required_score = rows[1] #row 2
-    time = rows[2] #row 3
-    mjono = rows[3] # row 4
+    multiplayer = eval(rows[0]) #row 1, multiplayer
+    required_score = int(rows[1]) #row 2, required score
+    time = int(rows[2]) #row 3, time limit
+    mjono = rows[3] # row 4, map size
 
     #read map size:
     y_and_x = mjono.split(',') #replace str

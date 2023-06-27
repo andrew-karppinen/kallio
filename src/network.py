@@ -168,7 +168,7 @@ class Server:
         try:
             self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
             self.connected_ = True
-            self.client_.settimeout(0.1) #set new timeout
+            self.client_.settimeout(0.001) #set new timeout
         except:
             self.connected_ = False
 
@@ -277,7 +277,7 @@ class Client:
 
         try: #Todo connection timeout not working
             self.socket_.connect((ipaddress, port))  #connect to server
-            self.socket_.settimeout(0.1)  #set new timeout
+            self.socket_.settimeout(0.001)  #set new timeout
             self.connected_ = True
         except Exception as a:
             print(a)

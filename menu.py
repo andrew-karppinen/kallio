@@ -13,15 +13,34 @@ import os
 pygame.init() #init pygame module
 
 
-def ReturnMaps():
-    # return files from \maps folder
-    # set maps folder path
-    path = os.getcwd()
-    path += "/maps"
+def ReturnMaps(multiplayer:bool):
+    '''
+     return map file path
 
+    return files from
+
+     /maps/sigleplayer
+     or
+    /maps/multiplayer
+
+    et maps folder path
+        '''
+    path = os.getcwd()
     maplist = []
-    for i in os.listdir(path):
-        maplist.append((str(i), f"maps/{i}"))
+
+    if multiplayer == True: #multiplayer maps
+        path += "/maps/multiplayer"
+        for i in os.listdir(path):
+            maplist.append((str(i), f"maps/multiplayer/{i}"))
+
+
+    elif multiplayer == False: #signleplayer maps
+        path += "/maps/singleplayer"
+        for i in os.listdir(path):
+            maplist.append((str(i), f"maps/singleplayer/{i}"))
+
+
+
 
     return (maplist)  # return maps
 
@@ -132,7 +151,7 @@ class Menu:
 
         self.menu_.add.label(f"your ip address:")
         self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
-        self.menu_.add.selector("map:", ReturnMaps(), onchange=self.SetMapFilepath) #select map
+        self.menu_.add.selector("map:", ReturnMaps(True), onchange=self.SetMapFilepath) #select map
         self.menu_.add.text_input('port:', default=f"{str(self.port_)}",onchange=self.SetPort)
         self.menu_.add.text_input('join number:', default= self.gameid_,onchange=self.SetGameid)
         self.menu_.add.text_input('timeout:', default="10", onchange=self.SetTimeout)
@@ -210,7 +229,7 @@ class Menu:
 
         self.menu_.clear()
         self.menu_.add.button("Play",StartSingleplayer,self)
-        self.menu_.add.selector("map:", ReturnMaps(), onchange=self.SetMapFilepath,default=1) #map select
+        self.menu_.add.selector("map:", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
         self.menu_.add.button("Back",self.MainMenu)
 
 

@@ -5,14 +5,18 @@ ensimmäinen rivi on "True" tai "False" True kertoo että kartta on tarkotus pel
 
 toisella rivillä on luku joka kertoo vaadittavien pisteiden määrän
 
-tiedoston kolmannella rivillä on pilkuilla eroteltuna kaksi lukua
+kolmannella rivillä on kartan aikaraja sekuntteina, jos se on 0 aikarajaa ei ole
+
+tiedoston neljännellä rivillä on pilkuilla eroteltuna kaksi lukua
 ensimmäinen luku on kartan koko y suunnassa ja toinen kartan koko x suunnassa
 
+viidenneltä riviltä alkaa itse kartta, rivinvaihdot vaihdetaan automaattisesti pilkuiksi
 
 
 ESIMERKKITIEDOSTO:
 True
 5
+0
 8,14
 1,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
@@ -22,28 +26,3 @@ True
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
-
-
-0 = empty
-1 = local player
-2 = remote player
-3 = default tile
-4 = tile that can be destroyed
-5 = tile that cannot be destroyed
-7 = goal
-8 not a falling tnt
-9 = falling tnt
-10 = not a falling stone
-11 = falling stone
-12 = Explosion
-14 =  monster which looking to right
-15 = monster which looking to down
-16 = monster which looking to left
-17 = monster which looking to up
-18 = not a falling diamond
-19 = falling diamond
-
-20 Door up
-21 Door right
-22 door down
-23 door left

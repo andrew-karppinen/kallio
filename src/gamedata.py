@@ -1,4 +1,3 @@
-
 import pygame
 import json
 from src import *
@@ -18,8 +17,8 @@ class GameData:
         self.draw_area_x_ = 32 #default drawing area size
         self.draw_area_y_ = 18
 
-        self.margin_x = 0
-        self.margin_y = 0
+        self.margin_x_ = 0
+        self.margin_y_ = 0
 
 
         self.multiplayer_ = multiplayer
@@ -46,8 +45,8 @@ class GameData:
         self.explosive2_ = [Tnt,Player,Monster] #explosive if something falls on it
 
 
-        self.pushing_right_ = 0
-        self.pushing_left_ = 0
+        self.pushing_right_ = 0 #0,1
+        self.pushing_left_ = 0 #0,1
 
         self.map_width_ = 0 #x
         self.map_height_ = 0 #y
@@ -69,34 +68,11 @@ class GameData:
 
 
 
-    def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
-
-        self.draw_area_x_ = draw_area_x #set draw area
-        self.draw_area_y_ = draw_area_y
-
-
-        if self.map_width_ < self.draw_area_x_: #if map size < drawing area size
-            self.draw_area_x_ = self.map_width_ #set drawing area size to map size
-
-            x, y = self.screen_.get_size()
-            margin_x = self.map_width_ * self.tile_size_
-            margin_x = x //2 - margin_x //2
-            self.margin_x = margin_x
-
-
-        if self.map_height_ < self.draw_area_y_: #if map size < drawing area size
-            self.draw_area_y_ = self.map_height_ #set drawing area size to map size
-
-            x, y = self.screen_.get_size()
-            margin_y = self.map_height_ * self.tile_size_
-            margin_y = y // 2 - margin_y //2
-            self.margin_y = margin_y
-
 
 
 
     def SetImages(self):
-        # load images
+        # load images and set tile images
         sandimage = pygame.image.load("media/sand.png")
         playerimage = pygame.image.load("media/player.png")
         playerimage2 = pygame.image.load("media/player2.png")
@@ -135,21 +111,30 @@ class GameData:
         self.local_player_.SetImage(playerimage, playerimage2, playerimage3)
         self.remote_player_.SetImage(playerimage, playerimage2, playerimage3)
 
-    def ReturnResolutions(self):
 
-        x = 16
-        y = 9
-        resolutions = []
+    def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
 
-        for i in range(200):
-            if x % self.draw_area_x_ == 0:
-                if y % self.draw_area_y_ == 0:
-                    resolutions.append((x,y))
-            y += 9
-            x += 16
+        self.draw_area_x_ = draw_area_x #set draw area
+        self.draw_area_y_ = draw_area_y
 
 
-        return(resolutions)
+        if self.map_width_ < self.draw_area_x_: #if map size < drawing area size
+            self.draw_area_x_ = self.map_width_ #set drawing area size to map size
+
+            x, y = self.screen_.get_size()
+            margin_x = self.map_width_ * self.tile_size_
+            margin_x = x //2 - margin_x //2
+            self.margin_x_ = margin_x
+
+
+        if self.map_height_ < self.draw_area_y_: #if map size < drawing area size
+            self.draw_area_y_ = self.map_height_ #set drawing area size to map size
+
+            x, y = self.screen_.get_size()
+            margin_y = self.map_height_ * self.tile_size_
+            margin_y = y // 2 - margin_y //2
+            self.margin_y_ = margin_y
+
 
     def SetScreenSize(self,resolution:tuple):
 
@@ -253,7 +238,7 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            self.screen_.blit(self.current_map_[i][j].image_,(x*self.tile_size_+self.margin_x,y*self.tile_size_+self.margin_y)) #draw tiles
+                            self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, y * self.tile_size_ + self.margin_y_)) #draw tiles
 
 
 

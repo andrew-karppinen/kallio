@@ -5,7 +5,7 @@ from src import *
 
 
 
-def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
+def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:bool):
     '''
     move local player
     '''
@@ -110,13 +110,18 @@ def Move(gamedata:object,right:bool,left:bool,up:bool,down:bool):
                     gamedata.local_player_position_y_ += 2  # move player
 
 
-    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
+    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) == Explosion: #if go to explosion
+        RestartLevel(gamedata,connection)
+    else:
+        gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
+
 
 def CollectPoints(gamedata:object,y:int,x:int):
     #try collect point from given location
     if type(gamedata.current_map_[y][x]) == Diamond:
         gamedata.current_map_[y][x] = None
         gamedata.points_collected_ += 1
+        gamedata.total_points_collected_ += 1
 
 def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
     '''
@@ -185,14 +190,14 @@ def Gravity(gamedata):
                                         gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x] #move stone to right
                                         gamedata.current_map_[y][x].Rotate(1)
                                         gamedata.current_map_[y][x] = None
-                                        return
+                                        continue
 
                                 if x-1 >= 0: #if map not end
                                     if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
                                         gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move stone to left
                                         gamedata.current_map_[y][x].Rotate(2)
                                         gamedata.current_map_[y][x] = None
-                                        return
+                                        continue
 
 
                         gamedata.current_map_[y][x].drop_ = False
@@ -293,8 +298,16 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
     gamedata.screen_.blit(text3, (text3_x, text3_y - 100))
 
 
-def Run(gamedata:object,connection:object = None): #game main function
+def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
 
+    SetMap(gamedata, gamedata.original_mapstr_, True)  # restart level
+    gamedata.points_collected_ = 0
+    gamedata.total_points_collected_ = 0
+
+    if connection != None and sendrestartlevel == True:
+            connection.SendRestartLevel()
+
+def Run(gamedata:object,connection:object = None): #game main function
 
     right = False
     left = False
@@ -324,9 +337,9 @@ def Run(gamedata:object,connection:object = None): #game main function
 
                 try:
                     if connection.data_type_ == "map": #if message is map
-                            mapstr = connection.data_
-                            SetMap(gamedata,mapstr) #set map
-                            gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+                        mapstr = connection.data_
+                        SetMap(gamedata,mapstr) #set map
+                        gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
 
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
@@ -334,7 +347,7 @@ def Run(gamedata:object,connection:object = None): #game main function
                         return #back to menu
 
                     elif connection.data_type_ == "restartlevel":
-                        SetMap(gamedata, gamedata.original_mapstr_, True)  # restart level
+                        RestartLevel(gamedata)
 
                 except Exception as error_message:
                     print(error_message)
@@ -394,12 +407,13 @@ def Run(gamedata:object,connection:object = None): #game main function
                 if pausemenu_number == 1: #exit pause menu
                     pausemenu_is_active = False
                 elif pausemenu_number == 2: #restart level
-                    SetMap(gamedata, gamedata.original_mapstr_, True) #restart level
-                    if gamedata.multiplayer_: #if multiplayer
-                        connection.SendRestartLevel()
+                    RestartLevel(gamedata,connection)
+
+
+
                     pausemenu_is_active = False
                 elif pausemenu_number == 3: #exit level
-                    if gamedata.multiplayer_:
+                    if gamedata.multiplayer_: #if multiplayer
                         connection.SendGameExit(False)
                         connection.CloseSocket()  # close socket
                     pygame.display.quit()  # close screen
@@ -411,14 +425,15 @@ def Run(gamedata:object,connection:object = None): #game main function
             Gravity(gamedata)
 
 
-        if pygame.time.get_ticks() > movelimit2 + 80:
-            movelimit2 = pygame.time.get_ticks()
-            if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
+
+        if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
+            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
+                movelimit2 = pygame.time.get_ticks()
                 if pausemenu_is_active == False:
                     if space: #if space pressed
                         Eat(gamedata,right,left,up,down) #remove tile in left,right,up or down
                     else:
-                        Move(gamedata,right,left,up,down) #move player
+                        Move(gamedata,connection,right,left,up,down) #move player
                     if gamedata.multiplayer_:
                         connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
@@ -434,7 +449,8 @@ def Run(gamedata:object,connection:object = None): #game main function
                         else:
                             pausemenu_number = 3
 
-            else: #no move
+        else: #no move
+            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
                 #set player image to defaultimage
                 if gamedata.local_player_.animated_ == True:
                     if gamedata.local_player_.image_number_ != 0:
@@ -443,17 +459,17 @@ def Run(gamedata:object,connection:object = None): #game main function
                             connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
 
+
         if DeleteExplosion(gamedata): #delete exlplosions
             #if explosion removed
             if gamedata.multiplayer_: #if multiplayer
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
-
+        print(gamedata.total_points_collected_)
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map
         if pausemenu_is_active == True: #if pausemenu is active
             DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
         pygame.display.flip()  #update screen
-
         clock.tick(30) #fps limit
