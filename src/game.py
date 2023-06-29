@@ -13,11 +13,11 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     collisions = gamedata.collision_objects_
     pushing = gamedata.pushing_objects_
 
-
+    original_x = gamedata.local_player_position_x_
+    original_y = gamedata.local_player_position_y_
     if right:
         if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_+1) #try collect point
-            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_x_ += 1 #move player
 
             if gamedata.local_player_.animated_ == True: #if player is animated
@@ -33,7 +33,6 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Stone: #if stone
                         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1].Rotate(1) #rotate image
                     gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 2] =  gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1] #set stone new position
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ += 1  # move player
                     gamedata.pushing_right_ = 0
                     if gamedata.local_player_.animated_ == True:  # if player is animated
@@ -42,14 +41,12 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ += 2 #move player
 
 
     if left:
         if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_-1) #try collect point
-            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_x_ -= 1 #move player
 
             if gamedata.local_player_.animated_ == True: #if player is animated
@@ -64,7 +61,6 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Stone: #if stone
                         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].Rotate(2) #rotate image
                     gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] =  gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1] #set stone new position
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ -= 1 #move player
                     gamedata.pushing_left_ = 0
                     if gamedata.local_player_.animated_ == True:  # if player is animated
@@ -73,14 +69,12 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_x_ -= 2 #move player
 
 
     if up:
         if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
-            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_y_ -= 1 #move player
 
             if gamedata.local_player_.animated_ == True: #if player is animated
@@ -90,14 +84,12 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
         elif gamedata.local_player_position_y_ - 2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_-2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_].direction_ == 1: #if the direction of the door is to the up
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_y_ -= 2 #move player
 
 
     if down:
         if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in collisions:  #if map not end and if no collision
             CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
-            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
             gamedata.local_player_position_y_ += 1 #move player
 
             if gamedata.local_player_.animated_ == True:  # if player is animated
@@ -106,13 +98,22 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
         elif gamedata.local_player_position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_position_y_+2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
-                    gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None
                     gamedata.local_player_position_y_ += 2  # move player
 
 
-    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) in gamedata.deadlys_objects_:
-        RestartLevel(gamedata,connection)
+
+    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) in gamedata.deadlys_objects_: #if a player hits a monster or explosion
+        RestartLevel(gamedata,connection) #level failed
+    elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) == Goal: #if player go to goal
+        if gamedata.total_points_collected_ >= gamedata.required_score_:
+            gamedata.level_complete_ = True #level complete
+        else:
+            gamedata.local_player_position_x_ = original_x #cancel move
+            gamedata.local_player_position_y_ = original_y
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_  # set player to map list
+
     else:
+        gamedata.current_map_[original_y][original_x] = None
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
 
 
@@ -155,7 +156,7 @@ def Eat(gamedata:object,right:bool,left:bool,up:bool,down:bool):
 
             CollectPoints(gamedata,gamedata.local_player_position_y_+1,gamedata.local_player_position_x_)
 
-def Gravity(gamedata):
+def Gravity(gamedata,connection):
 
     for y in range(gamedata.map_height_-1,-1,-1):
         for x in range(gamedata.map_width_-1,-1,-1):
@@ -163,16 +164,16 @@ def Gravity(gamedata):
                 if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
                         if type(gamedata.current_map_[y+1][x]) in gamedata.explosive2_: #if something falls on this tile
-                            CreateExplosion(gamedata,y+1,x) #create explosion
-
+                            CreateExplosion(gamedata,connection,y+1,x) #create explosion
+                            return
 
                         if gamedata.current_map_[y+1][x] != None:
                             if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
-                                CreateExplosion(gamedata,y,x) #create explosion
-
+                                CreateExplosion(gamedata,connection,y,x) #create explosion
+                                return
                     else: #if map end
                         if type(gamedata.current_map_[y][x]) == Tnt:
-                            CreateExplosion(gamedata, y, x)
+                            CreateExplosion(gamedata,connection, y, x)
 
 
                 if y + 1 < gamedata.map_height_:  # if map not end
@@ -232,10 +233,7 @@ def MoveMonsters(gamedata:object,connection:object):
                 return True
         return False
 
-    y = 0
-    x = 0
     for y in range(gamedata.map_height_):
-        x = 0
         for x in range(gamedata.map_width_):
             if type(gamedata.current_map_[y][x]) == Monster:
                 move_x = x
@@ -323,7 +321,6 @@ def MoveMonsters(gamedata:object,connection:object):
                             return #exit function
 
 
-                            
                         #move monster:
                         gamedata.current_map_[move_y][move_x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
@@ -332,7 +329,8 @@ def MoveMonsters(gamedata:object,connection:object):
 
 
 
-    #set moved_this_rekursion_ variable to false
+    #moved_during_this_function_call_ variable to false
+    #and change monster image
     for y in range(gamedata.map_height_):
         for x in range(gamedata.map_width_):
             if type(gamedata.current_map_[y][x]) == Monster:
@@ -345,7 +343,7 @@ def MoveMonsters(gamedata:object,connection:object):
                     gamedata.current_map_[y][x].image_number_ = 1
 
 
-def CreateExplosion(gamedata:object,y:int,x:int):
+def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
 
     list1 = [0,0,0,1,1,1,-1,-1,-1] #y
@@ -356,10 +354,14 @@ def CreateExplosion(gamedata:object,y:int,x:int):
         if y + list1[i] >= 0 and y + list1[i] < gamedata.map_height_: #if map not end
             if x + list2[i] >= 0 and x + list2[i] < gamedata.map_width_:  # if map not end
 
+                if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) == Player: #if player explose
+                    RestartLevel(gamedata,connection) #restart level
+                    return
+
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
                     if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt,player, monster...
                         gamedata.current_map_[y + list1[i]][x + list2[i]] = Explosion()
-                        CreateExplosion(gamedata,y+list1[i],x+list2[i]) #create new explosion
+                        CreateExplosion(gamedata,connection,y+list1[i],x+list2[i]) #create new explosion
 
                     gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
 
@@ -465,6 +467,15 @@ def Run(gamedata:object,connection:object = None): #game main function
 
     while True: #game main loop
 
+        if gamedata.level_complete_: #if level complete
+            if gamedata.multiplayer_: #if multiplayer
+                connection.SendGameExit(True)
+                connection.CloseSocket()  # close socket
+            pygame.display.quit()  # close screen
+            return True # back to menu
+
+
+        #read socket
         if gamedata.multiplayer_:
             if connection.connected_ == True:
 
@@ -483,7 +494,7 @@ def Run(gamedata:object,connection:object = None): #game main function
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
                         pygame.display.quit()  # close screen
-                        return #back to menu
+                        return connection.data_ #back to menu
 
                     elif connection.data_type_ == "restartlevel":
                         RestartLevel(gamedata)
@@ -539,7 +550,7 @@ def Run(gamedata:object,connection:object = None): #game main function
                     connection.SendGameExit(False)
                     connection.CloseSocket()  #close socket
                 pygame.display.quit()  #close screen
-                return #back to menu
+                return False #back to menu
 
         if enter == True:
             if pausemenu_is_active == True:
@@ -556,12 +567,13 @@ def Run(gamedata:object,connection:object = None): #game main function
                         connection.SendGameExit(False)
                         connection.CloseSocket()  # close socket
                     pygame.display.quit()  # close screen
-                    return  # back to menu
+                    return False  # back to menu
+
 
 
         if pygame.time.get_ticks() > movelimit + 140: #gravity and monster moving
             movelimit = pygame.time.get_ticks()
-            Gravity(gamedata)
+            Gravity(gamedata,connection)
             MoveMonsters(gamedata,connection)
 
 

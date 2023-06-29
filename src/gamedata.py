@@ -36,12 +36,13 @@ class GameData:
         self.required_score_ = 0
         self.points_collected_ = 0 #local player Points collected
         self.total_points_collected_ = 0
+        self.level_complete_ = False
 
         self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick,Door]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt,Diamond]
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
-        self.explosive_ = [Tnt,Monster,Player,Monster] #causing new explosion if explose
+        self.explosive_ = [Tnt,Monster] #causing new explosion if explose
         self.explosive2_ = [Tnt,Player,Monster] #explosive if something falls on it
         self.deadlys_objects_ = [Explosion,Monster] #if the player moved to these tiles, it's game over
 

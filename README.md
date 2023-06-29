@@ -12,5 +12,5 @@ move: arrows keys
 remove next to player:
 space + arrows keys
 
-restat level:
+pause menu:
 esc 
