@@ -110,7 +110,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.local_player_position_y_ += 2  # move player
 
 
-    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) == Explosion: #if go to explosion
+    if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) in gamedata.deadlys_objects_:
         RestartLevel(gamedata,connection)
     else:
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
@@ -204,6 +204,145 @@ def Gravity(gamedata):
                 else:
                     gamedata.current_map_[y][x].drop_ = False
 
+
+
+def MoveMonsters(gamedata:object,connection:object):
+
+    def TryGoRight(gamedata,y,x):
+        if x +1 < gamedata.map_width_: #if map not end
+            if gamedata.current_map_[y][x+1] == None or type(gamedata.current_map_[y][x+1]) == Player:
+                return True
+        return False
+    def TryGoDown(gamedata,y,x):
+        if y + 1 < gamedata.map_height_: #if map not end
+            if gamedata.current_map_[y+1][x] == None or type(gamedata.current_map_[y+1][x]) == Player:
+                return True
+        return False
+
+
+    def TryGoLeft(gamedata,y,x):
+        if x-1 >= 0: #if map not end
+            if gamedata.current_map_[y][x-1] == None or  type(gamedata.current_map_[y][x-1]) == Player:
+                return True
+        return False
+
+    def TryGoUp(gamedata, y, x):
+        if y-1 >= 0: #if map not end
+            if gamedata.current_map_[y - 1][x] == None or type(gamedata.current_map_[y - 1][x]) == Player:
+                return True
+        return False
+
+    y = 0
+    x = 0
+    for y in range(gamedata.map_height_):
+        x = 0
+        for x in range(gamedata.map_width_):
+            if type(gamedata.current_map_[y][x]) == Monster:
+                move_x = x
+                move_y = y
+
+                ##############
+                if gamedata.current_map_[y][x].direction_ == 1: #right
+                    if TryGoRight(gamedata,y,x) == False:
+                        if TryGoDown(gamedata,y,x) == False:
+                            if TryGoUp(gamedata,y,x) == False:
+                                if TryGoLeft(gamedata, y, x) == False:
+                                    pass
+                                else:
+                                    gamedata.current_map_[y][x].direction_ = 3  # set direction to left
+                                    move_x -= 1
+                            else:
+                                gamedata.current_map_[y][x].direction_ = 4  # set direction to up
+                                move_y -= 1
+                        else:
+                            gamedata.current_map_[y][x].direction_ = 2 #set direction to down
+                            move_y += 1
+                    else:
+                        move_x += 1
+
+                ##############
+                elif gamedata.current_map_[y][x].direction_ == 2: #down
+                    if TryGoDown(gamedata,y,x) == False:
+                        if TryGoLeft(gamedata,y,x) == False:
+                            if TryGoRight(gamedata,y,x) == False:
+                                if TryGoUp(gamedata,y,x) == False:
+                                    pass
+                                else:
+                                    gamedata.current_map_[y][x].direction_ = 4 #set direction to up
+                                    move_y -= 1
+                            else:
+                                gamedata.current_map_[y][x].direction_ = 1 #set direction to right
+                                move_x += 1
+                        else:
+                            gamedata.current_map_[y][x].direction_ = 3 #set direction to left
+                    else:
+                        move_y += 1
+
+                ##############
+                elif gamedata.current_map_[y][x].direction_ == 3: #left
+                    if TryGoLeft(gamedata,y,x) == False:
+                        if TryGoUp(gamedata,y,x) == False:
+                            if TryGoDown(gamedata,y,x) == False:
+                                if TryGoRight(gamedata,y,x) == False:
+                                    pass
+                                else:
+                                    gamedata.current_map_[y][x].direction_ = 1 #set direction to right
+                                    move_x += 1
+                            else:
+                                gamedata.current_map_[y][x].direction_ = 2 #set direction to down
+                        else:
+                            gamedata.current_map_[y][x].direction_ = 4 #set direction to up
+                    else:
+                        move_x -= 1
+
+                ################
+                elif gamedata.current_map_[y][x].direction_ == 4: #up
+                    if TryGoUp(gamedata,y,x) == False:
+                        if TryGoRight(gamedata,y,x) == False:
+                            if TryGoLeft(gamedata,y,x) == False:
+                                if TryGoDown(gamedata,y,x) == False:
+                                    pass
+                                else:
+                                    gamedata.current_map_[y][x].direction_ = 2 #set direcion to down
+                                    move_y += 1
+
+                            else:
+                                gamedata.current_map_[y][x].direction_ = 3 #set direction to left
+                                move_x -= 1
+                        else:
+                            gamedata.current_map_[y][x].direction_ = 1 #set direction to right
+                            move_x += 1
+                    else:
+                        move_y -= 1
+
+
+                if x != move_x or y != move_y:
+                    if gamedata.current_map_[y][x].moved_during_this_function_call_ == False: #the monster is moved only once in function call
+                        if type(gamedata.current_map_[move_y][move_x]) == Player:
+                            RestartLevel(gamedata,connection)
+                            return #exit function
+
+
+                            
+                        #move monster:
+                        gamedata.current_map_[move_y][move_x] = gamedata.current_map_[y][x]
+                        gamedata.current_map_[y][x] = None
+                        gamedata.current_map_[move_y][move_x].moved_during_this_function_call_ = True
+
+
+
+
+    #set moved_this_rekursion_ variable to false
+    for y in range(gamedata.map_height_):
+        for x in range(gamedata.map_width_):
+            if type(gamedata.current_map_[y][x]) == Monster:
+                gamedata.current_map_[y][x].moved_during_this_function_call_ = False
+
+                # change monster image
+                if gamedata.current_map_[y][x].image_number_ == 1:
+                    gamedata.current_map_[y][x].image_number_ = 2
+                else:
+                    gamedata.current_map_[y][x].image_number_ = 1
 
 
 def CreateExplosion(gamedata:object,y:int,x:int):
@@ -321,7 +460,7 @@ def Run(gamedata:object,connection:object = None): #game main function
 
 
     clock = pygame.time.Clock()
-    movelimit = 0 #gravity
+    movelimit = 0 #gravity and monster
     movelimit2 = 0 #player move
 
     while True: #game main loop
@@ -420,10 +559,10 @@ def Run(gamedata:object,connection:object = None): #game main function
                     return  # back to menu
 
 
-        if pygame.time.get_ticks() > movelimit + 140: #gravity
+        if pygame.time.get_ticks() > movelimit + 140: #gravity and monster moving
             movelimit = pygame.time.get_ticks()
             Gravity(gamedata)
-
+            MoveMonsters(gamedata,connection)
 
 
         if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
@@ -465,7 +604,6 @@ def Run(gamedata:object,connection:object = None): #game main function
             if gamedata.multiplayer_: #if multiplayer
                 connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
 
-        print(gamedata.total_points_collected_)
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map

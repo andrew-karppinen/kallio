@@ -43,7 +43,7 @@ class GameData:
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
         self.explosive_ = [Tnt,Monster,Player,Monster] #causing new explosion if explose
         self.explosive2_ = [Tnt,Player,Monster] #explosive if something falls on it
-
+        self.deadlys_objects_ = [Explosion,Monster] #if the player moved to these tiles, it's game over
 
         self.pushing_right_ = 0 #0,1
         self.pushing_left_ = 0 #0,1
@@ -78,6 +78,7 @@ class GameData:
         playerimage2 = pygame.image.load("media/player2.png")
         playerimage3 = pygame.image.load("media/player3.png")
         monsterimage1 = pygame.image.load("media/monster1.png")
+        monsterimage2 = pygame.image.load("media/monster2.png")
         stoneimage = pygame.image.load("media/stone.png")
         tntimage = pygame.image.load("media/tnt.png")
         explosionimage = pygame.image.load("media/explosion.png")
@@ -99,7 +100,7 @@ class GameData:
         DefaultTile.SetImage(sandimage)
         Bedrock.SetImage(bedrockimage)
         Brick.SetImage(brickimage)
-        Monster.SetImage(monsterimage1)
+        Monster.SetImage(monsterimage1,monsterimage2)
 
         # set images
         Stone.SetImage(stoneimage)
@@ -120,16 +121,14 @@ class GameData:
 
         if self.map_width_ < self.draw_area_x_: #if map size < drawing area size
             self.draw_area_x_ = self.map_width_ #set drawing area size to map size
-
             x, y = self.screen_.get_size()
             margin_x = self.map_width_ * self.tile_size_
-            margin_x = x //2 - margin_x //2
+            margin_x = x // 2 - margin_x // 2
             self.margin_x_ = margin_x
 
 
         if self.map_height_ < self.draw_area_y_: #if map size < drawing area size
             self.draw_area_y_ = self.map_height_ #set drawing area size to map size
-
             x, y = self.screen_.get_size()
             margin_y = self.map_height_ * self.tile_size_
             margin_y = y // 2 - margin_y //2
@@ -183,8 +182,6 @@ class GameData:
         #y = 18
 
         y = -1
-
-
 
 
 

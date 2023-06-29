@@ -15,7 +15,7 @@ pygame.init() #init pygame module
 
 def ReturnMaps(multiplayer:bool):
     '''
-     return map file path
+    return map file path
 
     return files from
 
@@ -23,8 +23,9 @@ def ReturnMaps(multiplayer:bool):
      or
     /maps/multiplayer
 
-    et maps folder path
-        '''
+    return maps file path
+    '''
+
     path = os.getcwd()
     maplist = []
 

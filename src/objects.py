@@ -308,8 +308,12 @@ class Monster:
             Monster.image2 = pygame.transform.scale(Monster.image2, (tile_size, tile_size))
 
     def __init__(self,direction):
-        self.direction_ = direction
+        self.direction_ = direction #1 = right, 2 = down, 3 = left, 4= up
         self.image_number_ = 1 #1, 2
+
+        self.moved_during_this_function_call_ = False
+
+
 
 
     @property
