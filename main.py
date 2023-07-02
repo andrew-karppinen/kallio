@@ -1,50 +1,16 @@
 from src import *
 
 import pygame
-
-import time
-from pygame.locals import *
 pygame.init()
 
 
 
 #initialize
 
-#initialize
 
-#load images
-sandimage = pygame.image.load("media/sand.png")
-playerimage = pygame.image.load("media/player.png")
-playerimage2 = pygame.image.load("media/player2.png")
-stoneimage = pygame.image.load("media/stone.png")
-tntimage = pygame.image.load("media/tnt.png")
-explosionimage = pygame.image.load("media/explosion.png")
-diamondimage = pygame.image.load("media/diamond.png")
-goalimage = pygame.image.load("media/goal.png")
-bedrockimage = pygame.image.load("media/bedrock.png")
-brickimage = pygame.image.load("media/brick.png")
-doorimage = pygame.image.load("media/door.png")
-
-#set images
-#set images
-Diamond.SetImage(diamondimage)
-Goal.SetImage(goalimage)
-Explosion.SetImage(explosionimage)
-Tnt.SetImage(tntimage)
-DefaultTile.SetImage(sandimage)
-Bedrock.SetImage(bedrockimage)
-Brick.SetImage(brickimage)
-
-#set images
-Stone.SetImage(stoneimage)
-Door.SetImage(doorimage)
-
-#create players
-local_player = Player(playerimage)
-remote_player = Player(playerimage2, False)
 
 if 0:  # client
-    gamedata = GameData(local_player, True, False,remote_player) #create gamedata object
+    gamedata = GameData(True, False) #create gamedata object
 
     connection = Client("localhost", 1234)  # tähän ip osoite!!!
 
@@ -55,43 +21,49 @@ if 0:  # client
         if connection.data_type_ == "startinfo":  # if start info
 
             #set map size and required score
-            gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = connection.data_
+            gamedata.map_height_, gamedata.map_width_, gamedata.required_score_ = connection.data_
 
             connection.Read()  # read messages
             print("tässä2", connection.data_)
             if connection.data_type_ == "map":  # if message is map
                 SetMap(gamedata, connection.data_,True)  # set map
                 gamedata.SetScreenSize((1920,1080))  # set screen size
-                Run(gamedata, connection)  # start game
-                print("tässä3", connection.data_)
+                gamedata.SetDrawarea()
+                a = Run(gamedata, connection)  # start game
+                print("tässä3", a)
 
 
 
-if 0:  # server
-    gamedata = GameData(local_player, True,True, remote_player)  # create gamedata
+if 1:  # server
+    gamedata = GameData(True,True)  # create gamedata
 
-
-    connection = Server(1234) #create server object
-
-    mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile("maps/multiplayer/multiplayer0.txt")
     SetMap(gamedata, mapstr,True)  # convert str to map list
+
+    connection = Server(1234,10) #create server object
 
     if connection.connected_:
         connection.Read()  # read messages
         if connection.data_type_ == "readytostart":  # if client ready to start the game
-            if connection.data_ == "05664":
+            if connection.data_ == "55664":
                 connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  #send start info
 
                 connection.SendMap(gamedata.current_map_, 0)  # and send map
-                gamedata.SetScreenSize((1920,1080))  # set screen size
-                Run(gamedata, connection)
+                gamedata.SetScreenSize((1280,720))  # set screen size
+                gamedata.SetDrawarea()
 
-if 1:  # if singleplayer
+                a = Run(gamedata, connection)
+                print(a)
 
-    gamedata = GameData(local_player, False, False)  # create gamedata
+if 0:  # if singleplayer
+    gamedata = GameData(False, False)  # create gamedata
 
-    gamedata.SetScreenSize((1920,1080)) #set screen size
-    mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,map_is_multiplayer = ReadMapFile("maps/testmap.txt")
+
+
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile("maps/singleplayer/down they fall.txt")
     SetMap(gamedata, mapstr,True)  # convert str to map list
+    gamedata.SetScreenSize((1920,1080)) #set screen size
+    gamedata.SetDrawarea()
 
-    Run(gamedata, False) #start game
+    a = Run(gamedata, None) #start game
+    print(a)

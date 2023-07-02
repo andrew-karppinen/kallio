@@ -168,7 +168,7 @@ class Server:
         try:
             self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
             self.connected_ = True
-            self.client_.settimeout(0.001) #set new timeout
+            self.client_.settimeout(0.1) #set new timeout
         except:
             self.connected_ = False
 
@@ -275,9 +275,9 @@ class Client:
         self.ipaddress_ = ipaddress
         self.port_ = port
 
-        try: #Todo connection timeout not working
+        try:
             self.socket_.connect((ipaddress, port))  #connect to server
-            self.socket_.settimeout(0.001)  #set new timeout
+            self.socket_.settimeout(0.1)  #set new timeout
             self.connected_ = True
         except Exception as a:
             print(a)
@@ -321,14 +321,14 @@ class Client:
                 y_x_list = data[10:].split(',') #set map size
                 map_height = int(y_x_list[0])  #map size y
                 map_width = int(y_x_list[1])  #map size x
-                required_score = int(y_x_list[1]) #required_score
+                required_score = int(y_x_list[2]) #required_score
 
                 self.data_ = (map_height,map_width,required_score)
                 self.data_type_ = "startinfo"
 
             elif data[0:9] == "gameexit:": #if message is gameexit
                 self.data_type_ = "gameexit"
-                self.data_ = eval(data[9:]) #strin to boolean
+                self.data_ = eval(data[9:]) #string to boolean
 
             elif data[0:13] == "restartlevel":
                 self.data_type_ = "restartlevel"

@@ -105,7 +105,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) in gamedata.deadlys_objects_: #if a player hits a monster or explosion
         RestartLevel(gamedata,connection) #level failed
     elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) == Goal: #if player go to goal
-        if gamedata.total_points_collected_ >= gamedata.required_score_:
+        if gamedata.total_points_collected_ >= gamedata.required_score_: #if enough points collected
             gamedata.level_complete_ = True #level complete
         else:
             gamedata.local_player_position_x_ = original_x #cancel move
@@ -316,8 +316,8 @@ def MoveMonsters(gamedata:object,connection:object):
 
                 if x != move_x or y != move_y:
                     if gamedata.current_map_[y][x].moved_during_this_function_call_ == False: #the monster is moved only once in function call
-                        if type(gamedata.current_map_[move_y][move_x]) == Player:
-                            RestartLevel(gamedata,connection)
+                        if type(gamedata.current_map_[move_y][move_x]) == Player: #a monster hits a player
+                            RestartLevel(gamedata,connection) #level failed
                             return #exit function
 
 
@@ -448,7 +448,9 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel()
 
-def Run(gamedata:object,connection:object = None): #game main function
+def Run(gamedata:object,connection:object = None)->bool: #game main function
+
+    #return True if level complete
 
     right = False
     left = False
@@ -623,3 +625,4 @@ def Run(gamedata:object,connection:object = None): #game main function
             DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
         pygame.display.flip()  #update screen
         clock.tick(30) #fps limit
+

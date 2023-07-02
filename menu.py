@@ -125,7 +125,7 @@ class Menu:
                 connection.Read()  # read messages
                 if connection.data_type_ == "readytostart":  # if client ready to start the game
                     if connection.data_ == self.gameid_:
-                        connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_)  # send start info
+                        connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  # send start info
 
                         connection.SendMap(gamedata.current_map_, 0)  #and send map
                         gamedata.SetScreenSize(self.resolution_)  #set local screen size
@@ -152,7 +152,7 @@ class Menu:
 
         self.menu_.add.label(f"your ip address:")
         self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
-        self.menu_.add.selector("map:", ReturnMaps(True), onchange=self.SetMapFilepath) #select map
+        self.menu_.add.selector("map:", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
         self.menu_.add.text_input('port:', default=f"{str(self.port_)}",onchange=self.SetPort)
         self.menu_.add.text_input('join number:', default= self.gameid_,onchange=self.SetGameid)
         self.menu_.add.text_input('timeout:', default="10", onchange=self.SetTimeout)
