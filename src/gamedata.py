@@ -8,10 +8,10 @@ class GameData:
     '''
 
 
-    def __init__(self,multiplayer:bool = False,server:bool = False,screen:pygame.surface = None):
+    def __init__(self,multiplayer:bool = False,server:bool = False):
 
 
-        self.screen_ = screen #pygame window
+        self.screen_ = None #pygame window
         self.font_ = self.font_ = pygame.font.SysFont('', 30) #load font
         self.tile_size_ = 50 #tilesize y*x
         self.draw_area_x_ = 32 #default drawing area size
@@ -24,7 +24,7 @@ class GameData:
         self.multiplayer_ = multiplayer
         self.server_ = server #False = client, True = server
 
-        self.local_player_position_x_= None
+        self.local_player_position_x_ = None
         self.local_player_position_y_ = None
 
         # create players

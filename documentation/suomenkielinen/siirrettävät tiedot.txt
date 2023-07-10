@@ -1,48 +1,8 @@
 
 
-tiedot siirretään socketin kautta 
-vastaanottajakone muodostaa saapuneista tiedoista kartan eli listan jossa alkioina olioita
-Tämä tapahtuu samalla tavalla kun peliä aloittaessa.
-tieto kartan koosta siirretään vain pelin aluksi
-
-Peliä aloittaessa ohjelma lukee tiedot vain tiedostosta johon kartta tallennettu
-
-
-Luettelo numeroista joista kartta muodostetaan.
-
-
-paikallisen ja etäpelaajan paikat vaihdetaan tietoja lähettäessä
-koska toisella tietokoneella roolit on tietenkin päinvastaiset
-
-0 = empty
-1 = local player
-2 = remote player
-3 = default tile
-4 = tile that can be destroyed
-5 = tile that cannot be destroyed
-7 = goal
-8 not a falling tnt
-9 = falling tnt
-10 = not a falling stone
-11 = falling stone
-12 = Explosion
-14 =  monster which looking to right
-15 = monster which looking to down
-16 = monster which looking to left
-17 = monster which looking to up
-18 = not a falling diamond
-19 = falling diamond
-
-20 Door up
-21 Door right
-22 door down
-23 door left
 
 
 
-Lähetettävät numerot erotellaan pilkuilla
-lähetettävä merkkijonon ensimmäiset kaksi lukua kertoo kartan sijainnin x,y suunnissa
-sen jälkeen kartta vasemmalta oikealle ja ylhäältä alas
 
 
 Paketit:
@@ -51,24 +11,46 @@ readytostart:
 client lähettää serverille tiedon että on valmis aloittamaan pelin
 lisäksi client lähettää 5 numeroa pitkän numerosarjan jonka pitää olla oikea
 
-näyttää tältä:
+esimerkki:
 "readytostart:01234"
 
 
 
 startinfo:
 serveri lähettää clientille
+
+syntaksi:
 tieto pelin aloituksesta ja kartan koko y,x suunnissa ja vaadittavien pisteiden määrä
+
 esimerkki:
 "startinfo:12,10,5"
 "startinfo:y,x,vaaditut pisteet"
 heti tämän perään server lähettää clientille kartan
 
+
 map:
-esimerkki:
-"map:kerätyt pisteet:3,3,3,3,3,3,3,3,3,3,3,3,33,3,2,3,3,3,3,10,10,3,3,3"
+
 
 tietokoneet lähettävät toisilleensa keräämäsä pisteiden määrän
+
+
+viesti voi sisältää koko kartan tai ainoastaan pelaajan sijainnin ja sen ympärillä olevat kohdat
+
+koko kartan server lähettää clientille pelin alussa, tämän jälkeen tietokoneet lähettää toisilleen vain oman pelaajan sijainnin ja tilen vasemmalta,oikealta,ylhäältä,alhaalta,
+tämä siksi jos pelaaja poistaa vieressä olevan tilen
+
+map viestissä lähetetään myös kerättyjen  pisteiden määrän
+
+syntaksi:
+"map:kerätyt pisteet:kokokartta:sijainti:kartta merkkijonona"
+
+silloin kun ei lähetetä koko karttaa:
+"2 1,3,3,3,3"
+tuosssa on tilet seuraavassa järjestyksessä:
+pelaaja,oikea,ala,vasen,ylä
+
+muuten koko kartta ylhäältä alas ja vasemmalta oikealle
+z
 
 
 

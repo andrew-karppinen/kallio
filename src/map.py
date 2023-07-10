@@ -1,15 +1,210 @@
 import pygame
 from src.objects import *
-
-
+from copy import deepcopy
 import json
+
+
+
+
+def ObjectToStr(gameobject):
+
+
+    if gameobject == None:  # if none
+        mapsymbol = ("0")
+
+    elif type(gameobject) == Player:  # if player
+        if gameobject.local_player_:  # if local player, change to remoteplayer
+            if gameobject.image_number_ == 0:
+                mapsymbol = ("2 1")
+            elif gameobject.image_number_ == 1:
+                mapsymbol = ("2 2")
+            elif gameobject.image_number_ == 2:
+                mapsymbol = ("2 3")
+            elif gameobject.image_number_ == 3:
+                mapsymbol = ("2 4")
+            elif gameobject.image_number_ == 4:
+                mapsymbol = ("2 5")
+        else:  # if remoteplayer
+            mapsymbol = ("1")  # change to local player
+
+    elif type(gameobject) == DefaultTile:  # if default tile
+        mapsymbol = ("3")
+    elif type(gameobject) == Brick:  # can explode tile
+        mapsymbol = ("4")
+    elif type(gameobject) == Bedrock:  # cannot explode tile
+        mapsymbol = ("5")
+    elif type(gameobject) == Goal:
+        mapsymbol = ("7")
+
+    elif type(gameobject) == Tnt:  # if tnt
+        if gameobject.drop_:  # if currently dropping
+            mapsymbol = ("9")
+        else:  # no currently dropping
+            mapsymbol = ("8")
+
+    elif type(gameobject) == Stone:  # if stone
+        if gameobject.drop_:  # if currently dropping
+            if gameobject.direction_ == 1:
+                mapsymbol = ("11 1")
+            elif gameobject.direction_ == 2:
+                mapsymbol = ("11 2")
+            elif gameobject.direction_ == 3:
+                mapsymbol = ("11 3")
+            elif gameobject.direction_ == 4:
+                mapsymbol = ("11 4")
+
+        else:  # no currently dropping
+            if gameobject.direction_ == 1:
+                mapsymbol = ("10 1")
+            elif gameobject.direction_ == 2:
+                mapsymbol = ("10 2")
+            elif gameobject.direction_ == 3:
+                mapsymbol = ("10 3")
+            elif gameobject.direction_ == 4:
+                mapsymbol = ("10 4")
+
+    elif type(gameobject) == Explosion:  # if explosion
+        mapsymbol =  ("0")
+        # Todo delete this?
+
+
+    elif type(gameobject) == Monster:  # if monster
+        if gameobject.direction_ == 1:  # right
+            mapsymbol = ("14")
+        elif gameobject.direction_ == 2:  # down
+            mapsymbol = ("15")
+        elif gameobject.direction_ == 3:  # left
+            mapsymbol = ("16")
+        elif gameobject.direction_ == 4:  # up
+            mapsymbol = ("17")
+
+    elif type(gameobject) == Diamond:  # if diamond
+        if gameobject.drop_:  # if currently dropping
+            if gameobject.direction_ == 1:
+                mapsymbol = ("19 1")
+            elif gameobject.direction_ == 2:
+                mapsymbol = ("19 2")
+            elif gameobject.direction_ == 3:
+                mapsymbol = ("19 3")
+            elif gameobject.direction_ == 4:
+                mapsymbol = ("19 4")
+        else:  # no currently dropping
+            print(gameobject.direction_)
+            if gameobject.direction_ == 1:
+                mapsymbol = ("18 1")
+            elif gameobject.direction_ == 2:
+                mapsymbol = ("18 2")
+            elif gameobject.direction_ == 3:
+                mapsymbol = ("18 3")
+            elif gameobject.direction_ == 4:
+                mapsymbol = ("18 4")
+
+    elif type(gameobject) == Door:  # if door
+        if gameobject.direction_ == 1:  # up
+            mapsymbol = ("20")
+        elif gameobject.direction_ == 2:  # right
+            mapsymbol = ("21")
+        elif gameobject.direction_ == 3:  # down
+            mapsymbol = ("22")
+        elif gameobject.direction_ == 4:  # left
+            mapsymbol = ("23")
+
+
+    return(mapsymbol)
+
+def MapListToStr(maplist: list):
+    '''
+    convert objects to numbers
+
+    data:
+    src/config/tile commands config.json
+    '''
+
+    sendlist = []
+
+
+    for i in range(len(maplist)):
+        for j in range(len(maplist[i])):
+            # i = y j = x
+
+            sendlist.append(ObjectToStr(maplist[i][j])) #convert obejcts to mapsymbol
+
+
+    sendstr = ",".join(sendlist) #convert list to string
+
+    return (sendstr)
+
+
+
+
+def SetMapPart(gamedata:object,mapstr:str,position:tuple):
+    #set the player's adjacent tiles
+    #convert str to objects
+
+
+    mapstr = mapstr.split(",")
+
+
+
+    #place player to map
+    gamedata.current_map_[position[0]][position[1]] = gamedata.remote_player_
+
+    #set player image
+    if gamedata.mapsymbols_[mapstr[0]]['command2'] != None:  # if command 2 exist
+        print("tässä")
+        command2 = gamedata.mapsymbols_[mapstr[0]]['command2']
+        exec(str(command2))  # execute command2
+
+
+
+    #set right
+    command = gamedata.mapsymbols_[mapstr[1]]['command']
+    if command != "other command":
+        exec(f"gamedata.current_map_[position[0]][position[1]+1] = {command}")
+
+    if gamedata.mapsymbols_[mapstr[1]]['command2'] != None: #if commadn 2 exist
+        command2 = gamedata.mapsymbols_[mapstr[1]]['command2']
+        exec(str(command2))  # execute command2
+
+    #set down
+    command = gamedata.mapsymbols_[mapstr[2]]['command']
+    if command != "other command":
+        exec(f"gamedata.current_map_[position[0]+1][position[1]] = {command}")
+
+    if gamedata.mapsymbols_[mapstr[2]]['command2'] != None: #if commadn 2 exist
+        command2 = gamedata.mapsymbols_[mapstr[2]]['command2']
+        exec(str(command2)) #execute command2
+
+    #set left
+    command = gamedata.mapsymbols_[mapstr[3]]['command']
+    if command != "other command":
+        exec(f"gamedata.current_map_[position[0]][position[1]-1] = {command}")
+
+    if gamedata.mapsymbols_[mapstr[3]]['command2'] != None: #if commadn 2 exist
+        command2 = gamedata.mapsymbols_[mapstr[3]]['command2']
+        exec(str(command2))  # execute command2
+
+
+    #set up
+    command = gamedata.mapsymbols_[mapstr[4]]['command']
+    if command != "other command":
+        exec(f"gamedata.current_map_[position[0]-1][position[1]] = {command}")
+
+    if gamedata.mapsymbols_[mapstr[4]]['command2'] != None: #if commadn 2 exist
+        command2 = gamedata.mapsymbols_[mapstr[4]]['command2']
+        exec(str(command2))  # execute command2
+
 
 def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     '''
+    set full map
     Convert mapstr to map list
     set maplist to gamedata object
 
     "initial" parameter must be true, If the level is started from the beginning
+
+    data:
+    src/config/tile commands config.json
 
     '''
 
@@ -41,7 +236,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
 
         if mapstr[i] != ",":
-
             number += mapstr[i]
 
         if i + 1 == len(mapstr):  # if map end
@@ -49,7 +243,13 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
             if number != "1":  # if no local player
 
-                exec(gamedata.mapsymbols_[number]['command'])  #convert numbers to objects
+                command = gamedata.mapsymbols_[number]['command'] #convert numbers to objects
+                exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
+
+                #if command2 exist
+                if gamedata.mapsymbols_[number]['command2'] != None:
+                    exec(str(gamedata.mapsymbols_[number]['command2']))
+
 
             elif number == "1":  # if local player
                 if initial == True:
@@ -70,7 +270,12 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
             if number != "1": #if no player
 
-                exec(gamedata.mapsymbols_[number]['command']) #convert numbers to objects
+                command = gamedata.mapsymbols_[number]['command']  # convert numbers to objects
+                exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
+
+                #if command2 exist
+                if gamedata.mapsymbols_[number]['command2'] != None:
+                    exec(str(gamedata.mapsymbols_[number]['command2']))
 
 
             elif number == "1": #if local player

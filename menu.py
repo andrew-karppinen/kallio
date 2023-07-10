@@ -132,12 +132,14 @@ class Menu:
                         if self.fullscreen_:  #if fullscreen
                             pygame.display.toggle_fullscreen()  #set fullscreen
                         gamedata.SetDrawarea()
+                        connection.SetTimeout(0.001) #set new timeout
                         Run(gamedata, connection) #start game
                         self.BackToMenu()
 
+
             #if the connection failed
             self.menu_.clear()
-            self.menu_.add.label("no one connected!")
+            self.menu_.add.label(connection.error_mesage_)
             self.menu_.add.label(f"server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
             self.menu_.add.label(f"join nubmer: {self.gameid_}") #print gameid
             self.menu_.add.label(f"port: {connection.port_}")  # print port
@@ -187,6 +189,7 @@ class Menu:
                         gamedata.SetDrawarea()
 
                         print("käynnistetään client")
+                        connection.SetTimeout(0.01) #set new timeout
                         Run(gamedata, connection)  # start game
                         print("poistuttiin clientistä")
                         self.BackToMenu()
@@ -255,7 +258,7 @@ class Menu:
 
 
     def BackToMenu(self): #This is used when returning to the menu from the game.
-
+        pygame.QUIT #close all pygame windows
         self.surface_ = pygame.display.set_mode((600, 500))  # create screen
         self.menu_ = pygame_menu.Menu('py boulderdash', 600, 500, theme=mytheme)  # create menu object
         self.MainMenu()

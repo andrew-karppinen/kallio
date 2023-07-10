@@ -481,7 +481,7 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
         if gamedata.multiplayer_:
             if connection.connected_ == True:
 
-                try:
+                try: #check connection
                     connection.Read()  # read socket
                 except:
                     print("connection problem")
@@ -489,9 +489,22 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
                 try:
                     if connection.data_type_ == "map": #if message is map
-                        mapstr = connection.data_
-                        SetMap(gamedata,mapstr) #set map
-                        gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+
+
+                        if connection.full_map_ == False:
+                            SetMapPart(gamedata,connection.data_,connection.position_)
+
+
+                        else: #if full map
+                            mapstr = connection.data_
+                            SetMap(gamedata,mapstr) #set map
+                            gamedata.total_points_collected_ = connection.points_collected_ + gamedata.points_collected_
+                            print(connection.full_map_)
+                            print(connection.position_)
+
+
+
+
 
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
@@ -588,7 +601,8 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                     else:
                         Move(gamedata,connection,right,left,up,down) #move player
                     if gamedata.multiplayer_:
-                        connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
+                        connection.SendMap(gamedata.current_map_, gamedata.points_collected_, False, (gamedata.local_player_position_y_, gamedata.local_player_position_x_))  # send map
+
 
                 else: #pause menu is active
                     if up:
@@ -609,7 +623,8 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                     if gamedata.local_player_.image_number_ != 0:
                         gamedata.local_player_.image_number_ = 0
                         if gamedata.multiplayer_ == True:
-                            connection.SendMap(gamedata.current_map_, gamedata.points_collected_)  #send map
+                            connection.SendMap(gamedata.current_map_, gamedata.points_collected_, False, (gamedata.local_player_position_y_, gamedata.local_player_position_x_))  # send map
+
 
 
 
@@ -624,5 +639,5 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
         if pausemenu_is_active == True: #if pausemenu is active
             DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
         pygame.display.flip()  #update screen
-        clock.tick(30) #fps limit
+        clock.tick(60) #fps limit
 

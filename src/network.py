@@ -11,171 +11,41 @@ import sys
 
 
 
-def MapListToStr(maplist: list):
-    '''
-    convert objects to numbers
-
-    data:
-    0 = empty
-    1 = local player
-    2 = remote player
-    3 = default tile
-    4 = tile that can be destroyed
-    5 = tile that cannot be destroyed
-    7 = goal
-    8 = not a falling tnt
-    9 = falling tnt
-    10 = not a falling stone
-    11 = falling stone
-    12 = Explosion
-    14 = monster which looking to right
-    15 = monster which looking to down
-    16 = monster which looking to left
-    17 = monster which looking to up
-    18 = not a falling diamond
-    19 = falling diamond
-
-    20 Door up
-    21 Door right
-    22 door down
-    23 door left
-    '''
-
-    sendlist = []
-
-
-    for i in range(len(maplist)):
-        for j in range(len(maplist[i])):
-            # i = y j = x
-
-            if maplist[i][j] == None:  # if none
-                sendlist.append("0")
-
-            elif type(maplist[i][j]) == Player:  #if player
-                if maplist[i][j].local_player_:  #if local player, change to remoteplayer
-                    if maplist[i][j].image_number_ == 0:
-                        sendlist.append("2 1")
-                    elif maplist[i][j].image_number_ == 1:
-                        sendlist.append("2 2")
-                    elif maplist[i][j].image_number_ == 2:
-                        sendlist.append("2 3")
-                    elif maplist[i][j].image_number_ == 3:
-                        sendlist.append("2 4")
-                    elif maplist[i][j].image_number_ == 4:
-                        sendlist.append("2 5")
-                else:  #if remoteplayer
-                    sendlist.append("1")  # change to local player
-
-            elif type(maplist[i][j]) == DefaultTile:  # if default tile
-                sendlist.append("3")
-            elif type(maplist[i][j]) == Brick:  # can explode tile
-                sendlist.append("4")
-            elif type(maplist[i][j]) == Bedrock:  # cannot explode tile
-                sendlist.append("5")
-            elif type(maplist[i][j]) == Goal:
-                sendlist.append("7")
-
-            elif type(maplist[i][j]) == Tnt:  # if tnt
-                if maplist[i][j].drop_:  # if currently dropping
-                    sendlist.append("9")
-                else:  #no currently dropping
-                    sendlist.append("8")
-
-            elif type(maplist[i][j]) == Stone:  # if stone
-                if maplist[i][j].drop_:  #if currently dropping
-                    if maplist[i][j].direction_ == 1:
-                        sendlist.append("11 1")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("11 2")
-                    elif maplist[i][j].direction_ == 3:
-                        sendlist.append("11 3")
-                    elif maplist[i][j].direction_ == 4:
-                        sendlist.append("11 4")
-
-                else:  # no currently dropping
-                    if maplist[i][j].direction_ == 1:
-                        sendlist.append("10 1")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("10 2")
-                    elif maplist[i][j].direction_ == 3:
-                        sendlist.append("10 3")
-                    elif maplist[i][j].direction_ == 4:
-                        sendlist.append("10 4")
-
-            elif type(maplist[i][j]) == Explosion: #if explosion
-                #sendlist.append("12")
-                #Todo delete this?
-                pass
-
-            elif type(maplist[i][j]) == Monster:  # if monster
-                if maplist[i][j].direction_ == 1:  # right
-                    sendlist.append("14")
-                elif maplist[i][j].direction_ == 2:  # down
-                    sendlist.append("15")
-                elif maplist[i][j].direction_ == 3:  # left
-                    sendlist.append("16")
-                elif maplist[i][j].direction_ == 4:  # up
-                    sendlist.append("17")
-
-            elif type(maplist[i][j]) == Diamond: #if diamond
-                if maplist[i][j].drop_:  # if currently dropping
-                    if maplist[i][j].direction_ == 1:
-                        sendlist.append("19 1")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("19 2")
-                    elif maplist[i][j].direction_ == 3:
-                        sendlist.append("19 3")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("19 4")
-                else:# no currently dropping
-                    if maplist[i][j].direction_ == 1:
-                        sendlist.append("18 1")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("18 2")
-                    elif maplist[i][j].direction_ == 3:
-                        sendlist.append("18 3")
-                    elif maplist[i][j].direction_ == 2:
-                        sendlist.append("18 4")
-
-            elif type(maplist[i][j]) == Door:  # if door
-                if maplist[i][j].direction_ == 1: #up
-                    sendlist.append("20")
-                elif maplist[i][j].direction_ == 2: #right
-                    sendlist.append("21")
-                elif maplist[i][j].direction_ == 3: #down
-                    sendlist.append("22")
-                elif maplist[i][j].direction_ == 4: #left
-                    sendlist.append("23")
-
-    sendstr = ",".join(sendlist) #convert list to string
-
-    return (sendstr)
-
-
 class Server:
     def __init__(self,port:int,connection_timeout:int = 2):#constructor
         self.socket_ = socket.socket()  # create socket object
         self.port_ = port
+        self.error_mesage_ = ""
 
         self.socket_.settimeout(connection_timeout)
+        self.connected_ = False
 
-        self.socket_.bind(('', port))
-        print("socket binded to %s" % (port))  # set port
-
-        self.socket_.listen(1)
-        print("socket is listening")
 
         try:
-            self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
-            self.connected_ = True
-            self.client_.settimeout(0.1) #set new timeout
-        except:
-            self.connected_ = False
+            self.socket_.bind(('', port))
+            print("socket binded to %s" % (port))  # set port
+            self.socket_.listen(1)
+            print("socket is listening")
+
+            try:
+                self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
+                self.connected_ = True
+                self.client_.settimeout(0.1)
+            except Exception as message:
+                self.error_mesage_ = message
+                self.connected_ = False
+
+        except Exception as message:
+            self.error_mesage_ = message
+
+
 
 
         self.data_ = None #received messages
         self.data_type_ = None
         self.points_collected_ = 0 #if message is map
+        self.full_map_ = False #if message is map
+        self.position_ = (0,0) #if message is map
 
         #data_type_: "map","readytostart","gameexit","restartlevel",None, "other"
 
@@ -189,6 +59,8 @@ class Server:
         #None = None
 
 
+    def SetTimeout(self,timeout):
+        self.client_.settimeout(timeout)  # set new timeout
 
     def Read(self):
         #read socket message
@@ -204,10 +76,20 @@ class Server:
                 # exmine message data type and set data
                 if data[0:4] == "map:":  # if message is map
 
-                    index = data.find(":", 5) +1
+                    index = data.find(":", 5) +1 #find points collected
                     self.points_collected_ = int(data[4:index-1])  #points collected
+
+                    index2 = data.find(":", index) +1 #find is full_map boolean
+                    self.full_map_ = eval(data[index:index2-1])
+
+                    index3 = data.find(":",index2) +1 #find position
+                    self.position_ = data[index2:index3-1].split(',')
+
+                    self.position_[0] = int(self.position_[0])  # convert str to int
+                    self.position_[1] = int(self.position_[1])
+
                     self.data_type_ = "map"
-                    self.data_ = data[index:] #read the rest of message
+                    self.data_ = data[index3:] #read the rest of message
 
 
                 elif data[0:13] == "readytostart:": #if message is "readytostart"
@@ -235,10 +117,36 @@ class Server:
         return self.data_
 
 
-    def SendMap(self,maplist:list,points_collected:int):
-        mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = f"map:{str(points_collected)}:{mapstr}"
+    def SendMap(self,maplist:list,points_collected:int,send_full_map:bool = True,position:tuple=None):
+
+        #position = (y,x)
+
+        # sends the player's position and adjacent tiles
+        if send_full_map == False:
+
+            sendlist = [None,None, None, None, None]
+
+            sendlist[0] = maplist[position[0]][position[1]]  # player
+            sendlist[1] = maplist[position[0]][position[1] + 1]  # right
+            sendlist[2] = maplist[position[0] + 1][position[1]]  # down
+            sendlist[3] = maplist[position[0]][position[1] - 1]  # right
+            sendlist[4] = maplist[position[0] - 1][position[1]]  # up
+
+            mapstr = ObjectToStr(sendlist[0])
+            for i in range(1,len(sendlist)):
+                mapstr += "," + ObjectToStr(sendlist[i])  # convert obejcts to mapsymbol
+            print(mapstr)
+        else:
+            sendlist = maplist
+            mapstr = MapListToStr(sendlist)  # convert maplist to mapsymbols
+
+        if position == None:
+            position = (0, 0)
+
+
+        message = f"map:{str(points_collected)}:{send_full_map}:{position[0]},{position[1]}:{mapstr}"
         self.client_.send(zlib.compress(message.encode()))  # compress and send message
+
 
 
 
@@ -277,8 +185,8 @@ class Client:
 
         try:
             self.socket_.connect((ipaddress, port))  #connect to server
-            self.socket_.settimeout(0.1)  #set new timeout
             self.connected_ = True
+            self.socket_.settimeout(0.1)
         except Exception as a:
             print(a)
 
@@ -301,6 +209,9 @@ class Client:
         #None = None
 
 
+    def SetTimeout(self,timeout):
+        self.socket_.settimeout(timeout)  # set new timeout
+
 
     def Read(self):
         #read socket message
@@ -309,12 +220,22 @@ class Client:
             data = zlib.decompress(data).decode() #decompress and decode
 
             #exmine message data type and set data
-            if data[0:4] == "map:": #if message is map
+            if data[0:4] == "map:":  # if message is map
 
-                index = data.find(":", 4) +1
-                self.points_collected_ = int(data[4:index-1])  #points_collected_
+                index = data.find(":", 5) + 1  # find points collected
+                self.points_collected_ = int(data[4:index - 1])  # points collected
+
+                index2 = data.find(":", index) + 1  # find is full_map boolean
+                self.full_map_ = eval(data[index:index2 - 1]) #convert str to boolean
+
+                index3 = data.find(":", index2) + 1  # find position
+                self.position_ = data[index2:index3 - 1].split(',') #position
+
+                self.position_[0] = int(self.position_[0]) #convert str to int
+                self.position_[1] = int(self.position_[1])
+
                 self.data_type_ = "map"
-                self.data_ = data[index:] #read the rest of message
+                self.data_ = data[index3:]  # read the rest of message
 
 
             elif data[0:10] == "startinfo:": #if message is startinfo
@@ -352,12 +273,40 @@ class Client:
 
 
 
-    def SendMap(self,maplist:list,points_collected:int):
+    def SendMap(self,maplist:list,points_collected:int,send_full_map:bool = True,position:tuple=None):
 
-        mapstr = MapListToStr(maplist) #convert maplist to mapstr
-        message = f"map:{str(points_collected)}:{mapstr}"
 
+        #position = (y,x)
+
+        # sends the player's position and adjacent tiles
+        if send_full_map == False:
+
+            sendlist = [None, None, None, None, None]
+
+            sendlist[0] = maplist[position[0]][position[1]]  # player
+            sendlist[1] = maplist[position[0]][position[1] + 1]  # right
+            sendlist[2] = maplist[position[0] + 1][position[1]]  # down
+            sendlist[3] = maplist[position[0]][position[1] - 1]  # right
+            sendlist[4] = maplist[position[0] - 1][position[1]]  # up
+
+            mapstr = ObjectToStr(sendlist[0])
+            print(mapstr)
+            for i in range(1,len(sendlist)):
+                mapstr += "," + ObjectToStr(sendlist[i])  # convert obejcts to mapsymbol
+
+        else:
+            sendlist = maplist
+            mapstr = MapListToStr(sendlist)  # convert maplist to mapsymbols
+
+        if position == None:
+            position = (0, 0)
+
+
+        message = f"map:{str(points_collected)}:{send_full_map}:{position[0]},{position[1]}:{mapstr}"
         self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+
+
+
 
     def SendGameExit(self,win:bool = False): #if game exit
         #win False = game over, True = level complete
