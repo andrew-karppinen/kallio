@@ -9,8 +9,6 @@ import sys
 
 
 
-
-
 class Server:
     def __init__(self,port:int,connection_timeout:int = 2):#constructor
         self.socket_ = socket.socket()  # create socket object
@@ -43,14 +41,13 @@ class Server:
 
         self.data_ = None #received messages
         self.data_type_ = None
-        self.points_collected_ = 0 #if message is map
-        self.full_map_ = False #if message is map
-        self.position_ = (0,0) #if message is map
 
-        #data_type_: "map","readytostart","gameexit","restartlevel",None, "other"
+
+        #data_type_: "map","readytostart","gameexit","restartlevel",None,action, "other"
 
         #data_:
         #map = str
+        #action = str
         #points_collected_ = int
         #readytostart = str
         #gameexit = None
@@ -76,20 +73,8 @@ class Server:
                 # exmine message data type and set data
                 if data[0:4] == "map:":  # if message is map
 
-                    index = data.find(":", 5) +1 #find points collected
-                    self.points_collected_ = int(data[4:index-1])  #points collected
-
-                    index2 = data.find(":", index) +1 #find is full_map boolean
-                    self.full_map_ = eval(data[index:index2-1])
-
-                    index3 = data.find(":",index2) +1 #find position
-                    self.position_ = data[index2:index3-1].split(',')
-
-                    self.position_[0] = int(self.position_[0])  # convert str to int
-                    self.position_[1] = int(self.position_[1])
-
                     self.data_type_ = "map"
-                    self.data_ = data[index3:] #read the rest of message
+                    self.data_ = data[4:] #read the rest of message
 
 
                 elif data[0:13] == "readytostart:": #if message is "readytostart"
@@ -105,6 +90,10 @@ class Server:
                     self.data_ = None
 
 
+                elif data[0:7] == "action:":
+                    self.data_type_ = "action"
+                    self.data_ = data[7:] #read the rest of message
+
                 else: #other
                     self.data_type_ = "other"
                     self.data_ = data
@@ -117,39 +106,72 @@ class Server:
         return self.data_
 
 
-    def SendMap(self,maplist:list,points_collected:int,send_full_map:bool = True,position:tuple=None):
+    def SendMap(self,mapstr:str):
+        #send full map
 
-        #position = (y,x)
+        maplist = mapstr.split(",") #convert str to list
 
-        # sends the player's position and adjacent tiles
-        if send_full_map == False:
+        find_1 = maplist.index("1") #find local player position
+        find_2 = maplist.index("2") #find remoteplayer position
 
-            sendlist = [None,None, None, None, None]
-
-            sendlist[0] = maplist[position[0]][position[1]]  # player
-            sendlist[1] = maplist[position[0]][position[1] + 1]  # right
-            sendlist[2] = maplist[position[0] + 1][position[1]]  # down
-            sendlist[3] = maplist[position[0]][position[1] - 1]  # right
-            sendlist[4] = maplist[position[0] - 1][position[1]]  # up
-
-            mapstr = ObjectToStr(sendlist[0])
-            for i in range(1,len(sendlist)):
-                mapstr += "," + ObjectToStr(sendlist[i])  # convert obejcts to mapsymbol
-            print(mapstr)
-        else:
-            sendlist = maplist
-            mapstr = MapListToStr(sendlist)  # convert maplist to mapsymbols
-
-        if position == None:
-            position = (0, 0)
+        #change local player --> remote player
+        #and remote player --> local player
+        maplist[find_1] = "2"
+        maplist[find_2] = "1"
 
 
-        message = f"map:{str(points_collected)}:{send_full_map}:{position[0]},{position[1]}:{mapstr}"
+        mapstr = ",".join(maplist) #connvert list to str
+
+        message = f"map:{mapstr}"
         self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
 
+    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
+        '''
+        send action:
+        a player's moves
+        '''
+
+        if right == True:
+            message = f"action:moveright:{int(door)}"
+        elif down == True:
+            message = f"action:movedown:{int(door)}"
+        elif left == True:
+            message = f"action:moveleft:{int(door)}"
+        elif up == True:
+            message = f"action:moveup:{int(door)}"
+
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
 
+    def SendPush(self,right:bool,left:bool):
+        '''
+        send action:
+        push object
+        '''
+        if right == True:
+            message = "action:pushright"
+        elif left == True:
+            message = "action:pushleft"
+
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+
+
+    def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
+        '''
+        send  action:
+        remove next to player
+        '''
+        if right == True:
+            message = "action:removeright"
+        elif down == True:
+            message = "action:removedown"
+        elif left == True:
+            message = "action:removeleft"
+        elif up == True:
+            message = "action:removeup"
+
+        self.client_.send(zlib.compress(message.encode()))  # compress and send message
 
     def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0):
         '''
@@ -182,22 +204,21 @@ class Client:
         self.socket_.settimeout(5)
         self.ipaddress_ = ipaddress
         self.port_ = port
+        self.error_mesage_ = ""
 
-        try:
-            self.socket_.connect((ipaddress, port))  #connect to server
+        try: #try connect to server
+            self.socket_.connect((ipaddress, port))
             self.connected_ = True
             self.socket_.settimeout(0.1)
-        except Exception as a:
-            print(a)
-
+        except Exception as message:
+            self.error_mesage_ = message
             self.connected_ = False
 
 
         self.data_ = None #received messages
         self.data_type_ = None
-        self.points_collected_ = 0 #if message is map
 
-        #data_type_: "map","startinfo","gameexit","restartlevel",None, "other"
+        #data_type_: "map","startinfo","gameexit","restartlevel",None,action, "other"
 
         #data_:
         #map = str
@@ -222,20 +243,9 @@ class Client:
             #exmine message data type and set data
             if data[0:4] == "map:":  # if message is map
 
-                index = data.find(":", 5) + 1  # find points collected
-                self.points_collected_ = int(data[4:index - 1])  # points collected
-
-                index2 = data.find(":", index) + 1  # find is full_map boolean
-                self.full_map_ = eval(data[index:index2 - 1]) #convert str to boolean
-
-                index3 = data.find(":", index2) + 1  # find position
-                self.position_ = data[index2:index3 - 1].split(',') #position
-
-                self.position_[0] = int(self.position_[0]) #convert str to int
-                self.position_[1] = int(self.position_[1])
-
                 self.data_type_ = "map"
-                self.data_ = data[index3:]  # read the rest of message
+                self.data_ = data[4:]  # read the rest of message
+
 
 
             elif data[0:10] == "startinfo:": #if message is startinfo
@@ -255,6 +265,10 @@ class Client:
                 self.data_type_ = "restartlevel"
                 self.data_ = None
 
+            elif data[0:7] == "action:":
+                self.data_type_ = "action"
+                self.data_ = data[7:]  # read the rest of message
+
             else:  # other
                 self.data_type_ = "other"
                 self.data_ = data
@@ -273,40 +287,52 @@ class Client:
 
 
 
-    def SendMap(self,maplist:list,points_collected:int,send_full_map:bool = True,position:tuple=None):
 
+    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
+        '''
+        send action:
+        a player's moves
+        '''
 
-        #position = (y,x)
+        if right == True:
+            message = f"action:moveright:{int(door)}"
+        elif down == True:
+            message = f"action:movedown:{int(door)}"
+        elif left == True:
+            message = f"action:moveleft:{int(door)}"
+        elif up == True:
+            message = f"action:moveup:{int(door)}"
 
-        # sends the player's position and adjacent tiles
-        if send_full_map == False:
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+    def SendPush(self,right:bool,left:bool):
+        '''
+        send action:
+        push object
+        '''
 
-            sendlist = [None, None, None, None, None]
+        if right == True:
+            message = "action:pushright"
+        elif left == True:
+            message = "action:pushleft"
 
-            sendlist[0] = maplist[position[0]][position[1]]  # player
-            sendlist[1] = maplist[position[0]][position[1] + 1]  # right
-            sendlist[2] = maplist[position[0] + 1][position[1]]  # down
-            sendlist[3] = maplist[position[0]][position[1] - 1]  # right
-            sendlist[4] = maplist[position[0] - 1][position[1]]  # up
-
-            mapstr = ObjectToStr(sendlist[0])
-            print(mapstr)
-            for i in range(1,len(sendlist)):
-                mapstr += "," + ObjectToStr(sendlist[i])  # convert obejcts to mapsymbol
-
-        else:
-            sendlist = maplist
-            mapstr = MapListToStr(sendlist)  # convert maplist to mapsymbols
-
-        if position == None:
-            position = (0, 0)
-
-
-        message = f"map:{str(points_collected)}:{send_full_map}:{position[0]},{position[1]}:{mapstr}"
         self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
+    def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
+        '''
+        send action:
+        remove next to player
+        '''
 
+        if right == True:
+            message = "action:removeright"
+        elif down == True:
+            message = "action:removedown"
+        elif left == True:
+            message = "action:removeleft"
+        elif up == True:
+            message = "action:removeup"
 
+        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
     def SendGameExit(self,win:bool = False): #if game exit
         #win False = game over, True = level complete

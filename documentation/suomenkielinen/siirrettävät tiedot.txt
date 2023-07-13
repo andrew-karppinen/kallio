@@ -30,28 +30,53 @@ heti tämän perään server lähettää clientille kartan
 
 map:
 
+lähettää koko kartan mekkijonona:
 
-tietokoneet lähettävät toisilleensa keräämäsä pisteiden määrän
+esimerkki:
+"map:3,3,3,3,3,2,1,3,3,3,3,3,10,10,10,3,3,3,3,3,3,3,3,12,12,10,10,10,8,8,3,3,3"
 
 
-viesti voi sisältää koko kartan tai ainoastaan pelaajan sijainnin ja sen ympärillä olevat kohdat
 
-koko kartan server lähettää clientille pelin alussa, tämän jälkeen tietokoneet lähettää toisilleen vain oman pelaajan sijainnin ja tilen vasemmalta,oikealta,ylhäältä,alhaalta,
-tämä siksi jos pelaaja poistaa vieressä olevan tilen
+action:
+pelitilanteen synkronointiin kahden tietokoneen välillä
 
-map viestissä lähetetään myös kerättyjen  pisteiden määrän
+liikkuminen:
 
-syntaksi:
-"map:kerätyt pisteet:kokokartta:sijainti:kartta merkkijonona"
+#0 = normaali liikkuminen
+#1 = oven läpi liikkuminen
 
-silloin kun ei lähetetä koko karttaa:
-"2 1,3,3,3,3"
-tuosssa on tilet seuraavassa järjestyksessä:
-pelaaja,oikea,ala,vasen,ylä
+move right:
+"action:moveright:0"
 
-muuten koko kartta ylhäältä alas ja vasemmalta oikealle
-z
+move down:
+"action:movedown:0"
 
+move left
+"action:moveleft:0"
+
+move up
+"action:moveleft:0"
+
+
+
+push right:
+"action:pushright"
+
+push left:
+"action:pushleft"
+
+
+eat right:
+"action:removeright"
+
+eat down:
+"action:removedown"
+
+eat left
+"action:removeleft"
+
+eat up
+"action:removeup"
 
 
 gameexit:

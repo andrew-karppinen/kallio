@@ -66,7 +66,7 @@ aseta kartta:
 
 
 tämän jälkeen pitää pelin sujuvuuden takia asettaa uusi timeout socketille:
->> connection.SetTimeout(0.01) #set new timeout
+>> connection.SetTimeout(0.001) #set new timeout
 
 Pelinalustus on valmis, käynnistä se:
 >> Run(gamedata:object,connection:object = None)
@@ -98,7 +98,7 @@ lähetä clientille kartan koko, vaadittavat pisteet, kartan aikaraja:
 >> connection.SendStartInfo(map_height,map_width,required_score,timelimit)  # send start info
 
 tämän jälkeen pittää lähettää kartta clientille:
->> connection.SendMap(gamedata.current_map_, 0)  #send map
+>> connection.SendMap(mapstr)  #send map
 
 
 näytön asetukset pitää alustaa:
@@ -107,7 +107,7 @@ näytön asetukset pitää alustaa:
 
 
 ja soccketille pitää asettaa uusi timeout:
->> connection.SetTimeout(0.01) #set new timeout
+>> connection.SetTimeout(0.001) #set new timeout
 
 Pelin alustus on valmis, käynnistä se:
 >> Run(gamedata:object,connection:object = None)

@@ -5,7 +5,7 @@ from src import *
 import os
 
 
-
+import time
 
 
 
@@ -115,7 +115,6 @@ class Menu:
             gamedata.server_ = True
             gamedata.menudata_ = self #save menudata for the duration of the game
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile(self.map_file_path_)  # read map file
-            SetMap(gamedata, mapstr,True)  # convert str to map list
 
 
             connection = Server(self.port_,self.timeout_) #create connection object
@@ -127,12 +126,16 @@ class Menu:
                     if connection.data_ == self.gameid_:
                         connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  # send start info
 
-                        connection.SendMap(gamedata.current_map_, 0)  #and send map
+
+                        connection.SendMap(mapstr)  #and send map
+                        SetMap(gamedata, mapstr, True)  # set map(local) convert str to map list
+
                         gamedata.SetScreenSize(self.resolution_)  #set local screen size
                         if self.fullscreen_:  #if fullscreen
                             pygame.display.toggle_fullscreen()  #set fullscreen
                         gamedata.SetDrawarea()
                         connection.SetTimeout(0.001) #set new timeout
+
                         Run(gamedata, connection) #start game
                         self.BackToMenu()
 
@@ -175,10 +178,11 @@ class Menu:
             if connection.connected_: #if the connection was successful
                 connection.SendReadyToStart(self.gameid_)
                 connection.Read()  # read messages
-                print("tässä1", connection.data_)
                 if connection.data_type_ == "startinfo":  #if start info
 
                     gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = connection.data_ #set map size and required_score
+
+
 
                     connection.Read()  # read messages
                     if connection.data_type_ == "map":  #if message is map
@@ -188,17 +192,16 @@ class Menu:
                             pygame.display.toggle_fullscreen()  # set fullscreen
                         gamedata.SetDrawarea()
 
-                        print("käynnistetään client")
-                        connection.SetTimeout(0.01) #set new timeout
+                        connection.SetTimeout(0.001) #set new timeout
+
                         Run(gamedata, connection)  # start game
-                        print("poistuttiin clientistä")
                         self.BackToMenu()
 
 
 
             #if the connection failed
             self.menu_.clear()
-            self.menu_.add.label("Connection Failed!")
+            self.menu_.add.label(connection.error_mesage_)
             self.menu_.add.button("try again",StartClient,self)
             self.menu_.add.button("back to main menu",self.MainMenu)
 

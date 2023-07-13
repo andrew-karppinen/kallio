@@ -1,7 +1,7 @@
 {
 "commands":{
     "0":{"name":"empty","command":"None", "command2": null},
-    "1":{"name":"local player","command":"other command","command2": null},
+    "1":{"name":"local player","command":"gamedata.local_player_","command2": null},
     "2":{"name":"remote player","command":"gamedata.remote_player_", "command2":"gamedata.remote_player_.image_number_ = 0"},
     "2 1":{"name":"remote player image 0","command":"gamedata.remote_player_", "command2":"gamedata.remote_player_.image_number_ = 0"},
     "2 2":{"name":"remote player image 1","command":"gamedata.remote_player_","command2":"gamedata.remote_player_.image_number_ = 1"},

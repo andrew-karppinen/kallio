@@ -4,10 +4,11 @@ from copy import deepcopy
 import json
 
 
-
-
 def ObjectToStr(gameobject):
 
+    '''
+    convert one objects to map symbols
+    '''
 
     if gameobject == None:  # if none
         mapsymbol = ("0")
@@ -64,7 +65,7 @@ def ObjectToStr(gameobject):
                 mapsymbol = ("10 4")
 
     elif type(gameobject) == Explosion:  # if explosion
-        mapsymbol =  ("0")
+        pass
         # Todo delete this?
 
 
@@ -112,12 +113,12 @@ def ObjectToStr(gameobject):
 
     return(mapsymbol)
 
+
+
 def MapListToStr(maplist: list):
     '''
-    convert objects to numbers
+    convert full maplist to mapstr
 
-    data:
-    src/config/tile commands config.json
     '''
 
     sendlist = []
@@ -137,62 +138,6 @@ def MapListToStr(maplist: list):
 
 
 
-def SetMapPart(gamedata:object,mapstr:str,position:tuple):
-    #set the player's adjacent tiles
-    #convert str to objects
-
-
-    mapstr = mapstr.split(",")
-
-
-
-    #place player to map
-    gamedata.current_map_[position[0]][position[1]] = gamedata.remote_player_
-
-    #set player image
-    if gamedata.mapsymbols_[mapstr[0]]['command2'] != None:  # if command 2 exist
-        print("tässä")
-        command2 = gamedata.mapsymbols_[mapstr[0]]['command2']
-        exec(str(command2))  # execute command2
-
-
-
-    #set right
-    command = gamedata.mapsymbols_[mapstr[1]]['command']
-    if command != "other command":
-        exec(f"gamedata.current_map_[position[0]][position[1]+1] = {command}")
-
-    if gamedata.mapsymbols_[mapstr[1]]['command2'] != None: #if commadn 2 exist
-        command2 = gamedata.mapsymbols_[mapstr[1]]['command2']
-        exec(str(command2))  # execute command2
-
-    #set down
-    command = gamedata.mapsymbols_[mapstr[2]]['command']
-    if command != "other command":
-        exec(f"gamedata.current_map_[position[0]+1][position[1]] = {command}")
-
-    if gamedata.mapsymbols_[mapstr[2]]['command2'] != None: #if commadn 2 exist
-        command2 = gamedata.mapsymbols_[mapstr[2]]['command2']
-        exec(str(command2)) #execute command2
-
-    #set left
-    command = gamedata.mapsymbols_[mapstr[3]]['command']
-    if command != "other command":
-        exec(f"gamedata.current_map_[position[0]][position[1]-1] = {command}")
-
-    if gamedata.mapsymbols_[mapstr[3]]['command2'] != None: #if commadn 2 exist
-        command2 = gamedata.mapsymbols_[mapstr[3]]['command2']
-        exec(str(command2))  # execute command2
-
-
-    #set up
-    command = gamedata.mapsymbols_[mapstr[4]]['command']
-    if command != "other command":
-        exec(f"gamedata.current_map_[position[0]-1][position[1]] = {command}")
-
-    if gamedata.mapsymbols_[mapstr[4]]['command2'] != None: #if commadn 2 exist
-        command2 = gamedata.mapsymbols_[mapstr[4]]['command2']
-        exec(str(command2))  # execute command2
 
 
 def SetMap(gamedata:object,mapstr:str,initial:bool = False):
@@ -229,7 +174,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
     #numbers to objects
     for i in range(len(mapstr)):
 
-
         if x == gamedata.map_width_: #next row
             y += 1
             x = 0
@@ -240,54 +184,46 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
         if i + 1 == len(mapstr):  # if map end
 
+            if number == "1":  # if local player
+                gamedata.local_player_position_y_ = y
+                gamedata.local_player_position_x_ = x
 
-            if number != "1":  # if no local player
-
-                command = gamedata.mapsymbols_[number]['command'] #convert numbers to objects
-                exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
-
-                #if command2 exist
-                if gamedata.mapsymbols_[number]['command2'] != None:
-                    exec(str(gamedata.mapsymbols_[number]['command2']))
+            elif number == "2":  # if remote player
+                gamedata.remote_player_position_y_ = y
+                gamedata.remote_player_position_x_ = x
 
 
-            elif number == "1":  # if local player
-                if initial == True:
-                    #this scope run only in beginning the game
+            command = gamedata.mapsymbols_[number]['command'] #convert numbers to objects
+            exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
 
-                    gamedata.local_player_position_y_ = y  #set player position
-                    gamedata.local_player_position_x_ = x
-                    maplist2d[y][x] = gamedata.local_player_
-                else:
-                    #the localplayer's location already exists
-                    maplist2d[y][x] = None
-                    maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
+            #if command2 exist
+            if gamedata.mapsymbols_[number]['command2'] != None:
+                exec(str(gamedata.mapsymbols_[number]['command2']))
 
 
 
 
         if mapstr[i] == ",": #if ","
 
-            if number != "1": #if no player
 
-                command = gamedata.mapsymbols_[number]['command']  # convert numbers to objects
-                exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
+            if number == "1": #if local player
+                gamedata.local_player_position_y_ = y
+                gamedata.local_player_position_x_ = x
 
-                #if command2 exist
-                if gamedata.mapsymbols_[number]['command2'] != None:
-                    exec(str(gamedata.mapsymbols_[number]['command2']))
+            elif number == "2": #if remote player
+                gamedata.remote_player_position_y_ = y
+                gamedata.remote_player_position_x_ = x
 
 
-            elif number == "1": #if local player
-                if initial == True:
-                    #this scope run only in beginning the game
-                    gamedata.local_player_position_y_ = y  # set player position
-                    gamedata.local_player_position_x_ = x
-                    maplist2d[y][x] = gamedata.local_player_
-                else:
-                    #the localplayer's location already exists
-                    maplist2d[y][x] = None
-                    maplist2d[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_
+
+
+
+            command = gamedata.mapsymbols_[number]['command']  # convert numbers to objects
+            exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
+
+            #if command2 exist
+            if gamedata.mapsymbols_[number]['command2'] != None:
+                exec(str(gamedata.mapsymbols_[number]['command2']))
 
 
 

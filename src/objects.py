@@ -38,23 +38,25 @@ class Player:
 
 
     def AnimateToRight(self):
-        if self.image_number_ == 1:
-            self.image_number_ = 2
-        else:
-            self.image_number_ = 1
+        if self.animated_ == True:
+            if self.image_number_ == 1:
+                self.image_number_ = 2
+            else:
+                self.image_number_ = 1
 
     def AnimateToLeft(self):
-        if self.image_number_ == 3:
-            self.image_number_ = 4
-        else:
-            self.image_number_ = 3
+        if self.animated_ == True:
+            if self.image_number_ == 3:
+                self.image_number_ = 4
+            else:
+                self.image_number_ = 3
 
     def AnimateToHorizontal(self):
-
-        if self.image_number_ == 0 or self.image_number_ == 1 or self.image_number_ == 2:
-            self.AnimateToRight()
-        else:
-            self.AnimateToLeft()
+        if self.animated_ == True:
+            if self.image_number_ == 0 or self.image_number_ == 1 or self.image_number_ == 2:
+                self.AnimateToRight()
+            else:
+                self.AnimateToLeft()
 
 
     @property

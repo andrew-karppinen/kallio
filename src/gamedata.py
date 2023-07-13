@@ -24,6 +24,9 @@ class GameData:
         self.multiplayer_ = multiplayer
         self.server_ = server #False = client, True = server
 
+        self.remote_player_position_x_ = None
+        self.remote_player_position_y_ = None
+
         self.local_player_position_x_ = None
         self.local_player_position_y_ = None
 
@@ -66,8 +69,6 @@ class GameData:
         self.menudata_ = None
 
         self.SetImages() #set tile images
-
-
 
 
 

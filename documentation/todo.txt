@@ -1,8 +1,0 @@
-
-#Todo update stone and diamond image rotate system?
-
-#Todo update multiplayer game start system
-
-#Todo create a game ending system
-#Todo update menu system
-
