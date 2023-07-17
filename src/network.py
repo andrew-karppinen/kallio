@@ -15,6 +15,9 @@ class Server:
         self.port_ = port
         self.error_mesage_ = ""
 
+        self.compress_messages_ = False #compress sent message and decompress incoming messages
+
+
         self.socket_.settimeout(connection_timeout)
         self.connected_ = False
 
@@ -48,6 +51,7 @@ class Server:
         #data_:
         #map = str
         #action = str
+        #points:int
         #points_collected_ = int
         #readytostart = str
         #gameexit = None
@@ -64,15 +68,25 @@ class Server:
 
         try:
             data = self.client_.recv(10000) #read messages
-            data = zlib.decompress(data).decode()  # decompress and decode
+            if self.compress_messages_ == True:
+                data = zlib.decompress(data).decode()  # decompress and decode
+            else:
+                data = data.decode()  # only decode
 
             if len(data) == 0: #if no message or message is empty
                 self.data_ = None
                 self.data_type_ = None
             else:
                 # exmine message data type and set data
-                if data[0:4] == "map:":  # if message is map
+                if data[0:7] == "action:":
+                    self.data_type_ = "action"
+                    self.data_ = data[7:] #read the rest of message
 
+                elif data[0:7] == "points:":
+                    self.data_type_ = "points"
+                    self.data_ = int(data[7:]) #read the rest of message
+
+                elif data[0:4] == "map:":  # if message is map
                     self.data_type_ = "map"
                     self.data_ = data[4:] #read the rest of message
 
@@ -90,9 +104,7 @@ class Server:
                     self.data_ = None
 
 
-                elif data[0:7] == "action:":
-                    self.data_type_ = "action"
-                    self.data_ = data[7:] #read the rest of message
+
 
                 else: #other
                     self.data_type_ = "other"
@@ -105,6 +117,12 @@ class Server:
 
         return self.data_
 
+    def __SendMessage(self, message:str):  # private method
+
+        if self.compress_messages_ == True:
+            self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        else:
+            self.client_.send(message.encode())  # send message without compress
 
     def SendMap(self,mapstr:str):
         #send full map
@@ -123,7 +141,7 @@ class Server:
         mapstr = ",".join(maplist) #connvert list to str
 
         message = f"map:{mapstr}"
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
 
     def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
@@ -141,7 +159,7 @@ class Server:
         elif up == True:
             message = f"action:moveup:{int(door)}"
 
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
 
     def SendPush(self,right:bool,left:bool):
@@ -154,7 +172,7 @@ class Server:
         elif left == True:
             message = "action:pushleft"
 
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
 
     def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
@@ -171,7 +189,14 @@ class Server:
         elif up == True:
             message = "action:removeup"
 
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
+
+    def SendCollectedPoints(self,points_collected):
+
+        message=f"points:{points_collected}"
+        self.__SendMessage(message) #send message
+
+
 
     def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0):
         '''
@@ -181,20 +206,23 @@ class Server:
 
         message = f"startinfo:{str(map_height)},{str(map_width)},{str(required_score)}"
 
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
 
     def SendGameExit(self,win:bool = False): #if game exit
         #win False = game over, True = level complete
         message = "gameexit:" + str(win)
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
     def SendRestartLevel(self):
         message = "restartlevel"
-        self.client_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message) #send message
 
     def CloseSocket(self):
         self.socket_.close()
+
+
+
 
 
 
@@ -205,6 +233,8 @@ class Client:
         self.ipaddress_ = ipaddress
         self.port_ = port
         self.error_mesage_ = ""
+
+        self.compress_messages_ = False #compress sent message and decompress incoming messages
 
         try: #try connect to server
             self.socket_.connect((ipaddress, port))
@@ -238,11 +268,23 @@ class Client:
         #read socket message
         try:
             data = self.socket_.recv(10000) #read socket
-            data = zlib.decompress(data).decode() #decompress and decode
+
+            if self.compress_messages_ == True:
+                data = zlib.decompress(data).decode() #decompress and decode
+            else:
+                data = data.decode() #only decode
 
             #exmine message data type and set data
-            if data[0:4] == "map:":  # if message is map
 
+            if data[0:7] == "action:":
+                self.data_type_ = "action"
+                self.data_ = data[7:]  # read the rest of message
+
+            elif data[0:7] == "points:":
+                self.data_type_ = "points"
+                self.data_ = int(data[7:])  # read the rest of message
+
+            elif data[0:4] == "map:":  # if message is map
                 self.data_type_ = "map"
                 self.data_ = data[4:]  # read the rest of message
 
@@ -265,10 +307,6 @@ class Client:
                 self.data_type_ = "restartlevel"
                 self.data_ = None
 
-            elif data[0:7] == "action:":
-                self.data_type_ = "action"
-                self.data_ = data[7:]  # read the rest of message
-
             else:  # other
                 self.data_type_ = "other"
                 self.data_ = data
@@ -281,11 +319,17 @@ class Client:
         return self.data_
 
 
+    def __SendMessage(self,message:str): #private method
+
+        if self.compress_messages_ == True:
+            self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        else:
+            self.socket_.send(message.encode())  #send message without compress
+
     def SendReadyToStart(self,check_number:str):
         message = f"readytostart:{check_number}"
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
 
-
+        self.__SendMessage(message) #send message
 
 
     def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
@@ -303,7 +347,7 @@ class Client:
         elif up == True:
             message = f"action:moveup:{int(door)}"
 
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message)  # send message
     def SendPush(self,right:bool,left:bool):
         '''
         send action:
@@ -315,7 +359,7 @@ class Client:
         elif left == True:
             message = "action:pushleft"
 
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message)  # send message
 
     def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
         '''
@@ -332,17 +376,22 @@ class Client:
         elif up == True:
             message = "action:removeup"
 
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message)  # send message
+
+    def SendCollectedPoints(self,points_collected):
+        message=f"points:{points_collected}"
+        self.__SendMessage(message)  # send message
+
 
     def SendGameExit(self,win:bool = False): #if game exit
         #win False = game over, True = level complete
         message = "gameexit:" + str(win)
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message)  # send message
 
 
     def SendRestartLevel(self):
         message = "restartlevel"
-        self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+        self.__SendMessage(message)  # send message
 
 
     def CloseSocket(self):

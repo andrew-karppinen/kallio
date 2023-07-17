@@ -79,6 +79,18 @@ eat up
 "action:removeup"
 
 
+
+
+
+points:
+lähettää kerättyjen pisteiden määrän
+
+esimerkki:
+"points:10"
+
+
+
+
 gameexit:
 tieto pelin lopetuksesta,
 

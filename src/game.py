@@ -564,7 +564,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x+2] = gamedata.current_map_[position_y][position_x+1] #place the pushing object to new location
         gamedata.current_map_[position_y][position_x + 1] = gamedata.remote_player_ #place the player to new location
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
-        gamedata.remote_player_.AnimateaToRight()
+        gamedata.remote_player_.AnimateToRight()
 
 
     elif action[0] == "pushleft":
@@ -604,8 +604,10 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
 
     clock = pygame.time.Clock()
+
     movelimit = 0 #gravity and monster
     movelimit2 = 0 #player move
+    timelimit = 0 #send collected points every 2 seconds
 
     while True: #game main loop
 
@@ -630,15 +632,20 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
                 try: # read the content of the message
 
+                    if connection.data_type_ == "action": #if message is action
+                        ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
 
-                    if connection.data_type_ == "map": #if message is map
+
+                    elif connection.data_type_ == "points": #if message is collected points
+                        gamedata.total_points_collected_ = gamedata.points_collected_ + connection.data_
+
+
+                    elif connection.data_type_ == "map": #if message is map
+                        #this feature is not used!!!
                         mapstr = connection.data_
                         SetMap(gamedata,mapstr) #set map
 
 
-
-                    elif connection.data_type_ == "action": #if message is action
-                        ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
 
 
                     elif connection.data_type_ == "gameexit":
@@ -757,10 +764,13 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                         gamedata.local_player_.image_number_ = 0
 
 
+        if gamedata.multiplayer_ == True: #if multiplayer
+            if pygame.time.get_ticks() > timelimit + 2000:  #send collected points every 2 seconds
+                timelimit = pygame.time.get_ticks()
+                connection.SendCollectedPoints(gamedata.points_collected_)
 
 
         DeleteExplosion(gamedata) #delete exlplosions
-
 
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor

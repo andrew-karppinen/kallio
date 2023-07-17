@@ -37,8 +37,8 @@ class GameData:
 
 
         self.required_score_ = 0
-        self.points_collected_ = 0 #local player Points collected
-        self.total_points_collected_ = 0
+        self.points_collected_ = 0 #points collected by local player
+        self.total_points_collected_ = 0 #points collected by local and remote player
         self.level_complete_ = False
 
         self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick,Door]
