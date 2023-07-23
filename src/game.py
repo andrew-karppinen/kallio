@@ -494,6 +494,7 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     SetMap(gamedata, gamedata.original_mapstr_, True)  # restart level
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
+    gamedata.InitTimer() #init timer
 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel()
@@ -502,9 +503,8 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
 def ExecuteAction(gamedata:object,connection:object,action:str):
 
     #execute a other player actions
-
     action = action.split(":") #split str to list
-    position_x = gamedata.remote_player_position_x_
+    position_x = gamedata.remote_player_position_x_ #temp variables
     position_y = gamedata.remote_player_position_y_
 
     if action[0] ==  "moveright":
@@ -589,8 +589,9 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
 def Run(gamedata:object,connection:object = None)->bool: #game main function
-
-    #return True if level complete
+    '''
+    return True if level complete
+    '''
 
     right = False
     left = False
@@ -609,6 +610,9 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
     movelimit2 = 0 #player move
     timelimit = 0 #send collected points every 2 seconds
 
+
+    gamedata.InitTimer() #init timer
+
     while True: #game main loop
 
 
@@ -619,6 +623,12 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                 connection.CloseSocket()  # close socket
             pygame.display.quit()  # close screen
             return True # back to menu
+
+        #timer:
+        if gamedata.level_timelimit_ != 0: #if level has timelimit
+            if gamedata.Timer() >= gamedata.level_timelimit_: #time out
+                RestartLevel(gamedata,connection) #restart level
+
 
 
         #read socket
@@ -657,7 +667,7 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                         RestartLevel(gamedata)
 
                 except Exception as error_message: #if error
-                    print(error_message) #prin error message
+                    print(error_message) #print error message
 
 
 
@@ -769,9 +779,9 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                 timelimit = pygame.time.get_ticks()
                 connection.SendCollectedPoints(gamedata.points_collected_)
 
-
         DeleteExplosion(gamedata) #delete exlplosions
 
+        print(gamedata.Timer())
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map

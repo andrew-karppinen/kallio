@@ -114,7 +114,7 @@ class Menu:
             gamedata = GameData(True,True)  # create gamedata
             gamedata.server_ = True
             gamedata.menudata_ = self #save menudata for the duration of the game
-            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile(self.map_file_path_)  # read map file
+            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
 
             connection = Server(self.port_,self.timeout_) #create connection object
@@ -124,7 +124,7 @@ class Menu:
                 connection.Read()  # read messages
                 if connection.data_type_ == "readytostart":  # if client ready to start the game
                     if connection.data_ == self.gameid_:
-                        connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  # send start info
+                        connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_, gamedata.required_score_, gamedata.level_timelimit_)  # send start info
 
 
                         connection.SendMap(mapstr)  #and send map
@@ -168,7 +168,6 @@ class Menu:
 
     def ClientMenu(self):
         def StartClient(self):
-            print(self.gameid_)
             #try connect to server
 
             gamedata = GameData(True,False) #create gamedata
@@ -180,8 +179,7 @@ class Menu:
                 connection.Read()  # read messages
                 if connection.data_type_ == "startinfo":  #if start info
 
-                    gamedata.map_height_, gamedata.map_width_,gamedata.required_score_ = connection.data_ #set map size and required_score
-
+                    gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ #set map size and required_score
 
 
                     connection.Read()  # read messages
@@ -226,7 +224,7 @@ class Menu:
             if self.fullscreen_: #if fullscreen
                 pygame.display.toggle_fullscreen() #set fullscreen
 
-            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile(self.map_file_path_)  # read map file
+            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
             SetMap(gamedata, mapstr,True)  # convert str to map list
             gamedata.SetDrawarea()
             Run(gamedata) #start game

@@ -36,7 +36,6 @@ class GameData:
 
 
 
-        self.required_score_ = 0
         self.points_collected_ = 0 #points collected by local player
         self.total_points_collected_ = 0 #points collected by local and remote player
         self.level_complete_ = False
@@ -52,8 +51,13 @@ class GameData:
         self.pushing_right_ = 0 #0,1
         self.pushing_left_ = 0 #0,1
 
+        #level data:
+        self.level_timelimit_ = 0 #timelimit in seconds
+        self.required_score_ = 0
+
         self.map_width_ = 0 #x
         self.map_height_ = 0 #y
+
 
         #read configs from json file
         f = open("src/config/tile commands config.json", "r")  # read json file
@@ -70,6 +74,8 @@ class GameData:
 
         self.SetImages() #set tile images
 
+        #private variables:
+        self.__elapsed_time_ = 0
 
 
 
@@ -137,6 +143,8 @@ class GameData:
             self.margin_y_ = margin_y
 
 
+
+
     def SetScreenSize(self,resolution:tuple):
 
         '''
@@ -166,13 +174,31 @@ class GameData:
             if self.remote_player_ != None: #if remoteplayer exist
                 self.remote_player_.ScaleImages(tile_size)
 
-            if self.server_:
-                name = "server"
+            #set window name
+            if self.multiplayer_:
+                if self.server_:
+                    name = "server"
+                else:
+                    name = "client"
             else:
-                name = "client"
+                name = "singleplayer"
 
             pygame.display.set_caption(name) #name window
             return(True)
+
+
+
+    def InitTimer(self):
+        self.__elapsed_time_ = pygame.time.get_ticks() //1000
+
+
+    def Timer(self)->int:
+        '''
+        get game elapsed time in seconds
+        '''
+
+        return pygame.time.get_ticks() //1000 - self.__elapsed_time_ #calculate elapsed time and return it
+
 
     def DrawMap(self):
         #draw current map
@@ -184,7 +210,6 @@ class GameData:
         #y = 18
 
         y = -1
-
 
 
         left = self.local_player_position_x_ - self.draw_area_x_ // 2
@@ -207,7 +232,7 @@ class GameData:
 
 
         up = self.local_player_position_y_ - self.draw_area_y_ // 2
-        down = self.local_player_position_y_ + self.draw_area_y_ //2
+        down = self.local_player_position_y_ + self.draw_area_y_ //2 
 
         #move draw area
         while True:

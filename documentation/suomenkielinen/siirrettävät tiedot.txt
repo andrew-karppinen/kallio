@@ -20,11 +20,11 @@ startinfo:
 serveri lähettää clientille
 
 syntaksi:
-tieto pelin aloituksesta ja kartan koko y,x suunnissa ja vaadittavien pisteiden määrä
+tieto pelin aloituksesta ja kartan koko y,x suunnissa, kartan aikaraja sekuntteina ja vaadittavien pisteiden määrä
 
 esimerkki:
 "startinfo:12,10,5"
-"startinfo:y,x,vaaditut pisteet"
+"startinfo:y,x,vaaditut pisteet,aikaraja"
 heti tämän perään server lähettää clientille kartan
 
 

@@ -21,7 +21,7 @@ if 0:  # client
         if connection.data_type_ == "startinfo":  # if start info
 
             #set map size and required score
-            gamedata.map_height_, gamedata.map_width_, gamedata.required_score_ = connection.data_
+            gamedata.map_height_, gamedata.map_width_, gamedata.required_score_,gamedata.level_timelimit_ = connection.data_
 
             connection.Read()  # read messages
             print("tässä2", connection.data_)
@@ -38,7 +38,7 @@ if 0:  # client
 if 0:  # server
     gamedata = GameData(True,True)  # create gamedata
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile("maps/multiplayer/multiplayer0.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer0.txt") #read map file
 
 
     connection = Server(1234,10) #create server object
@@ -47,7 +47,7 @@ if 0:  # server
         connection.Read()  # read messages
         if connection.data_type_ == "readytostart":  # if client ready to start the game
             if connection.data_ == "55664":
-                connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_)  #send start info
+                connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_)  #send start info
 
                 connection.SendMap(mapstr)  # and send map
                 SetMap(gamedata, mapstr, True)  #set map(local)
@@ -64,7 +64,7 @@ if 1:  # if singleplayer
 
 
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, timelimit = ReadMapFile("maps/singleplayer/down they fall.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/singleplayer/singleplayer2.txt") #read map file
     SetMap(gamedata, mapstr,True)  # convert str to map list
     gamedata.SetScreenSize((1920,1080)) #set screen size
     gamedata.SetDrawarea()

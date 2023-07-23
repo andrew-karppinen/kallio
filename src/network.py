@@ -198,13 +198,13 @@ class Server:
 
 
 
-    def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0):
+    def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0,timelimit:int = 0):
         '''
         a message about the start of the game
         send map size y,z and required_score
         '''
 
-        message = f"startinfo:{str(map_height)},{str(map_width)},{str(required_score)}"
+        message = f"startinfo:{str(map_height)},{str(map_width)},{str(required_score)},{str(timelimit)}"
 
         self.__SendMessage(message) #send message
 
@@ -291,12 +291,14 @@ class Client:
 
 
             elif data[0:10] == "startinfo:": #if message is startinfo
-                y_x_list = data[10:].split(',') #set map size
-                map_height = int(y_x_list[0])  #map size y
-                map_width = int(y_x_list[1])  #map size x
-                required_score = int(y_x_list[2]) #required_score
+                datalist = data[10:].split(',') #split str to list
 
-                self.data_ = (map_height,map_width,required_score)
+                map_height = int(datalist[0])  #map size y
+                map_width = int(datalist[1])  #map size x
+                required_score = int(datalist[2]) #required_score
+                timelimit = int(datalist[3]) #timelimit
+
+                self.data_ = (map_height,map_width,required_score,timelimit)
                 self.data_type_ = "startinfo"
 
             elif data[0:9] == "gameexit:": #if message is gameexit
@@ -325,6 +327,7 @@ class Client:
             self.socket_.send(zlib.compress(message.encode()))  # compress and send message
         else:
             self.socket_.send(message.encode())  #send message without compress
+
 
     def SendReadyToStart(self,check_number:str):
         message = f"readytostart:{check_number}"
