@@ -7,6 +7,11 @@
 
 Paketit:
 
+":" erittelee viestin eri sisällöt toisistaan
+
+";" erottelee viestit toisistaan, laitetaan viestin loppuun
+
+
 readytostart:
 client lähettää serverille tiedon että on valmis aloittamaan pelin
 lisäksi client lähettää 5 numeroa pitkän numerosarjan jonka pitää olla oikea
@@ -20,11 +25,10 @@ startinfo:
 serveri lähettää clientille
 
 syntaksi:
-tieto pelin aloituksesta ja kartan koko y,x suunnissa, kartan aikaraja sekuntteina ja vaadittavien pisteiden määrä
+kartan koko y,x suunnissa, vaadittavien pisteiden määrä, kartan aikaraja sekuntteina
 
 esimerkki:
-"startinfo:12,10,5"
-"startinfo:y,x,vaaditut pisteet,aikaraja"
+"startinfo:12,10,5,60"
 heti tämän perään server lähettää clientille kartan
 
 

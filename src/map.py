@@ -242,7 +242,7 @@ def ReadMapFile(file_path:str):
     '''
     read txt file
 
-    return map:str height:int,width:int,required_score:int,time limit:int,multiplayer:bool
+    return map:str, height:int, width:int, multiplayer:bool, required_score:int, timelimit:int
     '''
 
 
