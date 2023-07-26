@@ -650,21 +650,23 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                         gamedata.total_points_collected_ = gamedata.points_collected_ + connection.data_
 
 
+                    elif connection.data_type_ == "restartlevel":
+                        RestartLevel(gamedata)
+
                     elif connection.data_type_ == "map": #if message is map
                         #this feature is not used!!!
                         mapstr = connection.data_
                         SetMap(gamedata,mapstr) #set map
-
-
-
 
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
                         pygame.display.quit()  # close screen
                         return connection.data_ #back to menu
 
-                    elif connection.data_type_ == "restartlevel":
-                        RestartLevel(gamedata)
+
+
+                    connection.BufferNext() #delete first message from buffer
+
 
                 except Exception as error_message: #if error
                     print(error_message) #print error message
@@ -781,7 +783,6 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
         DeleteExplosion(gamedata) #delete exlplosions
 
-        print(gamedata.Timer())
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map

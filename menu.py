@@ -5,7 +5,6 @@ from src import *
 import os
 
 
-import time
 
 
 
@@ -124,6 +123,7 @@ class Menu:
                 connection.Read()  # read messages
                 if connection.data_type_ == "readytostart":  # if client ready to start the game
                     if connection.data_ == self.gameid_:
+                        connection.BufferNext() #delete first message from buffer
                         connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_, gamedata.required_score_, gamedata.level_timelimit_)  # send start info
 
 
@@ -134,8 +134,8 @@ class Menu:
                         if self.fullscreen_:  #if fullscreen
                             pygame.display.toggle_fullscreen()  #set fullscreen
                         gamedata.SetDrawarea()
-                        connection.SetTimeout(0.001) #set new timeout
 
+                        connection.SetTimeout(0.001) #set new timeout
                         Run(gamedata, connection) #start game
                         self.BackToMenu()
 
@@ -180,18 +180,19 @@ class Menu:
                 if connection.data_type_ == "startinfo":  #if start info
 
                     gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ #set map size and required_score
-
+                    connection.BufferNext()  #delete first message from buffer
 
                     connection.Read()  # read messages
                     if connection.data_type_ == "map":  #if message is map
                         SetMap(gamedata, connection.data_,True)  #set map
+                        connection.BufferNext() #delete first message from buffer
+
                         gamedata.SetScreenSize(self.resolution_)  # set screen size
                         if self.fullscreen_:  # if fullscreen
                             pygame.display.toggle_fullscreen()  # set fullscreen
                         gamedata.SetDrawarea()
 
                         connection.SetTimeout(0.001) #set new timeout
-
                         Run(gamedata, connection)  # start game
                         self.BackToMenu()
 

@@ -5,8 +5,6 @@ import sys
 
 
 
-# Todo check the correctness of the message
-
 
 
 class Server:
@@ -41,9 +39,9 @@ class Server:
 
 
 
+        self.__buffer = [] #private method, received messages
+        #buffer = [[data_type,data],[data_type,data]]
 
-        self.data_ = None #received messages
-        self.data_type_ = None
 
 
         #data_type_: "map","readytostart","gameexit","restartlevel",None,action, "other"
@@ -63,68 +61,88 @@ class Server:
     def SetTimeout(self,timeout):
         self.client_.settimeout(timeout)  # set new timeout
 
-    def Read(self):
-        #read socket message
+    def Read(self)->None:
+        #read socket message to buffer
 
         try:
-            data = self.client_.recv(10000) #read messages
+            messages = self.client_.recv(10000) #read messages
             if self.compress_messages_ == True:
-                data = zlib.decompress(data).decode()  # decompress and decode
+                messages = zlib.decompress(messages).decode()  # decompress and decode
             else:
-                data = data.decode()  # only decode
+                messages = messages.decode()  # only decode
 
-            if len(data) == 0: #if no message or message is empty
-                self.data_ = None
-                self.data_type_ = None
-            else:
-                # exmine message data type and set data
-                if data[0:7] == "action:":
-                    self.data_type_ = "action"
-                    self.data_ = data[7:] #read the rest of message
-
-                elif data[0:7] == "points:":
-                    self.data_type_ = "points"
-                    self.data_ = int(data[7:]) #read the rest of message
-
-                elif data[0:4] == "map:":  # if message is map
-                    self.data_type_ = "map"
-                    self.data_ = data[4:] #read the rest of message
+            messages = messages.split(";") #split messages to list
 
 
-                elif data[0:13] == "readytostart:": #if message is "readytostart"
-                    self.data_type_ = "readytostart"
-                    self.data_ = data[13:] #read check_number
+            for message in messages:
+                if len(message) == 0: #if no message or message is empty
+                    pass
+                else:
+                    # exmine message data type and set data
+                    if message[0:7] == "action:":
+                        self.__buffer.append(["action",message[7:]])
 
-                elif data[0:9] == "gameexit:":  # if message is gameexit
-                    self.data_type_ = "gameexit"
-                    self.data_ = eval(data[9:])  # string to boolean
+                    elif message[0:7] == "points:":
+                        self.__buffer.append(["points",int(message[7:])])
 
-                elif data[0:13] == "restartlevel":
-                    self.data_type_ = "restartlevel"
-                    self.data_ = None
+                    elif message[0:4] == "map:":  # if message is map
+                        self.__buffer.append(["map",message[4:]])
 
+                    elif message[0:13] == "readytostart:": #if message is "readytostart"
+                        self.__buffer.append(["readytostart",message[13:]])
 
+                    elif message[0:9] == "gameexit:":  # if message is gameexit
+                        self.__buffer.append(["gameexit",eval(message[9:])])
 
-
-                else: #other
-                    self.data_type_ = "other"
-                    self.data_ = data
+                    elif message[0:13] == "restartlevel":
+                        self.__buffer.append(["restartlevel",None])
 
 
         except TimeoutError:
-            self.data_ = None
-            self.data_type_ = None
+            pass
 
-        return self.data_
 
-    def __SendMessage(self, message:str):  # private method
 
+    @property
+    def data_type_(self)->str:
+        '''
+        return data type of the first message in the buffer
+        '''
+        if len(self.__buffer) == 0: #if buffer is empty
+            return None
+        else:
+            return self.__buffer[0][0] #retrun str
+
+    @property
+    def data_(self)->str:
+        '''
+        return first message from buffer
+        '''
+        if len(self.__buffer) == 0: #if buffer is empty
+            return(None)
+        else:
+            return self.__buffer[0][1]
+
+
+    def BufferNext(self)->None:
+        '''
+        delete first message from buffer
+        '''
+
+        if len(self.__buffer) > 0: #if buffer is no empty
+            self.__buffer.pop(0)
+
+
+
+    def __SendMessage(self, message:str)->None:  # private method
+
+        message += ";"
         if self.compress_messages_ == True:
             self.client_.send(zlib.compress(message.encode()))  # compress and send message
         else:
             self.client_.send(message.encode())  # send message without compress
 
-    def SendMap(self,mapstr:str):
+    def SendMap(self,mapstr:str)->None:
         #send full map
 
         maplist = mapstr.split(",") #convert str to list
@@ -144,7 +162,7 @@ class Server:
         self.__SendMessage(message) #send message
 
 
-    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
+    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False)->None:
         '''
         send action:
         a player's moves
@@ -162,7 +180,7 @@ class Server:
         self.__SendMessage(message) #send message
 
 
-    def SendPush(self,right:bool,left:bool):
+    def SendPush(self,right:bool,left:bool)->None:
         '''
         send action:
         push object
@@ -175,7 +193,7 @@ class Server:
         self.__SendMessage(message) #send message
 
 
-    def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
+    def SendRemove(self,right:bool,left:bool,up:bool,down:bool)->None:
         '''
         send  action:
         remove next to player
@@ -191,14 +209,14 @@ class Server:
 
         self.__SendMessage(message) #send message
 
-    def SendCollectedPoints(self,points_collected):
+    def SendCollectedPoints(self,points_collected)->None:
 
         message=f"points:{points_collected}"
         self.__SendMessage(message) #send message
 
 
 
-    def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0,timelimit:int = 0):
+    def SendStartInfo(self,map_height:int,map_width:int,required_score:int=0,timelimit:int = 0)->None:
         '''
         a message about the start of the game
         send map size y,z and required_score
@@ -209,18 +227,17 @@ class Server:
         self.__SendMessage(message) #send message
 
 
-    def SendGameExit(self,win:bool = False): #if game exit
+    def SendGameExit(self,win:bool = False)->None: #if game exit
         #win False = game over, True = level complete
         message = "gameexit:" + str(win)
         self.__SendMessage(message) #send message
 
-    def SendRestartLevel(self):
+    def SendRestartLevel(self)->None:
         message = "restartlevel"
         self.__SendMessage(message) #send message
 
-    def CloseSocket(self):
+    def CloseSocket(self)->None:
         self.socket_.close()
-
 
 
 
@@ -245,8 +262,8 @@ class Client:
             self.connected_ = False
 
 
-        self.data_ = None #received messages
-        self.data_type_ = None
+        self.__buffer = [] #private method, received messages
+        #buffer = [[data_type,data],[data_type,data]]
 
         #data_type_: "map","startinfo","gameexit","restartlevel",None,action, "other"
 
@@ -267,61 +284,81 @@ class Client:
     def Read(self):
         #read socket message
         try:
-            data = self.socket_.recv(10000) #read socket
+            messages = self.socket_.recv(10000) #read socket
 
             if self.compress_messages_ == True:
-                data = zlib.decompress(data).decode() #decompress and decode
+                messages = zlib.decompress(messages).decode() #decompress and decode
             else:
-                data = data.decode() #only decode
-
-            #exmine message data type and set data
-
-            if data[0:7] == "action:":
-                self.data_type_ = "action"
-                self.data_ = data[7:]  # read the rest of message
-
-            elif data[0:7] == "points:":
-                self.data_type_ = "points"
-                self.data_ = int(data[7:])  # read the rest of message
-
-            elif data[0:4] == "map:":  # if message is map
-                self.data_type_ = "map"
-                self.data_ = data[4:]  # read the rest of message
+                messages = messages.decode() #only decode
 
 
+            messages = messages.split(";")  # split messages to list
 
-            elif data[0:10] == "startinfo:": #if message is startinfo
-                datalist = data[10:].split(',') #split str to list
+            for message in messages:
 
-                map_height = int(datalist[0])  #map size y
-                map_width = int(datalist[1])  #map size x
-                required_score = int(datalist[2]) #required_score
-                timelimit = int(datalist[3]) #timelimit
+                if message[0:7] == "action:":
+                    self.__buffer.append(["action",message[7:]])
 
-                self.data_ = (map_height,map_width,required_score,timelimit)
-                self.data_type_ = "startinfo"
+                elif message[0:7] == "points:":
+                    self.__buffer.append(["points",int(message[7:])])
 
-            elif data[0:9] == "gameexit:": #if message is gameexit
-                self.data_type_ = "gameexit"
-                self.data_ = eval(data[9:]) #string to boolean
-
-            elif data[0:13] == "restartlevel":
-                self.data_type_ = "restartlevel"
-                self.data_ = None
-
-            else:  # other
-                self.data_type_ = "other"
-                self.data_ = data
-
-        except TimeoutError:
-            self.data_ = None
-            self.data_type_ = None
+                elif message[0:4] == "map:":  # if message is map
+                    self.__buffer.append(["map",message[4:]])
 
 
-        return self.data_
+                elif message[0:10] == "startinfo:": #if message is startinfo
+                    datalist = message[10:].split(',') #split str to list
+                    map_height = int(datalist[0])  #map size y
+                    map_width = int(datalist[1])  #map size x
+                    required_score = int(datalist[2]) #required_score
+                    timelimit = int(datalist[3]) #timelimit
+
+                    self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
+
+                elif message[0:9] == "gameexit:": #if message is gameexit
+                    self.__buffer.append(["gameexit",eval(message[9:])])
+ 
+                elif message[0:13] == "restartlevel":
+                    self.__buffer.append(["restartlevel",None])
+
+
+        except TimeoutError: 
+            pass
+
+    @property
+    def data_type_(self)->str:
+        '''
+        return data type of the first message in the buffer
+        '''
+        if len(self.__buffer) == 0: #if buffer is empty
+            return None
+        else:
+            return self.__buffer[0][0] #retrun str
+
+    @property
+    def data_(self)->str:
+        '''
+        return first message from buffer
+        '''
+        if len(self.__buffer) == 0: #if buffer is empty
+            return(None)
+        else:
+            return self.__buffer[0][1]
+
+
+    def BufferNext(self)->None:
+        '''
+        delete first message from buffer
+        '''
+
+        if len(self.__buffer) > 0: #if buffer is no empty
+            self.__buffer.pop(0)
+
 
 
     def __SendMessage(self,message:str): #private method
+
+        message += ";"
 
         if self.compress_messages_ == True:
             self.socket_.send(zlib.compress(message.encode()))  # compress and send message

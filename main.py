@@ -22,11 +22,14 @@ if 0:  # client
 
             #set map size and required score
             gamedata.map_height_, gamedata.map_width_, gamedata.required_score_,gamedata.level_timelimit_ = connection.data_
+            connection.BufferNext()  # delete first message from buffer
 
             connection.Read()  # read messages
             print("tässä2", connection.data_)
             if connection.data_type_ == "map":  # if message is map
                 SetMap(gamedata, connection.data_,True)  # set map
+                connection.BufferNext()  # delete first message from buffer
+
                 gamedata.SetScreenSize((1280,720))  # set screen size
                 gamedata.SetDrawarea()
                 connection.SetTimeout(0.001)  # set new timeout
@@ -47,6 +50,7 @@ if 0:  # server
         connection.Read()  # read messages
         if connection.data_type_ == "readytostart":  # if client ready to start the game
             if connection.data_ == "55664":
+                connection.BufferNext()  # delete first message from buffer
                 connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_)  #send start info
 
                 connection.SendMap(mapstr)  # and send map
