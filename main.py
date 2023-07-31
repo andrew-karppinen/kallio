@@ -30,11 +30,13 @@ if 0:  # client
                 SetMap(gamedata, connection.data_,True)  # set map
                 connection.BufferNext()  # delete first message from buffer
 
-                gamedata.SetScreenSize((1280,720))  # set screen size
+                screen = pygame.display.set_mode((1600, 900))  # create screen
+                gamedata.SetScreen(screen)  # set screen to gamedata object
+
                 gamedata.SetDrawarea()
                 connection.SetTimeout(0.001)  # set new timeout
-                a = Run(gamedata, connection)  # start game
-                print("tässä3", a)
+                level_completed = Run(gamedata, connection)  # start game
+                print("tässä3", level_completed)
 
 
 
@@ -55,12 +57,16 @@ if 0:  # server
 
                 connection.SendMap(mapstr)  # and send map
                 SetMap(gamedata, mapstr, True)  #set map(local)
-                gamedata.SetScreenSize((1280,720))  # set screen size
+
+                screen = pygame.display.set_mode((1600, 900))  # create screen
+                gamedata.SetScreen(screen)  # set screen to gamedata object
+
                 gamedata.SetDrawarea()
                 connection.SetTimeout(0.001)  # set new timeout
 
-                a = Run(gamedata, connection)
-                print(a)
+                level_completed = Run(gamedata, connection)
+                print(level_completed)
+
 
 if 1:  # if singleplayer
     gamedata = GameData(False, False)  # create gamedata
@@ -70,8 +76,15 @@ if 1:  # if singleplayer
 
     mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/singleplayer/singleplayer2.txt") #read map file
     SetMap(gamedata, mapstr,True)  # convert str to map list
-    gamedata.SetScreenSize((1920,1080)) #set screen size
+
+    screen = pygame.display.set_mode((1600, 900)) #create screen
+
+    gamedata.SetScreen(screen) #set screen to gamedata object
     gamedata.SetDrawarea()
 
-    a = Run(gamedata, None) #start game
-    print(a)
+    level_completed = Run(gamedata, None) #start game
+
+    pygame.display.quit() #close screen
+
+    print(level_completed)
+

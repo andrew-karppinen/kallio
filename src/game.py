@@ -621,7 +621,6 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
             if gamedata.multiplayer_: #if multiplayer
                 connection.SendGameExit(True)
                 connection.CloseSocket()  # close socket
-            pygame.display.quit()  # close screen
             return True # back to menu
 
         #timer:
@@ -660,7 +659,6 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
-                        pygame.display.quit()  # close screen
                         return connection.data_ #back to menu
 
 
@@ -718,24 +716,20 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                 if gamedata.multiplayer_:
                     connection.SendGameExit(False)
                     connection.CloseSocket()  #close socket
-                pygame.display.quit()  #close screen
                 return False #back to menu
 
         if enter == True:
-            if pausemenu_is_active == True:
+            if pausemenu_is_active == True: #if pausemenu is active
                 if pausemenu_number == 1: #exit pause menu
                     pausemenu_is_active = False
                 elif pausemenu_number == 2: #restart level
                     RestartLevel(gamedata,connection)
-
-
 
                     pausemenu_is_active = False
                 elif pausemenu_number == 3: #exit level
                     if gamedata.multiplayer_: #if multiplayer
                         connection.SendGameExit(False)
                         connection.CloseSocket()  # close socket
-                    pygame.display.quit()  # close screen
                     return False  # back to menu
 
 

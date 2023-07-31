@@ -18,10 +18,24 @@ lue kartan tiedot:
 aseta mapstr gamedata olioon:
 >> SetMap(gamedata, mapstr) #muuttaa merkkijonon pelin kartaksi ja asettaa sen gamedata olioon
 
-tämän jälkeen pitää asettaa näytön resoluutio  ja alustaa piirtoalue
->> gamedata.SetScreenSize((1280,720))  # set screen size
->
->> gamedata.SetDrawarea()
+tämän jälkeen pitää asettaa näyttö ja alustaa piirtoalue
+
+luo pygame ikkuna:
+>>  screen = pygame.display.set_mode(resolution:tuple) #create screen
+
+tätä samaa ikkunaa voidaan käytää esim valikossa
+
+aseta näyttö gamedata olioon:
+>> gamedata.SetScreenSize(screen)  # set screen to gamedata object
+
+huomaa että itse peli ei sulje tätä ikkunaa koskaan vaan sen voi tehdä halutessaan itse kun pelistä on poistuttu:
+>> pygame.display.quit() #close screen
+
+
+alusta piirtoalue:
+>> gamedata.SetDrawarea() #init drawing areea
+
+
 
 tämän jälkeen pelin alustus on valmis ja se voidaan aloittaa mikäli se on yksinpeli:
 >> Run(gamedata:object,connection:object = None)

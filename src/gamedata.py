@@ -7,7 +7,6 @@ class GameData:
     game data
     '''
 
-
     def __init__(self,multiplayer:bool = False,server:bool = False):
 
 
@@ -145,16 +144,18 @@ class GameData:
 
 
 
-    def SetScreenSize(self,resolution:tuple):
+    def SetScreen(self,screen):
 
         '''
-        sets screen size and scales images
-        return True/False if resize succesful or unsuccesful
+        sets screen to gamedata object and scale tileimages
+
+        make exception if screen size is not valid
         '''
 
 
-        width = resolution[0]
-        height = resolution[1]
+        self.screen_ = screen
+
+        width,height = screen.get_size()
 
         tile_size = height // self.draw_area_y_
 
@@ -163,7 +164,6 @@ class GameData:
 
         else:
             self.tile_size_ = tile_size
-            self.screen_ = pygame.display.set_mode((width, height))  #update screen size
 
             #scale tile images
             for i in [Goal,Diamond,Tnt,Stone,Door,DefaultTile,Explosion,Brick,Bedrock,Monster]:
@@ -203,14 +203,10 @@ class GameData:
     def DrawMap(self):
         #draw current map
         #camera follow player
-
-
         #Drawing area:
         #x = 32
         #y = 18
-
         y = -1
-
 
         left = self.local_player_position_x_ - self.draw_area_x_ // 2
         right = self.local_player_position_x_+ self.draw_area_x_ // 2
