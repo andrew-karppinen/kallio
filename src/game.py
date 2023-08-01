@@ -409,9 +409,10 @@ def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
                     return
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
-                    if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt,player, monster...
+                    if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt, monster...
                         gamedata.current_map_[y + list1[i]][x + list2[i]] = Explosion()
                         CreateExplosion(gamedata,connection,y+list1[i],x+list2[i]) #create new explosion
+
 
                     gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
 
@@ -491,7 +492,7 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 
 def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
 
-    SetMap(gamedata, gamedata.original_mapstr_, True)  # restart level
+    SetMap(gamedata, gamedata.original_mapstr_, True)  #set original map to current map
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
     gamedata.InitTimer() #init timer
@@ -574,7 +575,8 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
         gamedata.remote_player_.AnimateToLeft()
 
-    elif action[0] == "removeright":
+
+    if action[0] == "removeright":
         gamedata.current_map_[position_y][position_x+1] = None #remove tile next to remoteplayer
 
     elif action[0] == "removedown":
@@ -588,8 +590,10 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
 
-def Run(gamedata:object,connection:object = None)->bool: #game main function
+def Run(gamedata:object,connection:object = None)->bool:
     '''
+    game main function
+
     return True if level complete
     '''
 
@@ -604,12 +608,13 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
     pausemenu_number = 1  #1 = back to game, 2 = restart level, 3 = exit level
 
 
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock() #fps limit
 
     movelimit = 0 #gravity and monster
     movelimit2 = 0 #player move
-    timelimit = 0 #send collected points every 2 seconds
 
+    timelimit = 0 #send collected points every 2 seconds
+    timelimit2 = 0 #sets player image to default image if no move
 
     gamedata.InitTimer() #init timer
 
@@ -643,9 +648,17 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
                     if connection.data_type_ == "action": #if message is action
                         ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
+                        timelimit2 = pygame.time.get_ticks()
+
+                    else: #if remoteplayer no move
+                        #set player image to default image:
+                        if pygame.time.get_ticks() > timelimit2 +150: #timelimit
+                            timelimit2 = pygame.time.get_ticks()
+                            gamedata.remote_player_.image_number_ = 0
 
 
-                    elif connection.data_type_ == "points": #if message is collected points
+
+                    if connection.data_type_ == "points": #if message is collected points
                         gamedata.total_points_collected_ = gamedata.points_collected_ + connection.data_
 
 
@@ -668,6 +681,8 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
 
                 except Exception as error_message: #if error
                     print(error_message) #print error message
+
+
 
 
 
@@ -768,6 +783,7 @@ def Run(gamedata:object,connection:object = None)->bool: #game main function
                 if gamedata.local_player_.animated_ == True:
                     if gamedata.local_player_.image_number_ != 0:
                         gamedata.local_player_.image_number_ = 0
+
 
 
         if gamedata.multiplayer_ == True: #if multiplayer
