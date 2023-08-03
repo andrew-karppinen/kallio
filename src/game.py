@@ -406,7 +406,7 @@ def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) == Player: #if player explose
                     RestartLevel(gamedata,connection) #restart level
-                    return
+                    return #Todo fix this bug
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
                     if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt, monster...
@@ -561,6 +561,10 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.remote_player_.AnimateToHorizontal()
 
     elif action[0] == "pushright":
+
+        if type(gamedata.current_map_[position_y][position_x + 1]) == Stone: #if the player pushes a stone
+            gamedata.current_map_[position_y][position_x + 1].Rotate(1) #rotae stone image
+
         gamedata.remote_player_position_x_ += 1  # move player
         gamedata.current_map_[position_y][position_x+2] = gamedata.current_map_[position_y][position_x+1] #place the pushing object to new location
         gamedata.current_map_[position_y][position_x + 1] = gamedata.remote_player_ #place the player to new location
@@ -568,7 +572,12 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.remote_player_.AnimateToRight()
 
 
+
     elif action[0] == "pushleft":
+
+        if type(gamedata.current_map_[position_y][position_x - 1]) == Stone: #if the player pushes a stone
+            gamedata.current_map_[position_y][position_x - 1].Rotate(2) #rotate stone image
+
         gamedata.remote_player_position_x_ -= 1  # move player
         gamedata.current_map_[position_y][position_x-2] = gamedata.current_map_[position_y][position_x-1] #place the pushing object to new location
         gamedata.current_map_[position_y][position_x - 1] = gamedata.remote_player_ #place the player to new location
@@ -778,7 +787,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                             pausemenu_number = 3
 
         else: #no move
-            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
+            if pygame.time.get_ticks() > movelimit2 + 150: #speed limit
                 #set player image to defaultimage
                 if gamedata.local_player_.animated_ == True:
                     if gamedata.local_player_.image_number_ != 0:
