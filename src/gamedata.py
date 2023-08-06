@@ -10,16 +10,25 @@ class GameData:
     def __init__(self,multiplayer:bool = False,server:bool = False):
 
 
+        #window data:
         self.screen_ = None #pygame window
-        self.font_ = self.font_ = pygame.font.SysFont('', 30) #load font
+        self.font_ = self.font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",30) #load font from file
         self.tile_size_ = 50 #tilesize y*x
-        self.draw_area_x_ = 32 #default drawing area size
-        self.draw_area_y_ = 18
+        self.draw_area_x_ = 32 #drawing area size
+        self.draw_area_y_ = 16
 
         self.margin_x_ = 0
         self.margin_y_ = 0
 
+        self.infopanel_height_ = 100
 
+        #create infopanel texts:
+        self.infopanel_text_score_ = self.font_.render("score:",True,(255,255,255))
+        self.infopanel_text_needed_ = self.font_.render("needed:", True, (255, 255, 255))
+        self.infopanel_text_time_ = self.font_.render("time:",True,(255,255,255))
+
+
+        #gamedata:
         self.multiplayer_ = multiplayer
         self.server_ = server #False = client, True = server
 
@@ -32,7 +41,6 @@ class GameData:
         # create players
         self.local_player_ = Player()
         self.remote_player_ = Player(False)
-
 
 
         self.points_collected_ = 0 #points collected by local player
@@ -69,7 +77,6 @@ class GameData:
         self.current_map_ = []
 
 
-        self.menudata_ = None
 
         self.SetImages() #set tile images
 
@@ -79,7 +86,7 @@ class GameData:
 
 
     def SetImages(self):
-        # load images and set tile images
+        #load tile images:
         sandimage = pygame.image.load("media/sand.png")
         playerimage = pygame.image.load("media/player.png")
         playerimage2 = pygame.image.load("media/player2.png")
@@ -99,7 +106,7 @@ class GameData:
         door_up_image = pygame.image.load("media/door up.png")
         door_left_image = pygame.image.load("media/door left.png")
 
-        # set images
+        #set images:
         Diamond.SetImage(diamondimage)
         Goal.SetImage(goalimage)
         Explosion.SetImage(explosionimage)
@@ -109,82 +116,14 @@ class GameData:
         Brick.SetImage(brickimage)
         Monster.SetImage(monsterimage1,monsterimage2)
 
-        # set images
+        # setimages:
         Stone.SetImage(stoneimage)
         Door.SetImage(door_right_image, door_down_image, door_left_image, door_up_image)
 
 
-
-        # set players images
+        #set players images
         self.local_player_.SetImage(playerimage, playerimage2, playerimage3)
         self.remote_player_.SetImage(playerimage, playerimage2, playerimage3)
-
-
-    def SetDrawarea(self,draw_area_x:int = 32,draw_area_y = 18):
-
-        self.draw_area_x_ = draw_area_x #set draw area
-        self.draw_area_y_ = draw_area_y
-
-
-        if self.map_width_ < self.draw_area_x_: #if map size < drawing area size
-            self.draw_area_x_ = self.map_width_ #set drawing area size to map size
-            x, y = self.screen_.get_size()
-            margin_x = self.map_width_ * self.tile_size_
-            margin_x = x // 2 - margin_x // 2
-            self.margin_x_ = margin_x
-
-
-        if self.map_height_ < self.draw_area_y_: #if map size < drawing area size
-            self.draw_area_y_ = self.map_height_ #set drawing area size to map size
-            x, y = self.screen_.get_size()
-            margin_y = self.map_height_ * self.tile_size_
-            margin_y = y // 2 - margin_y //2
-            self.margin_y_ = margin_y
-
-
-
-
-    def SetScreen(self,screen):
-
-        '''
-        sets screen to gamedata object and scale tileimages
-
-        make exception if screen size is not valid
-        '''
-
-
-        self.screen_ = screen
-
-        width,height = screen.get_size()
-
-        tile_size = height // self.draw_area_y_
-
-        if width % tile_size != 0:
-            raise Exception("invalid screen size")
-
-        else:
-            self.tile_size_ = tile_size
-
-            #scale tile images
-            for i in [Goal,Diamond,Tnt,Stone,Door,DefaultTile,Explosion,Brick,Bedrock,Monster]:
-                i.ScaleImages(tile_size)
-
-            #scale player image size
-            self.local_player_.ScaleImages(tile_size)
-            if self.remote_player_ != None: #if remoteplayer exist
-                self.remote_player_.ScaleImages(tile_size)
-
-            #set window name
-            if self.multiplayer_:
-                if self.server_:
-                    name = "server"
-                else:
-                    name = "client"
-            else:
-                name = "singleplayer"
-
-            pygame.display.set_caption(name) #name window
-            return(True)
 
 
 
@@ -200,57 +139,98 @@ class GameData:
         return pygame.time.get_ticks() //1000 - self.__elapsed_time_ #calculate elapsed time and return it
 
 
+
+
+    def InitDisplay(self,screen:pygame.display):
+        '''
+        set pygame display to gamedata object
+
+        diplay aspect ratio must be 16:9 !!!
+
+        calculate tile size,
+        scale tiles images
+
+        example resolution: 1280x720
+
+        #drawing area:
+        x = 32
+        y = 16
+        '''
+
+
+        self.screen_width_,self.screen_height_ = screen.get_size() #get display size
+
+        self.screen_ = screen #set screen to self object
+
+
+        if self.draw_area_y_ > self.map_height_: #if map height < draw Area y
+            self.draw_area_y_ = self.map_height_ #set draw area si<e to map size
+
+
+        if self.draw_area_x_ > self.map_width_: #if map width < draw Area x
+            self.draw_area_x_ = self.map_width_ #set draw area si<e to map size
+
+
+
+
+        self.tile_size_ = (self.screen_height_ - self.infopanel_height_) // self.draw_area_y_ #calculate tile size
+
+
+        while self.tile_size_ * self.draw_area_x_ > self.screen_width_: #if the width of the drawing area is greater than the width of the screen
+            self.tile_size_ -= 1 #reduce the size of the tile
+
+
+
+        #if the width of the drawing area is less than the width of the screen:
+
+        if self.draw_area_x_*self.tile_size_ < self.screen_width_: #margin required in x direction
+            self.margin_x_ = abs(self.draw_area_x_*self.tile_size_ - self.screen_width_) //2 #calculate margin x
+
+        if self.draw_area_y_ *self.tile_size_ < self.screen_height_-self.infopanel_height_: #margin required in y direction
+            self.margin_y_ = abs(self.draw_area_y_*self.tile_size_ -(self.screen_height_ - self.infopanel_height_))//2 #calculate margin y
+
+
+
+
+        #scale tile images:
+        for i in [Goal, Diamond, Tnt, Stone, Door, DefaultTile, Explosion, Brick, Bedrock, Monster]:
+            i.ScaleImages(self.tile_size_)
+
+        #scale player image size
+        self.local_player_.ScaleImages(self.tile_size_)
+        if self.remote_player_ != None:  # if remoteplayer exist
+            self.remote_player_.ScaleImages(self.tile_size_)
+
+
+        #create infopanel texts:
+        self.infopanel_text_level_required_score_ = self.font_.render(str(self.required_score_),True,(255,255,255))
+
+
+        #rename window:
+        if self.multiplayer_ == True:
+            if self.server_ == True:
+                pygame.display.set_caption('server')
+            else:
+                pygame.display.set_caption('client')
+        else:
+            pygame.display.set_caption('singleplayer')
+
+
+
     def DrawMap(self):
         #draw current map
         #camera follow player
         #Drawing area:
         #x = 32
-        #y = 18
-        y = -1
-
-        left = self.local_player_position_x_ - self.draw_area_x_ // 2
-        right = self.local_player_position_x_+ self.draw_area_x_ // 2
+        #y = 16
 
 
-        #move draw area
-        while True:
-            if left < 0:
-                left += 1
-                right += 1
-
-            elif right > self.map_width_:
-                right -= 1
-                left -= 1
-
-            else:
-                break
+        temp_surface = pygame.Surface((self.map_width_*self.tile_size_,self.map_height_*self.tile_size_)) #create pygame surface
 
 
-
-        up = self.local_player_position_y_ - self.draw_area_y_ // 2
-        down = self.local_player_position_y_ + self.draw_area_y_ //2 
-
-        #move draw area
-        while True:
-            if up < 0:
-                up += 1
-                down += 1
-            elif down > self.map_height_:
-                down -= 1
-                up -= 1
-            else:
-                break
-
-
-
-        #draw map
-        for i in range(up,down): #y
-            x = -1
-            y += 1
-            for j in range(left,right): #x
-
-                x += 1
-
+        #draw full map to temp surface
+        for i in range(self.map_height_): #y
+            for j in range(self.map_width_): #x
 
                 if i >= 0 and j >= 0: #if map not end
                     if i < self.map_height_ and j < self.map_width_: #if map not end
@@ -258,9 +238,65 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, y * self.tile_size_ + self.margin_y_)) #draw tiles
+                            temp_surface.blit(self.current_map_[i][j].image_, (j * self.tile_size_, i * self.tile_size_)) #draw tiles to surface
 
 
 
 
 
+        #CROP DRAWAREA FROM TEMP SURFACE:
+        top = (self.local_player_position_y_-self.draw_area_y_//2)*self.tile_size_
+        left = (self.local_player_position_x_-self.draw_area_x_//2) *self.tile_size_
+
+        width = self.draw_area_x_*self.tile_size_
+        height = self.draw_area_y_*self.tile_size_
+
+
+        if top+height > self.map_height_*self.tile_size_: #if the drawing area goes beyond the edges of the map
+            top -= abs(top+height-self.map_height_*self.tile_size_) #move drawing area
+
+
+        if left+width > self.map_width_*self.tile_size_: #if the drawing area goes beyond the edges of the map
+            left -= left+width-self.map_width_*self.tile_size_  #move drawing area
+
+
+        if top <0: #if the drawing area goes beyond the edges of the map
+            height += abs(top-height) #move drawing area
+            top = 0
+
+        if left <0: #if the drawing area goes beyond the edges of the map
+            width += abs(left-width) #move drawing area
+            left = 0
+
+
+
+        clip_rect = pygame.Rect(left, top, width, height) #create pygame rect object
+        self.screen_.blit(temp_surface,(self.margin_x_,self.margin_y_),clip_rect) #DRAW MAP TO DISPLAY
+
+
+
+
+    def DrawInfoPanel(self):
+
+        #draw info panel:
+        screen_size = self.screen_.get_size()
+        pygame.draw.rect(self.screen_, (50,50,50), pygame.Rect(0, screen_size[1]-self.infopanel_height_, screen_size[0],self.infopanel_height_))
+
+        #create variable texts:
+        time_remaining_text = self.font_.render(str(self.level_timelimit_ - self.Timer()), True, (255, 255, 255)) #calculate remaining time
+        points_collected_text = self.font_.render(str(self.total_points_collected_),True,(255,255,255)) #collected points
+
+
+
+        #draw texts to infopanel:
+        self.screen_.blit(self.infopanel_text_time_,(self.screen_width_//4,self.screen_height_-70)) #draw text to screen
+        if self.level_timelimit_ != 0: #if level has timelimit
+            self.screen_.blit(time_remaining_text,(self.screen_width_//4+self.infopanel_text_time_.get_width()+20,self.screen_height_-70)) #draw text to screen
+
+
+        self.screen_.blit(self.infopanel_text_score_,(self.screen_width_//2,self.screen_height_-70))
+        self.screen_.blit(points_collected_text,(self.screen_width_//2 + self.infopanel_text_score_.get_width()+20 ,self.screen_height_-70)) #draw text to screen
+
+
+        self.screen_.blit(self.infopanel_text_needed_, (self.screen_width_ - self.screen_width_ // 4, self.screen_height_ - 70)) #draw text to screen
+        self.screen_.blit(self.infopanel_text_level_required_score_,(self.screen_width_ - self.screen_width_ // 4 + self.infopanel_text_needed_.get_width() + 20, self.screen_height_ - 70)) #draw text to screen

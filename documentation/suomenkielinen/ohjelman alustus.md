@@ -8,6 +8,11 @@ Ennen kuin peli pyörii se vaatii alustamista:
 importtaa src kansio:
 >> from src import *
 
+ohjelman joka importta tämän on oltava src kansion ylähakemistossa
+(eli se missä on media,src,maps kansiot)
+
+
+
 
 luo gamedata olio:
 >> gamedata = Gamedata(moninpeli:bool,server:bool):
@@ -18,7 +23,6 @@ lue kartan tiedot:
 aseta mapstr gamedata olioon:
 >> SetMap(gamedata, mapstr) #muuttaa merkkijonon pelin kartaksi ja asettaa sen gamedata olioon
 
-tämän jälkeen pitää asettaa näyttö ja alustaa piirtoalue
 
 luo pygame ikkuna:
 >>  screen = pygame.display.set_mode(resolution:tuple) #create screen
@@ -26,14 +30,19 @@ luo pygame ikkuna:
 tätä samaa ikkunaa voidaan käytää esim valikossa
 
 aseta näyttö gamedata olioon:
->> gamedata.SetScreenSize(screen)  # set screen to gamedata object
+
+>> gamedata.InitDisplay(screen)
+
+tämä alustaa näyttöön liittyviä tietoja
+HUOM!, tämä pitää tehdä aina kartan asettamisen jälkeen, koska se tarvitsee kartan tietoja
+
+
 
 huomaa että itse peli ei sulje tätä ikkunaa koskaan vaan sen voi tehdä halutessaan itse kun pelistä on poistuttu:
 >> pygame.display.quit() #close screen
 
 
-alusta piirtoalue:
->> gamedata.SetDrawarea() #init drawing areea
+
 
 
 

@@ -31,9 +31,9 @@ if 0:  # client
                 connection.BufferNext()  # delete first message from buffer
 
                 screen = pygame.display.set_mode((1600, 900))  # create screen
-                gamedata.SetScreen(screen)  # set screen to gamedata object
 
-                gamedata.SetDrawarea()
+                gamedata.InitDisplay(screen)  # set window to gamedata object
+
                 connection.SetTimeout(0.001)  # set new timeout
                 level_completed = Run(gamedata, connection)  # start game
                 print("tässä3", level_completed)
@@ -43,7 +43,7 @@ if 0:  # client
 if 0:  # server
     gamedata = GameData(True,True)  # create gamedata
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer0.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer1.txt") #read map file
 
 
     connection = Server(1234,10) #create server object
@@ -59,9 +59,9 @@ if 0:  # server
                 SetMap(gamedata, mapstr, True)  #set map(local)
 
                 screen = pygame.display.set_mode((1600, 900))  # create screen
-                gamedata.SetScreen(screen)  # set screen to gamedata object
 
-                gamedata.SetDrawarea()
+                gamedata.InitDisplay(screen)  # set window to gamedata object
+
                 connection.SetTimeout(0.001)  # set new timeout
 
                 level_completed = Run(gamedata, connection)
@@ -74,13 +74,13 @@ if 1:  # if singleplayer
 
 
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/singleplayer/singleplayer2.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(
+        "maps/singleplayer/singleplayer1.txt") #read map file
     SetMap(gamedata, mapstr,True)  # convert str to map list
 
     screen = pygame.display.set_mode((1600, 900)) #create screen
 
-    gamedata.SetScreen(screen) #set screen to gamedata object
-    gamedata.SetDrawarea()
+    gamedata.InitDisplay(screen)  # set window to gamedata object
 
     level_completed = Run(gamedata, None) #start game
 

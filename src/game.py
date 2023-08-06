@@ -395,7 +395,6 @@ def MoveMonsters(gamedata:object,connection:object):
 
 def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
-
     list1 = [0,0,0,1,1,1,-1,-1,-1] #y
     list2 = [1,-1,0,1,-1,0,1,-1,0] #x
 
@@ -805,6 +804,8 @@ def Run(gamedata:object,connection:object = None)->bool:
 
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map
+        gamedata.DrawInfoPanel() #draw infopanel
+
         if pausemenu_is_active == True: #if pausemenu is active
             DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
         pygame.display.flip()  #update screen

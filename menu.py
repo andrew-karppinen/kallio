@@ -141,9 +141,7 @@ class Menu:
                         connection.SendMap(mapstr)  #and send map to client
                         SetMap(gamedata, mapstr, True)  # set map(local) convert str to map list
 
-                        gamedata.SetScreen(self.screen_)  #set window to gamedata object
-
-                        gamedata.SetDrawarea() #init map drawing area
+                        gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
                         self.level_complete_ =  Run(gamedata, connection) #start game
@@ -196,9 +194,7 @@ class Menu:
                         SetMap(gamedata, connection.data_,True)  #set map
                         connection.BufferNext() #delete first message from buffer
 
-                        gamedata.SetScreen(self.screen_)  # set window to gamedata object
-
-                        gamedata.SetDrawarea()
+                        gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
                         self.level_complete_ = Run(gamedata, connection)  # start game
@@ -232,8 +228,8 @@ class Menu:
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
             SetMap(gamedata, mapstr,True)  # convert str to map list
 
-            gamedata.SetScreen(self.screen_)  #set window to gamedata object
-            gamedata.SetDrawarea()
+            gamedata.InitDisplay(self.screen_)  #set window to gamedata object
+
             self.level_complete_ = Run(gamedata) #start game
             self.BackToMenu()
 
@@ -295,7 +291,7 @@ class Menu:
         self.menu_.add.button('Server', self.ServerMenu)
         self.menu_.add.button("settings",self.SettingsMenu)
 
-        self.menu_.add.button('Quit', pygame_menu.events.EXIT)
+        self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
         self.menu_.mainloop(self.screen_)
 
 
@@ -320,3 +316,5 @@ if __name__ == "__main__":
     #start menu:
     menudata = Menu()
     menudata.MainMenu()
+
+
