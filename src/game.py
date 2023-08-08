@@ -395,6 +395,11 @@ def MoveMonsters(gamedata:object,connection:object):
 
 def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
+    '''
+    create 3x3 explosion at the given location
+    '''
+
+
     list1 = [0,0,0,1,1,1,-1,-1,-1] #y
     list2 = [1,-1,0,1,-1,0,1,-1,0] #x
 
@@ -405,12 +410,17 @@ def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) == Player: #if player explose
                     RestartLevel(gamedata,connection) #restart level
-                    return #Todo fix this bug
+                    return "exit"
 
                 if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) != Bedrock: #if not Bedrock
                     if type(gamedata.current_map_[y+list1[i]][x+list2[i]]) in gamedata.explosive_: #if tnt, monster...
                         gamedata.current_map_[y + list1[i]][x + list2[i]] = Explosion()
-                        CreateExplosion(gamedata,connection,y+list1[i],x+list2[i]) #create new explosion
+
+                        # create new explosion:
+                        if CreateExplosion(gamedata,connection,y+list1[i],x+list2[i]) == "exit": #if player explose
+                            #player explose
+                            #exit function
+                            return "exit"
 
 
                     gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
