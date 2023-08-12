@@ -12,26 +12,31 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     if multiplayer, send action
     '''
 
-    collisions = gamedata.collision_objects_
-    pushing = gamedata.pushing_objects_
 
+    door = False #if go throught the door
+    push = False #if pushing
+    move = False #normal move
+
+
+
+    #backup current location, if the move is cancelled:
     original_x = gamedata.local_player_position_x_
     original_y = gamedata.local_player_position_y_
+
+
+
     if right:
-        if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in collisions:  #if map not end and if no collision
+        if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_+1) #try collect point
             gamedata.local_player_position_x_ += 1 #move player
-
-            if gamedata.multiplayer_ == True: #if multiplayer
-                connection.SendMove(right,left,up,down) #send action
-
+            move = True
             if gamedata.local_player_.animated_ == True: #if player is animated
                 gamedata.local_player_.AnimateToRight() #animate player image
 
         #if no default tile or diamond
         #if pushing objects
         elif gamedata.local_player_position_x_+2 < gamedata.map_width_ and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 2] == None: #if map not end and if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) in pushing: #if pushing objects
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) in gamedata.pushing_objects_: #if pushing objects
                 if gamedata.pushing_right_ == 0: #the player moves slower if it pushes a rock
                     gamedata.pushing_right_ = 1
                 elif gamedata.pushing_right_ == 1:
@@ -41,9 +46,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.local_player_position_x_ += 1  # move player
                     gamedata.pushing_right_ = 0
 
-                    if gamedata.multiplayer_ == True: #if multiplayer
-                        connection.SendPush(right,left) #send push action
-
+                    push = True
                     if gamedata.local_player_.animated_ == True:  # if player is animated
                         gamedata.local_player_.AnimateToRight() #animate player image
 
@@ -51,24 +54,24 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
                     gamedata.local_player_position_x_ += 2 #move player
-                    if gamedata.multiplayer_ == True:  # if multiplayer
-                        connection.SendMove(right, left, up, down,True)  # send action
+
+                    door = True
+
 
 
     if left:
-        if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in collisions:  #if map not end and if no collision
+        if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_-1) #try collect point
             gamedata.local_player_position_x_ -= 1 #move player
-            
-            if gamedata.multiplayer_ == True: #if multiplayer
-                connection.SendMove(right,left,up,down) #send action
+            move = True
+
 
             if gamedata.local_player_.animated_ == True: #if player is animated
                 gamedata.local_player_.AnimateToLeft() #animate player image
 
         #if pushing objects
         elif gamedata.local_player_position_x_-2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] == None: #if map not end if index is empty
-            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in pushing: #if pushing objects
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in gamedata.pushing_objects_: #if pushing objects
                 if gamedata.pushing_left_ == 0: #the player moves slower if it pushes a rock
                     gamedata.pushing_left_ = 1
                 elif gamedata.pushing_left_ == 1:
@@ -78,8 +81,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.local_player_position_x_ -= 1 #move player
                     gamedata.pushing_left_ = 0
 
-                    if gamedata.multiplayer_ == True: #if multiplayer
-                        connection.SendPush(right,left) #send push action
+                    push = True
 
                     if gamedata.local_player_.animated_ == True:  # if player is animated
                         gamedata.local_player_.AnimateToLeft() #animate player image
@@ -88,17 +90,19 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
                     gamedata.local_player_position_x_ -= 2 #move player
-                    if gamedata.multiplayer_ == True:  # if multiplayer
-                        connection.SendMove(right, left, up, down,True)  # send action
+
+                    door = True
+
+
+
 
 
     if up:
-        if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in collisions:  #if map not end and if no collision
+        if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ -= 1 #move player
+            move = True
 
-            if gamedata.multiplayer_ == True: #if multiplayer
-                connection.SendMove(right,left,up,down) #send action
 
             if gamedata.local_player_.animated_ == True: #if player is animated
                 gamedata.local_player_.AnimateToHorizontal() #animate player image
@@ -108,17 +112,18 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_].direction_ == 1: #if the direction of the door is to the up
                     gamedata.local_player_position_y_ -= 2 #move player
-                    if gamedata.multiplayer_ == True:  # if multiplayer
-                        connection.SendMove(right, left, up, down,True)  # send action
+
+                    door = True
+
+
 
 
     if down:
-        if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in collisions:  #if map not end and if no collision
+        if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ += 1 #move player
+            move = True
 
-            if gamedata.multiplayer_ == True: #if multiplayer
-                connection.SendMove(right,left,up,down) #send action
 
             if gamedata.local_player_.animated_ == True:  # if player is animated
                 gamedata.local_player_.AnimateToHorizontal() #animate player image
@@ -127,8 +132,11 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
                     gamedata.local_player_position_y_ += 2  # move player
-                    if gamedata.multiplayer_ == True:  # if multiplayer
-                        connection.SendMove(right, left, up, down,True)  # send action
+
+                    door = True
+
+
+
 
 
 
@@ -136,15 +144,35 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
         RestartLevel(gamedata,connection) #level failed
     elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_]) == Goal: #if player go to goal
         if gamedata.total_points_collected_ >= gamedata.required_score_: #if enough points collected
-            gamedata.level_complete_ = True #level complete
+            #player in goal
+            if gamedata.multiplayer_ == True: #if multiplayer
+                connection.SendInGoal()
+
+
+            gamedata.local_player_in_goal_ = True #local player in goal
+            gamedata.local_player_position_x_ = original_x #cancel move
+            gamedata.local_player_position_y_ = original_y #cancel move
+            gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = None #delete player from map
+
+            return #exit function
         else:
             gamedata.local_player_position_x_ = original_x #cancel move
             gamedata.local_player_position_y_ = original_y
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_  # set player to map list
 
-    else:
+    else: #no goal or level not failed
         gamedata.current_map_[original_y][original_x] = None
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
+
+        if gamedata.multiplayer_ == True: #if multiplayer
+
+            #send actions:
+            if door == True: #if door
+                connection.SendMove(right,left,up,down,True)
+            elif push == True: #if pushing
+                connection.SendPush(right,left)
+            elif move == True: #if normal move
+                connection.SendMove(right, left, up, down, False) #normal move
 
 
 def CollectPoints(gamedata:object,y:int,x:int):
@@ -502,9 +530,16 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
 
     SetMap(gamedata, gamedata.original_mapstr_, True)  #set original map to current map
+
+
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
     gamedata.InitTimer() #init timer
+
+    gamedata.local_player_in_goal_ = False
+    gamedata.remote_player_in_goal_ = False
+
+
 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel()
@@ -517,7 +552,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
     position_x = gamedata.remote_player_position_x_ #temp variables
     position_y = gamedata.remote_player_position_y_
 
-    if action[0] ==  "moveright":
+    if action[0] == "moveright":
         if action[1] == "0": #no door
             gamedata.remote_player_position_x_ += 1 #move player
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
@@ -631,20 +666,25 @@ def Run(gamedata:object,connection:object = None)->bool:
     movelimit = 0 #gravity and monster
     movelimit2 = 0 #player move
 
-    timelimit = 0 #send collected points every 2 seconds
+    timelimit = 0 #send collected points every 1 seconds
     timelimit2 = 0 #sets player image to default image if no move
 
     gamedata.InitTimer() #init timer
 
     while True: #game main loop
 
+        if gamedata.local_player_in_goal_: #if local player in goal
 
-
-        if gamedata.level_complete_: #if level complete
             if gamedata.multiplayer_: #if multiplayer
-                connection.SendGameExit(True)
-                connection.CloseSocket()  # close socket
-            return True # back to menu
+                if gamedata.remote_player_in_goal_ == True:
+                    #level completed:
+                    connection.CloseSocket()  # close socket
+                    return True # back to menu
+
+            else: #if singleplayer
+
+                return(True) #back to menu
+
 
         #timer:
         if gamedata.level_timelimit_ != 0: #if level has timelimit
@@ -688,9 +728,13 @@ def Run(gamedata:object,connection:object = None)->bool:
                         mapstr = connection.data_
                         SetMap(gamedata,mapstr) #set map
 
+                    elif connection.data_type_ == "ingoal":
+                        gamedata.remote_player_in_goal_ = True
+                        gamedata.current_map_[gamedata.remote_player_position_y_][gamedata.remote_player_position_x_] = None
+
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
-                        return connection.data_ #back to menu
+                        return False #back to menu, level not completed
 
 
 
@@ -712,7 +756,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                     pausemenu_is_active = True
 
 
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN: #enter
                     enter = True
 
                 if event.key == pygame.K_LEFT:
@@ -728,8 +772,9 @@ def Run(gamedata:object,connection:object = None)->bool:
                 if event.key == pygame.K_SPACE:
                     space = True
 
+
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN: #enter
                     enter = False
                 if event.key == pygame.K_LEFT:
                     left = False
@@ -747,11 +792,11 @@ def Run(gamedata:object,connection:object = None)->bool:
 
             if event.type == pygame.QUIT:  #exit program
                 if gamedata.multiplayer_:
-                    connection.SendGameExit(False)
+                    connection.SendGameExit()
                     connection.CloseSocket()  #close socket
                 return False #back to menu
 
-        if enter == True:
+        if enter == True: #if enter is pressed
             if pausemenu_is_active == True: #if pausemenu is active
                 if pausemenu_number == 1: #exit pause menu
                     pausemenu_is_active = False
@@ -761,7 +806,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                     pausemenu_is_active = False
                 elif pausemenu_number == 3: #exit level
                     if gamedata.multiplayer_: #if multiplayer
-                        connection.SendGameExit(False)
+                        connection.SendGameExit()
                         connection.CloseSocket()  # close socket
                     return False  # back to menu
 
@@ -777,10 +822,12 @@ def Run(gamedata:object,connection:object = None)->bool:
             if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
                 movelimit2 = pygame.time.get_ticks()
                 if pausemenu_is_active == False:
-                    if space: #if space pressed
-                        RemoveTile(gamedata,connection, right, left, up, down) #remove tile in left,right,up or down
-                    else:
-                        Move(gamedata,connection,right,left,up,down) #move player
+
+                    if gamedata.local_player_in_goal_ == False: #if player in goal, can't move
+                        if space: #if space pressed
+                            RemoveTile(gamedata,connection, right, left, up, down) #remove tile in left,right,up or down
+                        else:
+                            Move(gamedata,connection,right,left,up,down) #move player
 
 
                 else: #pause menu is active
@@ -803,9 +850,8 @@ def Run(gamedata:object,connection:object = None)->bool:
                         gamedata.local_player_.image_number_ = 0
 
 
-
         if gamedata.multiplayer_ == True: #if multiplayer
-            if pygame.time.get_ticks() > timelimit + 2000:  #send collected points every 2 seconds
+            if pygame.time.get_ticks() > timelimit + 1000:  #send collected points every 1 seconds
                 timelimit = pygame.time.get_ticks()
                 connection.SendCollectedPoints(gamedata.points_collected_)
 

@@ -11,7 +11,7 @@ class Server:
     def __init__(self,port:int,connection_timeout:int = 2):#constructor
         self.socket_ = socket.socket()  # create socket object
         self.port_ = port
-        self.error_mesage_ = ""
+        self.error_message_ = ""
 
         self.compress_messages_ = False #compress sent message and decompress incoming messages
 
@@ -31,12 +31,11 @@ class Server:
                 self.connected_ = True
                 self.client_.settimeout(0.1)
             except Exception as message:
-                self.error_mesage_ = message
+                self.error_message_ = message
                 self.connected_ = False
 
         except Exception as message:
-            self.error_mesage_ = message
-
+            self.error_message_ = str(message)
 
 
         self.__buffer = [] #private method, received messages
@@ -58,7 +57,7 @@ class Server:
         #None = None
 
 
-    def SetTimeout(self,timeout):
+    def SetTimeout(self,timeout)->None:
         self.client_.settimeout(timeout)  # set new timeout
 
     def Read(self)->None:
@@ -85,14 +84,17 @@ class Server:
                     elif message[0:7] == "points:":
                         self.__buffer.append(["points",int(message[7:])])
 
+                    elif message[0:6] == "ingoal":
+                        self.__buffer.append(["ingoal", None])
+
                     elif message[0:4] == "map:":  # if message is map
                         self.__buffer.append(["map",message[4:]])
 
                     elif message[0:13] == "readytostart:": #if message is "readytostart"
                         self.__buffer.append(["readytostart",message[13:]])
 
-                    elif message[0:9] == "gameexit:":  # if message is gameexit
-                        self.__buffer.append(["gameexit",eval(message[9:])])
+                    elif message[0:9] == "gameexit":  # if message is gameexit
+                        self.__buffer.append(["gameexit",None])
 
                     elif message[0:13] == "restartlevel":
                         self.__buffer.append(["restartlevel",None])
@@ -114,7 +116,7 @@ class Server:
             return self.__buffer[0][0] #retrun str
 
     @property
-    def data_(self)->str:
+    def data_(self):
         '''
         return first message from buffer
         '''
@@ -227,9 +229,14 @@ class Server:
         self.__SendMessage(message) #send message
 
 
-    def SendGameExit(self,win:bool = False)->None: #if game exit
+    def SendInGoal(self):
+        message = "ingoal"
+
+        self.__SendMessage(message)
+
+    def SendGameExit(self): #if game exit
         #win False = game over, True = level complete
-        message = "gameexit:" + str(win)
+        message = "gameexit"
         self.__SendMessage(message) #send message
 
     def SendRestartLevel(self)->None:
@@ -249,7 +256,7 @@ class Client:
         self.socket_.settimeout(5)
         self.ipaddress_ = ipaddress
         self.port_ = port
-        self.error_mesage_ = ""
+        self.error_message_ = ""
 
         self.compress_messages_ = False #compress sent message and decompress incoming messages
 
@@ -258,7 +265,7 @@ class Client:
             self.connected_ = True
             self.socket_.settimeout(0.1)
         except Exception as message:
-            self.error_mesage_ = message
+            self.error_message_ = str(message)
             self.connected_ = False
 
 
@@ -277,11 +284,11 @@ class Client:
         #None = None
 
 
-    def SetTimeout(self,timeout):
+    def SetTimeout(self,timeout)->None:
         self.socket_.settimeout(timeout)  # set new timeout
 
 
-    def Read(self):
+    def Read(self)->None:
         #read socket message
         try:
             messages = self.socket_.recv(10000) #read socket
@@ -302,6 +309,9 @@ class Client:
                 elif message[0:7] == "points:":
                     self.__buffer.append(["points",int(message[7:])])
 
+                elif message[0:6] == "ingoal":
+                    self.__buffer.append(["ingoal", None])
+
                 elif message[0:4] == "map:":  # if message is map
                     self.__buffer.append(["map",message[4:]])
 
@@ -315,8 +325,8 @@ class Client:
 
                     self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
 
-                elif message[0:9] == "gameexit:": #if message is gameexit
-                    self.__buffer.append(["gameexit",eval(message[9:])])
+                elif message[0:8] == "gameexit": #if message is gameexit
+                    self.__buffer.append(["gameexit",None])
  
                 elif message[0:13] == "restartlevel":
                     self.__buffer.append(["restartlevel",None])
@@ -356,7 +366,7 @@ class Client:
 
 
 
-    def __SendMessage(self,message:str): #private method
+    def __SendMessage(self,message:str)->None: #private method
 
         message += ";"
 
@@ -366,13 +376,13 @@ class Client:
             self.socket_.send(message.encode())  #send message without compress
 
 
-    def SendReadyToStart(self,check_number:str):
+    def SendReadyToStart(self,check_number:str)->None:
         message = f"readytostart:{check_number}"
 
         self.__SendMessage(message) #send message
 
 
-    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False):
+    def SendMove(self,right:bool,left:bool,up:bool,down:bool,door:bool=False)->None:
         '''
         send action:
         a player's moves
@@ -401,7 +411,7 @@ class Client:
 
         self.__SendMessage(message)  # send message
 
-    def SendRemove(self,right:bool,left:bool,up:bool,down:bool):
+    def SendRemove(self,right:bool,left:bool,up:bool,down:bool)->None:
         '''
         send action:
         remove next to player
@@ -418,21 +428,28 @@ class Client:
 
         self.__SendMessage(message)  # send message
 
-    def SendCollectedPoints(self,points_collected):
+    def SendCollectedPoints(self,points_collected)->None:
         message=f"points:{points_collected}"
         self.__SendMessage(message)  # send message
 
 
-    def SendGameExit(self,win:bool = False): #if game exit
+    def SendInGoal(self):
+        message = "ingoal"
+
+        self.__SendMessage(message)
+
+
+    def SendGameExit(self)->None: #if game exit
         #win False = game over, True = level complete
-        message = "gameexit:" + str(win)
+        message = "gameexit"
+
         self.__SendMessage(message)  # send message
 
 
-    def SendRestartLevel(self):
+    def SendRestartLevel(self)->None:
         message = "restartlevel"
         self.__SendMessage(message)  # send message
 
 
-    def CloseSocket(self):
+    def CloseSocket(self)->None:
         self.socket_.close()

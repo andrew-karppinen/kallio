@@ -95,11 +95,17 @@ esimerkki:
 
 
 
-gameexit:
-tieto pelin lopetuksesta,
+gameexit
+lopetetaan peli, kartta ei läpi
 
-server lähettää myös tiedon päästiinkö maaliin vai loppuuko muuten vain
-client voi lähettää ainoastaan tiedon että poistui pelistä
+"gameexit"
+
+ingoal
+lähettää toiselle tietokoneelle tiedon että päästiin maalin
+
+"ingoal"
+
+
 
 
 esimerkki:

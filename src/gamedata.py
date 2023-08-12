@@ -45,7 +45,13 @@ class GameData:
 
         self.points_collected_ = 0 #points collected by local player
         self.total_points_collected_ = 0 #points collected by local and remote player
-        self.level_complete_ = False
+
+        self.local_player_in_goal_ = False #the local player in goal
+        self.remote_player_in_goal_ = False #remote player in goal
+
+
+
+
 
         self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick,Door]
         self.pushing_objects_ = [Stone, Tnt]
@@ -88,9 +94,15 @@ class GameData:
     def SetImages(self):
         #load tile images:
         sandimage = pygame.image.load("media/sand.png")
-        playerimage = pygame.image.load("media/player.png")
-        playerimage2 = pygame.image.load("media/player2.png")
-        playerimage3 = pygame.image.load("media/player3.png")
+
+        player1image1 = pygame.image.load("media/player1.png")
+        player1image2 = pygame.image.load("media/player1 animate1.png")
+        player1image3 = pygame.image.load("media/player1 animate2.png")
+
+        player2image1 = pygame.image.load("media/player2.png")
+        player2image2 = pygame.image.load("media/player2 animate1.png")
+        player2image3 = pygame.image.load("media/player2 animate2.png")
+
         monsterimage1 = pygame.image.load("media/monster1.png")
         monsterimage2 = pygame.image.load("media/monster2.png")
         stoneimage = pygame.image.load("media/stone.png")
@@ -122,10 +134,19 @@ class GameData:
 
 
         #set players images
-        self.local_player_.SetImage(playerimage, playerimage2, playerimage3)
-        self.remote_player_.SetImage(playerimage, playerimage2, playerimage3)
+        if self.multiplayer_ == True:
+            if self.server_ == True: #server
+                self.local_player_.SetImage(player1image1, player1image2, player1image3)
+                self.remote_player_.SetImage(player2image1, player2image2, player2image3)
+
+            else: #client
+                self.local_player_.SetImage(player2image1, player2image2, player2image3)
+                self.remote_player_.SetImage(player1image1, player1image2, player1image3)
 
 
+        else: #singleplayer
+            self.local_player_.SetImage(player1image1, player1image2, player1image3)
+            self.remote_player_.SetImage(player2image1, player2image2, player2image3)
 
     def InitTimer(self):
         self.__elapsed_time_ = pygame.time.get_ticks() //1000
