@@ -30,7 +30,7 @@ def ReturnMaps(multiplayer:bool):
             maplist.append((str(i), f"maps/multiplayer/{i}"))
 
 
-    elif multiplayer == False: #signleplayer maps
+    elif multiplayer == False: #singleplayer maps
         path += "/maps/singleplayer"
         for i in os.listdir(path):
             maplist.append((str(i), f"maps/singleplayer/{i}"))
@@ -59,7 +59,7 @@ class Menu:
 
         self.menu_ = pygame_menu.Menu('py boulderdash', 600, 500,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
 
-        self.level_complete_ = False
+        self.level_completed_ = False
 
         self.resolutions_ = [('1600x900',(1600,900)),('1920x1080',(1920,1080)),('1056x594',(1056,594)),('1280x720', (1280,720))] #resolutions list
 
@@ -118,7 +118,6 @@ class Menu:
 
 
 
-
     def ServerMenu(self):
 
         def StartServer(self):
@@ -144,18 +143,19 @@ class Menu:
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
-                        self.level_complete_ =  Run(gamedata, connection) #start game
+                        self.level_completed_ =  Run(gamedata, connection) #start game
                         self.BackToMenu()
 
 
             #if the connection failed
+            connection.CloseSocket() #close socket
             self.menu_.clear()
-            self.menu_.add.label(connection.error_mesage_)
+            self.menu_.add.label(connection.error_message_,max_char=30)
             self.menu_.add.label(f"server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
-            self.menu_.add.label(f"join nubmer: {self.join_id_}") #print gameid
+            self.menu_.add.label(f"join number: {self.join_id_}") #print gameid
             self.menu_.add.label(f"port: {connection.port_}")  # print port
             self.menu_.add.button("try again",StartServer,self)
-            self.menu_.add.button("back to main menu",self.MainMenu)
+            self.menu_.add.button("back",self.ServerMenu)
 
 
 
@@ -197,16 +197,20 @@ class Menu:
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
-                        self.level_complete_ = Run(gamedata, connection)  # start game
+                        self.level_completed_ = Run(gamedata, connection)  # start game
                         self.BackToMenu()
 
 
 
             #if the connection failed
+            connection.CloseSocket() #close socket
             self.menu_.clear()
-            self.menu_.add.label(connection.error_mesage_)
+
+            self.menu_.add.label(connection.error_message_,max_char = 30)
+
+
             self.menu_.add.button("try again",StartClient,self)
-            self.menu_.add.button("back to main menu",self.MainMenu)
+            self.menu_.add.button("back ",self.ClientMenu)
 
 
 
@@ -230,7 +234,7 @@ class Menu:
 
             gamedata.InitDisplay(self.screen_)  #set window to gamedata object
 
-            self.level_complete_ = Run(gamedata) #start game
+            self.level_completed_ = Run(gamedata) #start game
             self.BackToMenu()
 
 
@@ -277,7 +281,7 @@ class Menu:
 
         self.menu_.clear()
         self.menu_.add.toggle_switch("full screen",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
-        self.menu_.add.selector('Screen size:', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
+        self.menu_.add.selector('resolution:', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("back",self.MainMenu)
 
@@ -301,10 +305,10 @@ class Menu:
         '''
         self.menu_.clear()
 
-        if self.level_complete_ == True:
+        if self.level_completed_ == True:
             self.menu_.add.label("level completed!")
         else:
-            self.menu_.add.label("level fail!")
+            self.menu_.add.label("level failed!")
 
 
         self.menu_.add.button("next",self.MainMenu)
