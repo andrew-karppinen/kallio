@@ -487,17 +487,17 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 
     #the selected text is drawn in black
     if pausemenu_number == 1:
-        text1 = font.render('Back', True, (0, 0, 0))
+        text1 = font.render('Resume game', True, (0, 0, 0))
     else:
-        text1 = font.render('Back', True, (255, 255, 255))
+        text1 = font.render('Resume game', True, (255, 255, 255))
     if pausemenu_number == 2:
-        text2 = font.render('restart level', True, (0, 0, 0))
+        text2 = font.render('Restart level', True, (0, 0, 0))
     else:
-        text2 = font.render('restart level', True, (255, 255, 255))
+        text2 = font.render('Restart level', True, (255, 255, 255))
     if pausemenu_number == 3:
-        text3 = font.render('exit level', True, (0, 0, 0))
+        text3 = font.render('Exit level', True, (0, 0, 0))
     else:
-        text3 = font.render('exit level', True, (255, 255, 255))
+        text3 = font.render('Exit level', True, (255, 255, 255))
 
     x, y = gamedata.screen_.get_size() #get screen size
 
@@ -529,9 +529,13 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 
 def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
 
+    if connection != None and sendrestartlevel == True:
+            connection.SendRestartLevel()
+
+
     SetMap(gamedata, gamedata.original_mapstr_, True)  #set original map to current map
 
-
+    #init gamedata:
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
     gamedata.InitTimer() #init timer
@@ -539,10 +543,21 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     gamedata.local_player_in_goal_ = False
     gamedata.remote_player_in_goal_ = False
 
+    #draw map:
+    gamedata.screen_.fill((0,0,0))
+    gamedata.DrawMap()
+    gamedata.DrawInfoPanel()
 
 
-    if connection != None and sendrestartlevel == True:
-            connection.SendRestartLevel()
+    #draw "GAME OVER" text
+    timesleep = pygame.time.get_ticks()
+    text = gamedata.big_size_font_.render("GAME OVER", True,(153, 0, 0),(0,0,0))
+
+    while pygame.time.get_ticks() < timesleep +500: #wait 0,5 seconds
+        gamedata.screen_.blit(text,(gamedata.screen_width_//2 - text.get_width()//2,gamedata.screen_height_- gamedata.screen_height_//4))
+        pygame.display.flip()  #update screen
+
+
 
 
 def ExecuteAction(gamedata:object,connection:object,action:str):

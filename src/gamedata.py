@@ -12,7 +12,10 @@ class GameData:
 
         #window data:
         self.screen_ = None #pygame window
-        self.font_ = self.font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",30) #load font from file
+        self.font_ = self.font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",30) #load font from file, font size 30
+        self.big_size_font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",60) #load font from file, font size 60
+
+
         self.tile_size_ = 50 #tilesize y*x
         self.draw_area_x_ = 32 #drawing area size
         self.draw_area_y_ = 16
@@ -23,9 +26,9 @@ class GameData:
         self.infopanel_height_ = 100
 
         #create infopanel texts:
-        self.infopanel_text_score_ = self.font_.render("score:",True,(255,255,255))
-        self.infopanel_text_needed_ = self.font_.render("needed:", True, (255, 255, 255))
-        self.infopanel_text_time_ = self.font_.render("time:",True,(255,255,255))
+        self.infopanel_text_score_ = self.font_.render("Score:",True,(255,255,255))
+        self.infopanel_text_needed_ = self.font_.render("Needed:", True, (255, 255, 255))
+        self.infopanel_text_time_ = self.font_.render("Time:",True,(255,255,255))
 
 
         #gamedata:

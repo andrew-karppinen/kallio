@@ -37,7 +37,7 @@ def ReturnMaps(multiplayer:bool):
 
 
 
-    return (maplist)  # return maps
+    return(maplist)  # return maps
 
 
 
@@ -47,7 +47,8 @@ class Menu:
     def __init__(self) -> None: #constructor
 
         #MENUDATA
-        self.screen_ =  pygame.display.set_mode((1600, 900)) #create screen
+        self.screen_ =  pygame.display.set_mode((1600, 900)) #create window
+        pygame.display.set_caption('py-boulderdash') #rename window
 
         # create menu theme
         font8bit = pygame_menu.font.FONT_8BIT
@@ -151,11 +152,11 @@ class Menu:
             connection.CloseSocket() #close socket
             self.menu_.clear()
             self.menu_.add.label(connection.error_message_,max_char=30)
-            self.menu_.add.label(f"server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
-            self.menu_.add.label(f"join number: {self.join_id_}") #print gameid
-            self.menu_.add.label(f"port: {connection.port_}")  # print port
-            self.menu_.add.button("try again",StartServer,self)
-            self.menu_.add.button("back",self.ServerMenu)
+            self.menu_.add.label(f"Server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
+            self.menu_.add.label(f"Join number: {self.join_id_}") #print gameid
+            self.menu_.add.label(f"Port: {connection.port_}")  # print port
+            self.menu_.add.button("Try again",StartServer,self)
+            self.menu_.add.button("Back",self.ServerMenu)
 
 
 
@@ -165,12 +166,12 @@ class Menu:
 
         self.menu_.add.label(f"your ip address:")
         self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
-        self.menu_.add.selector("map:", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
-        self.menu_.add.text_input('port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
-        self.menu_.add.text_input('join number:', default= self.join_id_, onchange=self.SetJoinid) #set join id
-        self.menu_.add.text_input('timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
-        self.menu_.add.button("start server", StartServer,self)
-        self.menu_.add.button("back", self.MainMenu)
+        self.menu_.add.selector("Map:", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
+        self.menu_.add.text_input('Port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
+        self.menu_.add.text_input('Join number:', default= self.join_id_, onchange=self.SetJoinid) #set join id
+        self.menu_.add.text_input('Timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
+        self.menu_.add.button("Start server", StartServer,self)
+        self.menu_.add.button("Back", self.MultiPlayerMenu)
 
 
 
@@ -208,18 +209,17 @@ class Menu:
 
             self.menu_.add.label(connection.error_message_,max_char = 30)
 
-
-            self.menu_.add.button("try again",StartClient,self)
-            self.menu_.add.button("back ",self.ClientMenu)
+            self.menu_.add.button("Try again",StartClient,self)
+            self.menu_.add.button("Back ",self.ClientMenu)
 
 
 
         self.menu_.clear()
-        self.menu_.add.text_input('server ip:', default=self.server_ip_, onchange=self.SetIpaddress) #set server ip
-        self.menu_.add.text_input('port:', default='1234', onchange=self.SetPort) #set port
+        self.menu_.add.text_input('Server ip:', default=self.server_ip_, onchange=self.SetIpaddress) #set server ip
+        self.menu_.add.text_input('Port:', default='1234', onchange=self.SetPort) #set port
         self.menu_.add.text_input('Join number:', default=self.join_id_, onchange=self.SetJoinid) #set join id
         self.menu_.add.button("Connect",StartClient,self)
-        self.menu_.add.button("Back", self.MainMenu)
+        self.menu_.add.button("Back", self.MultiPlayerMenu)
 
 
     def SinglePlayerMenu(self):
@@ -241,7 +241,7 @@ class Menu:
 
         self.menu_.clear()
         self.menu_.add.button("Play",StartSingleplayer,self)
-        self.menu_.add.selector("map:", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
+        self.menu_.add.selector("Map:", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
         self.menu_.add.button("Back",self.MainMenu)
 
 
@@ -262,7 +262,7 @@ class Menu:
             self.temp_fullscreen_ = fullscreen
 
         def ApplySettings():
-            #set temp variables to object
+            #apply settings
             self.resolution_ = self.temp_resolution_
             self.resolution_index_ = self.temp_resolution_index_
             self.fullscreen_ =  self.temp_fullscreen_
@@ -279,22 +279,28 @@ class Menu:
 
             self.MainMenu() #back to mainmenu
 
-        self.menu_.clear()
-        self.menu_.add.toggle_switch("full screen",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
-        self.menu_.add.selector('resolution:', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
+        self.menu_.clear() #clear menu
+        self.menu_.add.toggle_switch("Full screen",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
+        self.menu_.add.selector('Resolution:', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
         self.menu_.add.button("Apply",action=ApplySettings)
-        self.menu_.add.button("back",self.MainMenu)
+        self.menu_.add.button("Back",self.MainMenu)
 
+
+    def MultiPlayerMenu(self):
+        self.menu_.clear() #clear menu
+
+        self.menu_.add.button('Join game', self.ClientMenu)
+        self.menu_.add.button('Server', self.ServerMenu)
+        self.menu_.add.button('Back', self.MainMenu)
 
 
 
     def MainMenu(self):
-        self.menu_.clear()
+        self.menu_.clear() #clear menu
         self.menu_.add.button('Singleplayer', self.SinglePlayerMenu)
-        self.menu_.add.button('Join game', self.ClientMenu)
-        self.menu_.add.button('Server', self.ServerMenu)
-        self.menu_.add.button("settings",self.SettingsMenu)
+        self.menu_.add.button('Multiplayer', self.MultiPlayerMenu)
 
+        self.menu_.add.button("settings",self.SettingsMenu)
         self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
         self.menu_.mainloop(self.screen_)
 
@@ -304,14 +310,16 @@ class Menu:
         This is used when returning to the menu from the game.
         '''
         self.menu_.clear()
+        pygame.display.set_caption('py-boulderdash') #rename window
+
 
         if self.level_completed_ == True:
-            self.menu_.add.label("level completed!")
+            self.menu_.add.label("Level completed!")
         else:
-            self.menu_.add.label("level failed!")
+            self.menu_.add.label("Level failed!")
 
 
-        self.menu_.add.button("next",self.MainMenu)
+        self.menu_.add.button("Main menu",self.MainMenu)
         self.menu_.mainloop(self.screen_)
 
 
