@@ -1,8 +1,10 @@
 import pygame
 import pygame_menu
 import random
-from src import * #import py-boulderdash
 import os
+import json
+
+from src import * #import py-boulderdash
 
 
 
@@ -58,7 +60,7 @@ class Menu:
                                     title_font=font, title_font_size=65)
 
 
-        self.menu_ = pygame_menu.Menu('py boulderdash', 600, 500,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
+        self.menu_ = pygame_menu.Menu('py boulderdash', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
 
         self.level_completed_ = False
 
@@ -80,11 +82,58 @@ class Menu:
 
 
         #current resolution:
-        self.resolution_ = (1600,900)
+        #default settings:
+        self.resolution_ = [1600,900]
         self.resolution_index_ = 0
         self.fullscreen_ = False
 
+        self.ReadSettings() #read settings from json file
 
+    def ReadSettings(self):
+        '''
+        read settings from save/settings.json
+        '''
+
+        try:
+            f = open("save/settings.json", "r")  #read json file
+            settings = json.load(f)["settings"]  #read settings
+            f.close()  #close file
+
+            self.resolution_index_ = settings["resolution index"]
+            self.resolution_ = settings["resolutions"][settings["resolution index"]] #set resolution
+
+            if settings["fullscreen"] == True:
+                self.fullscreen_ = True
+                self.screen_ = pygame.display.set_mode(self.resolution_, pygame.FULLSCREEN)  # crete fullscreen window
+            else:
+                self.fullscreen_ = False
+                self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
+
+            self.menu_ = pygame_menu.Menu('py boulderdash', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+        except: #invalid json file
+            self.SaveSettings() #save default settings to json file
+            self.ReadSettings()
+
+    def SaveSettings(self):
+        '''
+        save current settings to json file
+        save/settings.json
+        '''
+
+
+        settings = {
+            "settings":{
+                "fullscreen":self.fullscreen_,
+                "resolution index":self.resolution_index_,
+                "resolutions":[[1600,900],[1920,1080],[1056,594],[1280,720]]
+            }
+        }
+
+        jsonstr = json.dumps(settings) #dictionary to str
+
+        f = open("save/settings.json", "w")  #open file
+        f.write(jsonstr) #write dictionary data to json file
+        f.close()  # close file
 
     def SetIpaddress(self, ip: str):
         self.server_ip_ = ip
@@ -245,6 +294,18 @@ class Menu:
         self.menu_.add.button("Back",self.MainMenu)
 
 
+    def InfoMenu(self):
+        self.menu_.clear() #clear menu
+
+        self.menu_.add.label("Controls:")
+        self.menu_.add.label("Move:")
+        self.menu_.add.label("arrow keys")
+        self.menu_.add.label("")
+        self.menu_.add.label("Delete next to player:")
+        self.menu_.add.label("space + arrow keys")
+        self.menu_.add.label("")
+
+        self.menu_.add.button("Back to main menu",self.MainMenu)
 
 
     def SettingsMenu(self):
@@ -274,6 +335,8 @@ class Menu:
             else:
                 self.screen_ = pygame.display.set_mode(self.resolution_,pygame.WINDOWMOVED) #create noremal window
 
+            self.SaveSettings() #save settings to json file
+
             # update menu object:
             self.menu_ = pygame_menu.Menu('py boulderdash', 600, 500, surface=self.screen_,theme=self.menu_theme_)  # create menu object
 
@@ -299,7 +362,7 @@ class Menu:
         self.menu_.clear() #clear menu
         self.menu_.add.button('Singleplayer', self.SinglePlayerMenu)
         self.menu_.add.button('Multiplayer', self.MultiPlayerMenu)
-
+        self.menu_.add.button("Info",self.InfoMenu)
         self.menu_.add.button("settings",self.SettingsMenu)
         self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
         self.menu_.mainloop(self.screen_)

@@ -1,14 +1,15 @@
 
 
 
-# needed for the programme to work:
+#needed for the programme to work:
 /media/fonts/Almo_Andrea_FontlabARROW.ttf
 
+#needed directory "/save"
+
+/save/settings.json
 
 
-
-
-# not important:
+#not important:
 
 /maps/singleplayer/korkea.txt
 
