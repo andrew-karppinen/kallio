@@ -112,7 +112,9 @@ class GameData:
         tntimage = pygame.image.load("media/tnt.png")
         explosionimage = pygame.image.load("media/explosion.png")
         diamondimage = pygame.image.load("media/diamond.png")
-        goalimage = pygame.image.load("media/goal.png")
+        goal_open_image = pygame.image.load("media/goal open.png")
+        goal_close_image = pygame.image.load("media/goal close.png")
+
         bedrockimage = pygame.image.load("media/bedrock.png")
         brickimage = pygame.image.load("media/brick.png")
 
@@ -123,7 +125,7 @@ class GameData:
 
         #set images:
         Diamond.SetImage(diamondimage)
-        Goal.SetImage(goalimage)
+        Goal.SetImage(goal_open_image,goal_close_image)
         Explosion.SetImage(explosionimage)
         Tnt.SetImage(tntimage)
         DefaultTile.SetImage(sandimage)

@@ -276,20 +276,29 @@ class Brick:
 
 class Goal:
     #class variables:
-    image = None
+    image_open = None
+    image_close = None
 
-    def SetImage(image:pygame.surface):
-        Goal.image = image
+    goal_is_open = False #if required score have been collected
+
+    def SetImage(goal_open,goal_close):
+        Goal.image_open = goal_open
+        Goal.image_close = goal_close
 
     def ScaleImages(tile_size:int):
-        Goal.image = pygame.transform.scale(Goal.image, (tile_size, tile_size))
+        Goal.image_open = pygame.transform.scale(Goal.image_open, (tile_size, tile_size))
+        Goal.image_close = pygame.transform.scale(Goal.image_close, (tile_size, tile_size))
 
     def __init__(self):
         pass
 
     @property
     def image_(self):
-        return (Goal.image)
+
+        if Goal.goal_is_open == True:
+            return (Goal.image_open)
+        else:
+            return (Goal.image_close)
 
 
 

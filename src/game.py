@@ -9,8 +9,20 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     '''
     move local player
 
-    if multiplayer, send action
+    if multiplayer, send action to another computer
     '''
+
+
+    #can move onlu 1 direction:
+    if right == True:
+        left == False;up = False; down = False;
+    elif left == True:
+        up = False; down = False;right = False;
+    elif down == True:
+        up = False; left = False;right = False;
+    elif up == True:
+        down = False;left = False;right = False;
+
 
 
     door = False #if go throught the door
@@ -59,7 +71,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
 
 
-    if left:
+    elif left:
         if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_-1) #try collect point
             gamedata.local_player_position_x_ -= 1 #move player
@@ -97,7 +109,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
 
 
-    if up:
+    elif up:
         if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ -= 1 #move player
@@ -118,7 +130,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
 
 
-    if down:
+    elif down:
         if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in gamedata.collision_objects_:  #if map not end and if no collision
             CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ += 1 #move player
@@ -553,8 +565,8 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     timesleep = pygame.time.get_ticks()
     text = gamedata.big_size_font_.render("GAME OVER", True,(153, 0, 0),(0,0,0))
 
-    while pygame.time.get_ticks() < timesleep +500: #wait 0,5 seconds
-        gamedata.screen_.blit(text,(gamedata.screen_width_//2 - text.get_width()//2,gamedata.screen_height_- gamedata.screen_height_//4))
+    while pygame.time.get_ticks() < timesleep +700: #wait 0,5 seconds
+        gamedata.screen_.blit(text,(gamedata.screen_width_//2 - text.get_width()//2,gamedata.screen_height_ //2- gamedata.infopanel_height_))
         pygame.display.flip()  #update screen
 
 
@@ -688,6 +700,10 @@ def Run(gamedata:object,connection:object = None)->bool:
 
     while True: #game main loop
 
+        if gamedata.total_points_collected_ >= gamedata.required_score_: #if required score have been collected
+            Goal.goal_is_open = True #change goal image
+
+
         if gamedata.local_player_in_goal_: #if local player in goal
 
             if gamedata.multiplayer_: #if multiplayer
@@ -751,13 +767,11 @@ def Run(gamedata:object,connection:object = None)->bool:
                         connection.CloseSocket()  # close socket
                         return False #back to menu, level not completed
 
-
-
                     connection.BufferNext() #delete first message from buffer
 
 
                 except Exception as error_message: #if error
-                    print(error_message) #print error message
+                    print(error_message) #print error message to console
 
 
 
@@ -773,7 +787,11 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                 if event.key == pygame.K_RETURN: #enter
                     enter = True
+                if event.key == pygame.K_SPACE: #space
+                    space = True
 
+
+                #keyboards
                 if event.key == pygame.K_LEFT:
                     left = True
                 if event.key == pygame.K_RIGHT:
@@ -784,8 +802,6 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                 if event.key == pygame.K_DOWN:
                     down = True
-                if event.key == pygame.K_SPACE:
-                    space = True
 
 
             if event.type == pygame.KEYUP:
@@ -801,7 +817,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                     down = False
                 if event.key == pygame.K_SPACE:
                     space = False
-
 
 
 
@@ -822,7 +837,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                 elif pausemenu_number == 3: #exit level
                     if gamedata.multiplayer_: #if multiplayer
                         connection.SendGameExit()
-                        connection.CloseSocket()  # close socket
+                        connection.CloseSocket()  #close socket
                     return False  # back to menu
 
 
@@ -833,7 +848,7 @@ def Run(gamedata:object,connection:object = None)->bool:
             MoveMonsters(gamedata,connection)
 
 
-        if [right, left, up, down].count(True) == 1:  #can only move in one direction at a time
+        if [right, left, up, down].count(True) > 0:  #if arrow key is pressed
             if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
                 movelimit2 = pygame.time.get_ticks()
                 if pausemenu_is_active == False:
