@@ -57,7 +57,7 @@ tämän jälkeen pelin alustus on valmis ja se voidaan aloittaa mikäli se on yk
 ## CLIENT:
 
 luo client olion ja yrittää yhdistää serveriin:
->> connection = Client(ip-osoite,portti)  #create connection object
+>> connection = Client(ip-osoite,portti,viestien_pakkaus)  #create connection object
 
 
 jos yhteys luotu onnistuneesti
@@ -100,6 +100,10 @@ tämän jälkeen pitää pelin sujuvuuden takia asettaa uusi timeout socketille:
 
 on tärkeää että serverillä ja clientillä on sama timeout 
 
+ota viestien pakkaus pois käytöstä:
+>> connection.compress_messages_ = False
+
+
 Pelinalustus on valmis, käynnistä se:
 >> Run(gamedata:object,connection:object = None)
 
@@ -110,7 +114,7 @@ lataa kartta
 luo Server olio:
 ja odottaa aikakatkaisun verran yhdistääkö joku:
 
->> connection = Server(port,timeout) #create connection object
+>> connection = Server(port,timeout,viestien_pakkaus) #create connection object
 
 tarkista yhdistikö joku:
 >> if connection.connected_: #if someone connected
@@ -138,6 +142,11 @@ tämän jälkeen pittää lähettää kartta clientille:
 
 soccketille pitää asettaa uusi timeout:
 >> connection.SetTimeout(0.001) #set new timeout
+
+
+ota viestine pakkaus pois käytöstä:
+>> connection.compress_messages_ = False
+
 
 Pelin alustus on valmis, käynnistä se:
 >> Run(gamedata:object,connection:object = None)

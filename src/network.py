@@ -8,12 +8,12 @@ import sys
 
 
 class Server:
-    def __init__(self,port:int,connection_timeout:int = 2):#constructor
+    def __init__(self,port:int,connection_timeout:int = 2,compress_messages:bool=True):#constructor
         self.socket_ = socket.socket()  # create socket object
         self.port_ = port
         self.error_message_ = ""
 
-        self.compress_messages_ = False #compress sent message and decompress incoming messages
+        self.compress_messages_ = compress_messages #compress sent message and decompress incoming messages
 
 
         self.socket_.settimeout(connection_timeout)
@@ -251,14 +251,14 @@ class Server:
 
 
 class Client:
-    def __init__(self,ipaddress:str,port:int):
+    def __init__(self,ipaddress:str,port:int,compress_messages:bool=True):
         self.socket_ = socket.socket()  # create socket object
         self.socket_.settimeout(5)
         self.ipaddress_ = ipaddress
         self.port_ = port
         self.error_message_ = ""
 
-        self.compress_messages_ = False #compress sent message and decompress incoming messages
+        self.compress_messages_ = compress_messages #compress sent message and decompress incoming messages
 
         try: #try connect to server
             self.socket_.connect((ipaddress, port))

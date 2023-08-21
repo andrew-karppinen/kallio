@@ -26,7 +26,7 @@ def ReturnMaps(multiplayer:bool):
     path = os.getcwd()
     maplist = []
 
-    if multiplayer == True: #multiplayer maps
+    if  multiplayer == True: #multiplayer maps
         path += "/maps/multiplayer"
         for i in os.listdir(path):
             maplist.append((str(i), f"maps/multiplayer/{i}"))
@@ -64,7 +64,6 @@ class Menu:
 
         self.level_completed_ = False
 
-        self.resolutions_ = [('1600x900',(1600,900)),('1920x1080',(1920,1080)),('1056x594',(1056,594)),('1280x720', (1280,720))] #resolutions list
 
 
         #settings temp variables:
@@ -81,7 +80,8 @@ class Menu:
         self.map_file_path_ = ""  #mapfile path  #if server or singleplayer
 
 
-        #current resolution:
+        self.resolutions_ = [('1600x900',(1600,900)),('1920x1080',(1920,1080)),('1056x594',(1056,594)),('1280x720', (1280,720))] #resolutions list
+
         #default settings:
         self.resolution_ = [1600,900]
         self.resolution_index_ = 0
@@ -176,7 +176,7 @@ class Menu:
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
 
-            connection = Server(self.port_,self.timeout_) #create connection object
+            connection = Server(self.port_,self.timeout_,True) #create connection object
 
             if connection.connected_: #if someone connected
 
@@ -193,7 +193,12 @@ class Menu:
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
+                        connection.compress_messages_ = False
                         self.level_completed_ =  Run(gamedata, connection) #start game
+
+                        del gamedata  # delete gamedata object from memory
+                        del connection  # delete connection object from memory
+
                         self.BackToMenu()
 
 
@@ -215,7 +220,7 @@ class Menu:
 
         self.menu_.add.label(f"your ip address:")
         self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
-        self.menu_.add.selector("Map:", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
+        self.menu_.add.selector("Map: ", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
         self.menu_.add.text_input('Port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
         self.menu_.add.text_input('Join number:', default= self.join_id_, onchange=self.SetJoinid) #set join id
         self.menu_.add.text_input('Timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
@@ -229,7 +234,7 @@ class Menu:
             #try connect to server
 
             gamedata = GameData(True,False) #create gamedata
-            connection = Client(self.server_ip_, self.port_)  #create connection object
+            connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
             if connection.connected_: #if the connection was successful
                 connection.SendReadyToStart(self.join_id_)
@@ -247,7 +252,12 @@ class Menu:
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
 
                         connection.SetTimeout(0.001) #set new timeout
+                        connection.compress_messages_ = False
                         self.level_completed_ = Run(gamedata, connection)  # start game
+
+                        del gamedata  # delete gamedata object from memory
+                        del connection  # delete connection object from memory
+
                         self.BackToMenu()
 
 
@@ -277,20 +287,26 @@ class Menu:
             gamedata = GameData(False,False)  # create gamedata
 
 
+            try:
+                mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
+                SetMap(gamedata, mapstr,True)  # convert str to map list
 
-            mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
-            SetMap(gamedata, mapstr,True)  # convert str to map list
+                gamedata.InitDisplay(self.screen_)  #set window to gamedata object
 
-            gamedata.InitDisplay(self.screen_)  #set window to gamedata object
+                self.level_completed_ = Run(gamedata) #start game
 
-            self.level_completed_ = Run(gamedata) #start game
-            self.BackToMenu()
+                del gamedata #delete gamedata object from memory
 
+                self.BackToMenu()
+            except: #if map file is invalid
+                self.menu_.clear()
+                self.menu_.add.label("Invalid map file!")
+                self.menu_.add.button("Main menu", self.MainMenu)
 
 
         self.menu_.clear()
         self.menu_.add.button("Play",StartSingleplayer,self)
-        self.menu_.add.selector("Map:", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
+        self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
         self.menu_.add.button("Back",self.MainMenu)
 
 
@@ -344,7 +360,7 @@ class Menu:
 
         self.menu_.clear() #clear menu
         self.menu_.add.toggle_switch("Full screen",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
-        self.menu_.add.selector('Resolution:', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
+        self.menu_.add.selector('Resolution: ', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("Back",self.MainMenu)
 
@@ -363,7 +379,7 @@ class Menu:
         self.menu_.add.button('Singleplayer', self.SinglePlayerMenu)
         self.menu_.add.button('Multiplayer', self.MultiPlayerMenu)
         self.menu_.add.button("Info",self.InfoMenu)
-        self.menu_.add.button("settings",self.SettingsMenu)
+        self.menu_.add.button("Settings",self.SettingsMenu)
         self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
         self.menu_.mainloop(self.screen_)
 
@@ -374,6 +390,7 @@ class Menu:
         '''
         self.menu_.clear()
         pygame.display.set_caption('py-boulderdash') #rename window
+
 
 
         if self.level_completed_ == True:
