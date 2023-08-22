@@ -13,7 +13,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     '''
 
 
-    #can move onlu 1 direction:
+    #can move only 1 direction:
     if right == True:
         left == False;up = False; down = False;
     elif left == True:
@@ -42,8 +42,8 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_+1) #try collect point
             gamedata.local_player_position_x_ += 1 #move player
             move = True
-            if gamedata.local_player_.animated_ == True: #if player is animated
-                gamedata.local_player_.AnimateToRight() #animate player image
+
+            gamedata.local_player_.AnimateToRight() #animate player image
 
         #if no default tile or diamond
         #if pushing objects
@@ -66,6 +66,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
                     gamedata.local_player_position_x_ += 2 #move player
+                    gamedata.local_player_.AnimateToRight()  # animate player image
 
                     door = True
 
@@ -102,7 +103,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
                     gamedata.local_player_position_x_ -= 2 #move player
-
+                    gamedata.local_player_.AnimateToLeft()  # animate player image
                     door = True
 
 
@@ -124,6 +125,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_].direction_ == 1: #if the direction of the door is to the up
                     gamedata.local_player_position_y_ -= 2 #move player
+                    gamedata.local_player_.AnimateToHorizontal()  # animate player image
 
                     door = True
 
@@ -144,6 +146,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
                     gamedata.local_player_position_y_ += 2  # move player
+                    gamedata.local_player_.AnimateToHorizontal()  # animate player image
 
                     door = True
 
@@ -561,12 +564,12 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     gamedata.DrawInfoPanel()
 
 
-    #draw "GAME OVER" text
+    #draw "GAME OVER" text:
     timesleep = pygame.time.get_ticks()
-    text = gamedata.big_size_font_.render("GAME OVER", True,(153, 0, 0),(0,0,0))
+    text = gamedata.big_size_font_.render("GAME OVER", True,(153, 0, 0),(0,0,0)) #create text
 
-    while pygame.time.get_ticks() < timesleep +700: #wait 0,5 seconds
-        gamedata.screen_.blit(text,(gamedata.screen_width_//2 - text.get_width()//2,gamedata.screen_height_ //2- gamedata.infopanel_height_))
+    while pygame.time.get_ticks() < timesleep +700: #wait 0,7 seconds
+        gamedata.screen_.blit(text,(gamedata.screen_width_//2 - text.get_width()//2,gamedata.screen_height_ //2- gamedata.infopanel_height_)) #draw text to screen
         pygame.display.flip()  #update screen
 
 
@@ -576,7 +579,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
     #execute a other player actions
     action = action.split(":") #split str to list
-    position_x = gamedata.remote_player_position_x_ #temp variables
+    position_x = gamedata.remote_player_position_x_ #rename variable name to short in this function
     position_y = gamedata.remote_player_position_y_
 
     if action[0] == "moveright":
@@ -634,7 +637,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
     elif action[0] == "pushright":
 
         if type(gamedata.current_map_[position_y][position_x + 1]) == Stone: #if the player pushes a stone
-            gamedata.current_map_[position_y][position_x + 1].Rotate(1) #rotae stone image
+            gamedata.current_map_[position_y][position_x + 1].Rotate(1) #rotate stone image
 
         gamedata.remote_player_position_x_ += 1  # move player
         gamedata.current_map_[position_y][position_x+2] = gamedata.current_map_[position_y][position_x+1] #place the pushing object to new location
@@ -674,7 +677,7 @@ def Run(gamedata:object,connection:object = None)->bool:
     '''
     game main function
 
-    return True if level complete
+    return: level_completed:bool,connection_fail:bool
     '''
 
     right = False
@@ -690,8 +693,9 @@ def Run(gamedata:object,connection:object = None)->bool:
 
     clock = pygame.time.Clock() #fps limit
 
-    movelimit = 0 #gravity and monster
+    movelimit = 0 #gravity
     movelimit2 = 0 #player move
+    movelimit3 = 0 #monster move
 
     timelimit = 0 #send collected points every 1 seconds
     timelimit2 = 0 #sets player image to default image if no move
@@ -700,8 +704,12 @@ def Run(gamedata:object,connection:object = None)->bool:
 
     while True: #game main loop
 
+        #Todo update this?
         if gamedata.total_points_collected_ >= gamedata.required_score_: #if required score have been collected
             Goal.goal_is_open = True #change goal image
+        else:
+            Goal.goal_is_open = False #change goal image
+
 
 
         if gamedata.local_player_in_goal_: #if local player in goal
@@ -710,11 +718,11 @@ def Run(gamedata:object,connection:object = None)->bool:
                 if gamedata.remote_player_in_goal_ == True:
                     #level completed:
                     connection.CloseSocket()  # close socket
-                    return True # back to menu
+                    return True,False # back to menu, level completed
 
             else: #if singleplayer
 
-                return(True) #back to menu
+                return True,False #back to menu
 
 
         #timer:
@@ -728,10 +736,8 @@ def Run(gamedata:object,connection:object = None)->bool:
         if gamedata.multiplayer_:
             if connection.connected_ == True:
 
-                try: #check connection
-                    connection.Read()  # read socket
-                except:
-                    print("connection problem")
+                connection.Read()  # read socket
+
 
                 try: # read the content of the message
 
@@ -765,17 +771,20 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
-                        return False #back to menu, level not completed
+                        return False,False #back to menu, level not completed
 
                     connection.BufferNext() #delete first message from buffer
 
 
-                except Exception as error_message: #if error
-                    print(error_message) #print error message to console
+                except Exception as error_message: #incorrect message
+                    print("incorrect socket message")
+                    print(error_message)
+                    connection.CloseSocket()  # close socket
+                    return False,True  # back to menu, level not completed
 
-
-
-
+            else: #if connection lost
+                connection.CloseSocket()  # close socket
+                return False, True  # back to menu, level not completed
 
         for event in pygame.event.get(): #pygame event loop
             #read keyboard
@@ -824,7 +833,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                 if gamedata.multiplayer_:
                     connection.SendGameExit()
                     connection.CloseSocket()  #close socket
-                return False #back to menu
+                return False,False #back to menu
 
         if enter == True: #if enter is pressed
             if pausemenu_is_active == True: #if pausemenu is active
@@ -838,18 +847,25 @@ def Run(gamedata:object,connection:object = None)->bool:
                     if gamedata.multiplayer_: #if multiplayer
                         connection.SendGameExit()
                         connection.CloseSocket()  #close socket
-                    return False  # back to menu
+                    return False,False  # back to menu
 
 
 
-        if pygame.time.get_ticks() > movelimit + 140: #gravity and monster moving
+        if pygame.time.get_ticks() > movelimit + 140: #gravity 140ms
             movelimit = pygame.time.get_ticks()
             Gravity(gamedata,connection)
+
+
+
+        if pygame.time.get_ticks() > movelimit3 + 200: #monster moving 200ms
+            movelimit3 = pygame.time.get_ticks()
             MoveMonsters(gamedata,connection)
 
 
+
+
         if [right, left, up, down].count(True) > 0:  #if arrow key is pressed
-            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit
+            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit 100ms
                 movelimit2 = pygame.time.get_ticks()
                 if pausemenu_is_active == False:
 

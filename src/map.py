@@ -140,7 +140,7 @@ def MapListToStr(maplist: list):
 
 
 
-def SetMap(gamedata:object,mapstr:str,initial:bool = False):
+def SetMap(gamedata:object,mapstr:str,initial:bool = False)->None:
     '''
     set full map
     Convert mapstr to map list
@@ -163,7 +163,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
         gamedata.original_mapstr_ = mapstr
 
     maplist2d = [['' for i in range(gamedata.map_width_)] for j in range(gamedata.map_height_)] #create 2d array
-
     number = ""
 
     y = 0
@@ -217,7 +216,6 @@ def SetMap(gamedata:object,mapstr:str,initial:bool = False):
 
 
 
-
             command = gamedata.mapsymbols_[number]['command']  # convert numbers to objects
             exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
 
@@ -242,7 +240,7 @@ def ReadMapFile(file_path:str):
     '''
     read txt file
 
-    return map:str, height:int, width:int, multiplayer:bool, required_score:int, timelimit:int
+    return: map:str, height:int, width:int, multiplayer:bool, required_score:int, timelimit:int
     '''
 
 
@@ -251,6 +249,7 @@ def ReadMapFile(file_path:str):
     file = open(file_path, 'r')
     #read rows to list
     rows = file.readlines()
+
     #close file
     file.close()
 

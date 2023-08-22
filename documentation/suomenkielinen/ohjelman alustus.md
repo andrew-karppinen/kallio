@@ -152,11 +152,19 @@ Pelin alustus on valmis, käynnistä se:
 >> Run(gamedata:object,connection:object = None)
 
 
+
+
+# Huomioitavaa
+jos yhteys katkeaa serverin eikä client olioiden Read() metodi eikä viestien lähetys aiheuta virheitä
+mutta connected_ atribuutti muutta False muotoon
+
+
+
 # Run() funktio
 
 >> Run(gamedata:object,connection:object = None)
 
-funktio on itse pelin pääfunktio ja paluattaa True/False riippuen päästinkö kartta läpi
+funktio on itse pelin pääfunktio ja paluattaa kaksi bool tyyppistä muuttujaa, ensimmäinen kertoo päästiinkö kartta läpi, ja toinen katkesiko yhteys(singelplayerissä aina False)
 
 
 

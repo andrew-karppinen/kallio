@@ -51,9 +51,9 @@ class Menu:
         #MENUDATA
         self.screen_ =  pygame.display.set_mode((1600, 900)) #create window
         pygame.display.set_caption('py-boulderdash') #rename window
+        self.error_message_ = ""
 
         # create menu theme
-        font8bit = pygame_menu.font.FONT_8BIT
         font = pygame_menu.font.FONT_FRANCHISE
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
                                     widget_font_color=(255, 255, 255), widget_padding=6, widget_font_size=38,
@@ -62,8 +62,10 @@ class Menu:
 
         self.menu_ = pygame_menu.Menu('py boulderdash', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
 
-        self.level_completed_ = False
 
+        #game return values:
+        self.level_completed_ = False
+        self.connection_lost_ = False
 
 
         #settings temp variables:
@@ -171,13 +173,15 @@ class Menu:
     def ServerMenu(self):
 
         def StartServer(self):
+
+            #Todo check map cortness before sending it
+
             gamedata = GameData(True,True)  # create gamedata
             gamedata.server_ = True
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
 
             connection = Server(self.port_,self.timeout_,True) #create connection object
-
             if connection.connected_: #if someone connected
 
                 connection.Read()  # read messages
@@ -191,10 +195,10 @@ class Menu:
                         SetMap(gamedata, mapstr, True)  # set map(local) convert str to map list
 
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
-
                         connection.SetTimeout(0.001) #set new timeout
-                        connection.compress_messages_ = False
-                        self.level_completed_ =  Run(gamedata, connection) #start game
+                        connection.compress_messages_ = False #disable message compression
+
+                        self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
 
                         del gamedata  # delete gamedata object from memory
                         del connection  # delete connection object from memory
@@ -233,6 +237,7 @@ class Menu:
         def StartClient(self):
             #try connect to server
 
+
             gamedata = GameData(True,False) #create gamedata
             connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
@@ -250,10 +255,10 @@ class Menu:
                         connection.BufferNext() #delete first message from buffer
 
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
-
                         connection.SetTimeout(0.001) #set new timeout
-                        connection.compress_messages_ = False
-                        self.level_completed_ = Run(gamedata, connection)  # start game
+                        connection.compress_messages_ = False #disable message compression
+
+                        self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
 
                         del gamedata  # delete gamedata object from memory
                         del connection  # delete connection object from memory
@@ -290,21 +295,25 @@ class Menu:
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
                 SetMap(gamedata, mapstr,True)  # convert str to map list
+            except: #if incorrect map file
 
+                self.menu_.clear()#clear menu
+                self.menu_.add.label("Incorrect map file!")
+                self.menu_.add.button("Play", StartSingleplayer, self)
+                self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath,default=1)  # map select
+                self.menu_.add.button("Back", self.MainMenu)
+
+            else: #no error
                 gamedata.InitDisplay(self.screen_)  #set window to gamedata object
 
-                self.level_completed_ = Run(gamedata) #start game
+                self.level_completed_,self.connection_lost_ = Run(gamedata) #start game
 
                 del gamedata #delete gamedata object from memory
 
                 self.BackToMenu()
-            except: #if map file is invalid
-                self.menu_.clear()
-                self.menu_.add.label("Invalid map file!")
-                self.menu_.add.button("Main menu", self.MainMenu)
 
 
-        self.menu_.clear()
+        self.menu_.clear()#clear menu
         self.menu_.add.button("Play",StartSingleplayer,self)
         self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
         self.menu_.add.button("Back",self.MainMenu)
@@ -392,11 +401,15 @@ class Menu:
         pygame.display.set_caption('py-boulderdash') #rename window
 
 
+        if self.connection_lost_ == True:
+            self.menu_.add.label("Connection lost!")
 
-        if self.level_completed_ == True:
-            self.menu_.add.label("Level completed!")
         else:
-            self.menu_.add.label("Level failed!")
+
+            if self.level_completed_ == True:
+                self.menu_.add.label("Level completed!")
+            else:
+                self.menu_.add.label("Level failed!")
 
 
         self.menu_.add.button("Main menu",self.MainMenu)

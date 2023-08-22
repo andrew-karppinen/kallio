@@ -26,3 +26,5 @@ True
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
+
+kartan numeroiden merkitys on tallennettu /src/config/tile commands config.json tiedostoon

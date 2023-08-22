@@ -21,9 +21,9 @@ class Server:
 
 
         try:
-            self.socket_.bind(('', port))
-            print("socket binded to %s" % (port))  # set port
-            self.socket_.listen(1)
+            self.socket_.bind(('', port)) #bind socket
+            print("socket binded to %s" % (port))
+            self.socket_.listen(1) #Listen for incoming connections
             print("socket is listening")
 
             try:
@@ -31,7 +31,7 @@ class Server:
                 self.connected_ = True
                 self.client_.settimeout(0.1)
             except Exception as message:
-                self.error_message_ = message
+                self.error_message_ = str(message)
                 self.connected_ = False
 
         except Exception as message:
@@ -63,45 +63,51 @@ class Server:
     def Read(self)->None:
         #read socket message to buffer
 
+
         try:
-            messages = self.client_.recv(10000) #read messages
-            if self.compress_messages_ == True:
-                messages = zlib.decompress(messages).decode()  # decompress and decode
-            else:
-                messages = messages.decode()  # only decode
-
-            messages = messages.split(";") #split messages to list
-
-
-            for message in messages:
-                if len(message) == 0: #if no message or message is empty
-                    pass
+            try:
+                messages = self.client_.recv(10000) #read messages
+                if self.compress_messages_ == True:
+                    messages = zlib.decompress(messages).decode()  # decompress and decode
                 else:
-                    # exmine message data type and set data
-                    if message[0:7] == "action:":
-                        self.__buffer.append(["action",message[7:]])
+                    messages = messages.decode()  # only decode
 
-                    elif message[0:7] == "points:":
-                        self.__buffer.append(["points",int(message[7:])])
-
-                    elif message[0:6] == "ingoal":
-                        self.__buffer.append(["ingoal", None])
-
-                    elif message[0:4] == "map:":  # if message is map
-                        self.__buffer.append(["map",message[4:]])
-
-                    elif message[0:13] == "readytostart:": #if message is "readytostart"
-                        self.__buffer.append(["readytostart",message[13:]])
-
-                    elif message[0:9] == "gameexit":  # if message is gameexit
-                        self.__buffer.append(["gameexit",None])
-
-                    elif message[0:13] == "restartlevel":
-                        self.__buffer.append(["restartlevel",None])
+                messages = messages.split(";") #split messages to list
 
 
-        except TimeoutError:
-            pass
+                for message in messages:
+                    if len(message) == 0: #if no message or message is empty
+                        pass
+                    else:
+                        # exmine message data type and set data
+                        if message[0:7] == "action:":
+                            self.__buffer.append(["action",message[7:]])
+
+                        elif message[0:7] == "points:":
+                            self.__buffer.append(["points",int(message[7:])])
+
+                        elif message[0:6] == "ingoal":
+                            self.__buffer.append(["ingoal", None])
+
+                        elif message[0:4] == "map:":  # if message is map
+                            self.__buffer.append(["map",message[4:]])
+
+                        elif message[0:13] == "readytostart:": #if message is "readytostart"
+                            self.__buffer.append(["readytostart",message[13:]])
+
+                        elif message[0:9] == "gameexit":  # if message is gameexit
+                            self.__buffer.append(["gameexit",None])
+
+                        elif message[0:13] == "restartlevel":
+                            self.__buffer.append(["restartlevel",None])
+
+
+            except TimeoutError: #if timeouterror
+                pass
+        except: #connection failed
+            self.connected_ = False
+
+
 
 
 
@@ -139,10 +145,16 @@ class Server:
     def __SendMessage(self, message:str)->None:  # private method
 
         message += ";"
+
         if self.compress_messages_ == True:
-            self.client_.send(zlib.compress(message.encode()))  # compress and send message
+            message = zlib.compress(message.encode())  #compress and send message
         else:
-            self.client_.send(message.encode())  # send message without compress
+            message = message.encode()  #send message without compress
+
+        try:
+            self.client_.send(message) #send message
+        except: #if connection lost
+            self.connected_ = False
 
     def SendMap(self,mapstr:str)->None:
         #send full map
@@ -256,6 +268,8 @@ class Client:
         self.socket_.settimeout(5)
         self.ipaddress_ = ipaddress
         self.port_ = port
+
+        self.connected_ = False
         self.error_message_ = ""
 
         self.compress_messages_ = compress_messages #compress sent message and decompress incoming messages
@@ -290,50 +304,58 @@ class Client:
 
     def Read(self)->None:
         #read socket message
+
+
         try:
-            messages = self.socket_.recv(10000) #read socket
+            try:
+                messages = self.socket_.recv(10000) #read socket
 
-            if self.compress_messages_ == True:
-                messages = zlib.decompress(messages).decode() #decompress and decode
-            else:
-                messages = messages.decode() #only decode
-
-
-            messages = messages.split(";")  # split messages to list
-
-            for message in messages:
-
-                if message[0:7] == "action:":
-                    self.__buffer.append(["action",message[7:]])
-
-                elif message[0:7] == "points:":
-                    self.__buffer.append(["points",int(message[7:])])
-
-                elif message[0:6] == "ingoal":
-                    self.__buffer.append(["ingoal", None])
-
-                elif message[0:4] == "map:":  # if message is map
-                    self.__buffer.append(["map",message[4:]])
+                if self.compress_messages_ == True:
+                    messages = zlib.decompress(messages).decode() #decompress and decode
+                else:
+                    messages = messages.decode() #only decode
 
 
-                elif message[0:10] == "startinfo:": #if message is startinfo
-                    datalist = message[10:].split(',') #split str to list
-                    map_height = int(datalist[0])  #map size y
-                    map_width = int(datalist[1])  #map size x
-                    required_score = int(datalist[2]) #required_score
-                    timelimit = int(datalist[3]) #timelimit
+                messages = messages.split(";")  # split messages to list
 
-                    self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
+                for message in messages:
 
-                elif message[0:8] == "gameexit": #if message is gameexit
-                    self.__buffer.append(["gameexit",None])
- 
-                elif message[0:13] == "restartlevel":
-                    self.__buffer.append(["restartlevel",None])
+                    if message[0:7] == "action:":
+                        self.__buffer.append(["action",message[7:]])
+
+                    elif message[0:7] == "points:":
+                        self.__buffer.append(["points",int(message[7:])])
+
+                    elif message[0:6] == "ingoal":
+                        self.__buffer.append(["ingoal", None])
+
+                    elif message[0:4] == "map:":  # if message is map
+                        self.__buffer.append(["map",message[4:]])
 
 
-        except TimeoutError: 
-            pass
+                    elif message[0:10] == "startinfo:": #if message is startinfo
+                        datalist = message[10:].split(',') #split str to list
+                        map_height = int(datalist[0])  #map size y
+                        map_width = int(datalist[1])  #map size x
+                        required_score = int(datalist[2]) #required_score
+                        timelimit = int(datalist[3]) #timelimit
+
+                        self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
+
+                    elif message[0:8] == "gameexit": #if message is gameexit
+                        self.__buffer.append(["gameexit",None])
+
+                    elif message[0:13] == "restartlevel":
+                        self.__buffer.append(["restartlevel",None])
+
+
+            except TimeoutError: #if timeouterror
+                pass
+        except: #connection failed
+            self.connected_ = False
+
+
+
 
     @property
     def data_type_(self)->str:
@@ -371,10 +393,14 @@ class Client:
         message += ";"
 
         if self.compress_messages_ == True:
-            self.socket_.send(zlib.compress(message.encode()))  # compress and send message
+            message = zlib.compress(message.encode())  # compress and send message
         else:
-            self.socket_.send(message.encode())  #send message without compress
+            message = message.encode()  #send message without compress
 
+        try:
+            self.socket_.send(message) #send message
+        except: #if connection lost
+            self.connected_ = False
 
     def SendReadyToStart(self,check_number:str)->None:
         message = f"readytostart:{check_number}"

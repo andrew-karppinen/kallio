@@ -26,10 +26,10 @@
     "11 3":{"name":"falling stone direction 3","command":"Stone(True,3)","command2": null},
     "11 4":{"name":"falling stone direction 4","command":"Stone(True,4)","command2": null},
 
-    "14":{"name":"monster which looking to right","command":"Monster(1)","command2": null},
-    "15":{"name":"monster which looking to down","command":"Monster(2)","command2": null},
-    "16":{"name":"monster which looking to left","command":"Monster(3)","command2": null},
-    "17":{"name":"monster which looking to up","command":"Monster(4)","command2": null},
+    "14":{"name":"monster which goes to right","command":"Monster(1)","command2": null},
+    "15":{"name":"monster which goes to right","command":"Monster(2)","command2": null},
+    "16":{"name":"monster which goes to right","command":"Monster(3)","command2": null},
+    "17":{"name":"monster which goes to right","command":"Monster(4)","command2": null},
 
     "18":{"name":"not a falling diamond","command":"Diamond(False)","command2": null},
     "18 1":{"name":"not a falling diamond direction 1","command":"Diamond(False,1)","command2": null},
