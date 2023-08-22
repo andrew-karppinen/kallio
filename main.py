@@ -12,7 +12,7 @@ pygame.init()
 if 0:  # client
     gamedata = GameData(True, False) #create gamedata object
 
-    connection = Client("localhost", 1234) #create client object
+    connection = Client("localhost", 1234,True) #create client object
 
     if connection.connected_:
         connection.SendReadyToStart("55664")
@@ -35,7 +35,9 @@ if 0:  # client
                 gamedata.InitDisplay(screen)  # set window to gamedata object
 
                 connection.SetTimeout(0.001)  # set new timeout
-                level_completed = Run(gamedata, connection)  # start game
+                connection.compress_messages_ = False  # disable message compression
+
+                level_completed,connection_lost  = Run(gamedata, connection)  # start game
                 print("tässä3", level_completed)
 
 
@@ -46,7 +48,7 @@ if 0:  # server
     mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer1.txt") #read map file
 
 
-    connection = Server(1234,10) #create server object
+    connection = Server(1234,10,True) #create server object
 
     if connection.connected_:
         connection.Read()  # read messages
@@ -63,12 +65,13 @@ if 0:  # server
                 gamedata.InitDisplay(screen)  # set window to gamedata object
 
                 connection.SetTimeout(0.001)  # set new timeout
+                connection.compress_messages_ = False  # disable message compression
 
-                level_completed = Run(gamedata, connection)
+                level_completed,connection_lost = Run(gamedata, connection)
                 print(level_completed)
 
 
-if 1:  # if singleplayer
+if 0:  # if singleplayer
     gamedata = GameData(False, False)  # create gamedata
 
 
@@ -82,7 +85,7 @@ if 1:  # if singleplayer
 
     gamedata.InitDisplay(screen)  # set window to gamedata object
 
-    level_completed = Run(gamedata, None) #start game
+    level_completed,connection_lost  = Run(gamedata, None) #start game
 
     pygame.display.quit() #close screen
 
