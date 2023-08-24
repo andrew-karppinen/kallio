@@ -1,4 +1,5 @@
 import pygame
+import os
 import json
 from src import *
 
@@ -7,13 +8,19 @@ class GameData:
     game data
     '''
 
-    def __init__(self,multiplayer:bool = False,server:bool = False):
+    def __init__(self,multiplayer:bool = False,server:bool = False,font_file_path:str=""):
 
 
         #window data:
         self.screen_ = None #pygame window
-        self.font_ = self.font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",30) #load font from file, font size 30
-        self.big_size_font_ = pygame.font.Font("media/fonts/Almo_Andrea_FontlabARROW.ttf",60) #load font from file, font size 60
+
+        if font_file_path != "": #if the path to the font file is given
+            self.font_ = self.font_ = pygame.font.Font(font_file_path,30) #load font from file, font size 30
+            self.big_size_font_ = pygame.font.Font(font_file_path,60) #load font from file, font size 60
+        else: #file path is not given, load default sysfont
+            self.font_ = self.font_ = pygame.font.SysFont("", 30)  # load sysfont
+            self.big_size_font_ = pygame.font.SysFont("", 60)  # load sysfont
+
 
 
         self.tile_size_ = 50 #tilesize y*x

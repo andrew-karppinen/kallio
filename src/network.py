@@ -247,7 +247,6 @@ class Server:
         self.__SendMessage(message)
 
     def SendGameExit(self): #if game exit
-        #win False = game over, True = level complete
         message = "gameexit"
         self.__SendMessage(message) #send message
 
@@ -466,7 +465,6 @@ class Client:
 
 
     def SendGameExit(self)->None: #if game exit
-        #win False = game over, True = level complete
         message = "gameexit"
 
         self.__SendMessage(message)  # send message

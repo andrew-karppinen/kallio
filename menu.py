@@ -32,6 +32,7 @@ def ReturnMaps(multiplayer:bool):
             maplist.append((str(i), f"maps/multiplayer/{i}"))
 
 
+
     elif multiplayer == False: #singleplayer maps
         path += "/maps/singleplayer"
         for i in os.listdir(path):
@@ -51,16 +52,20 @@ class Menu:
         #MENUDATA
         self.screen_ =  pygame.display.set_mode((1600, 900)) #create window
         pygame.display.set_caption('py-boulderdash') #rename window
-        self.error_message_ = ""
+
 
         # create menu theme
-        font = pygame_menu.font.FONT_FRANCHISE
+
+        #find any font file from /media/font/ amd load it:
+        self.font_ = f"media/font/{os.listdir('media/font')[0]}"
+
+
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
-                                    widget_font_color=(255, 255, 255), widget_padding=6, widget_font_size=38,
-                                    title_font=font, title_font_size=65)
+                                    widget_font_color=(255, 255, 255), widget_padding=6,
+                                    title_font_size=49,widget_font = self.font_,widget_font_size=38)
 
 
-        self.menu_ = pygame_menu.Menu('py boulderdash', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
+        self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
 
 
         #game return values:
@@ -111,7 +116,7 @@ class Menu:
                 self.fullscreen_ = False
                 self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
 
-            self.menu_ = pygame_menu.Menu('py boulderdash', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
         except: #invalid json file
             self.SaveSettings() #save default settings to json file
             self.ReadSettings()
@@ -176,7 +181,7 @@ class Menu:
 
             #Todo check map cortness before sending it
 
-            gamedata = GameData(True,True)  # create gamedata
+            gamedata = GameData(True,True,self.font_)  # create gamedata
             gamedata.server_ = True
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
@@ -238,7 +243,7 @@ class Menu:
             #try connect to server
 
 
-            gamedata = GameData(True,False) #create gamedata
+            gamedata = GameData(True,False,self.font_) #create gamedata
             connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
             if connection.connected_: #if the connection was successful
@@ -289,7 +294,7 @@ class Menu:
     def SinglePlayerMenu(self):
 
         def StartSingleplayer(self):
-            gamedata = GameData(False,False)  # create gamedata
+            gamedata = GameData(False,False,self.font_)  # create gamedata
 
 
             try:
@@ -363,7 +368,7 @@ class Menu:
             self.SaveSettings() #save settings to json file
 
             # update menu object:
-            self.menu_ = pygame_menu.Menu('py boulderdash', 600, 500, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 600, 500, surface=self.screen_,theme=self.menu_theme_)  # create menu object
 
             self.MainMenu() #back to mainmenu
 
