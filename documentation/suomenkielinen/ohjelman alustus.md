@@ -15,7 +15,10 @@ ohjelman joka importta tämän on oltava src kansion ylähakemistossa
 
 
 luo gamedata olio:
->> gamedata = Gamedata(moninpeli:bool,server:bool):
+>> gamedata = Gamedata(moninpeli:bool,server:bool,font_file_path:str):
+
+Jos font_file_path on tyhjä käytetään järjestelmän oletusfonttia, ei suositella.
+
 
 lue kartan tiedot:
 >> mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = ReadMapFile(map_file_path) #moninpelissä client saa nämä tiedot socketin kautta
