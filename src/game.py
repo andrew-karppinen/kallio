@@ -545,7 +545,7 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
 
     if connection != None and sendrestartlevel == True:
-            connection.SendRestartLevel()
+            connection.SendRestartLevel() #send restart level message
 
 
     SetMap(gamedata, gamedata.original_mapstr_, True)  #set original map to current map
@@ -584,6 +584,14 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
     if action[0] == "moveright":
         if action[1] == "0": #no door
+
+            #bug check:
+            #if a remote player tries to go through a stone
+            #move the stone downwards
+            if type(gamedata.current_map_[position_y][position_x + 1]) in gamedata.pushing_objects_ :
+                gamedata.current_map_[position_y+1][position_x + 1] = gamedata.current_map_[position_y][position_x + 1]
+
+            #move player:
             gamedata.remote_player_position_x_ += 1 #move player
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -597,7 +605,16 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
     elif action[0] ==  "moveleft":
         if action[1] == "0": #no door
-            gamedata.remote_player_position_x_ -= 1 #move player
+
+
+            #bug check:
+            #if a remote player tries to go through a stone
+            #move the stone downwards
+            if type(gamedata.current_map_[position_y][position_x - 1]) in gamedata.pushing_objects_ :
+                gamedata.current_map_[position_y+1][position_x - 1] = gamedata.current_map_[position_y][position_x - 1]
+
+            #move player:
+            gamedata.remote_player_position_x_ -= 1
             gamedata.current_map_[position_y][position_x-1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
