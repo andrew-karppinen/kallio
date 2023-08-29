@@ -225,19 +225,21 @@ class Tnt:
 
 class Explosion:
     #class variables:
-    image = None
+    images = []
 
-    def SetImage(image:pygame.surface):
-        Explosion.image = image
+    def SetImage(image1,image2,image3,image4):
+        Explosion.images = [image1,image2,image3,image4]
 
     def ScaleImages(tile_size:int):
-        Explosion.image = pygame.transform.scale(Explosion.image, (tile_size, tile_size))
-    def __init__(self,counter:int = 1):
-        self.counter_ = counter #1,2
+
+        for i in range(len(Explosion.images)):
+            Explosion.images[i] = pygame.transform.scale(Explosion.images[i], (tile_size, tile_size))
+    def __init__(self,counter:int = 0):
+        self.counter_ = counter
 
     @property
     def image_(self):
-        return (Explosion.image)
+        return(Explosion.images[self.counter_//4])
 
 class Bedrock:
     #class variables:

@@ -117,7 +117,14 @@ class GameData:
         monsterimage2 = pygame.image.load("media/monster2.png")
         stoneimage = pygame.image.load("media/stone.png")
         tntimage = pygame.image.load("media/tnt.png")
-        explosionimage = pygame.image.load("media/explosion.png")
+
+        explosionimage1 = pygame.image.load("media/explosion1.png")
+        explosionimage2 = pygame.image.load("media/explosion2.png")
+        explosionimage3 = pygame.image.load("media/explosion3.png")
+        explosionimage4 = pygame.image.load("media/explosion4.png")
+
+
+
         diamondimage = pygame.image.load("media/diamond.png")
         goal_open_image = pygame.image.load("media/goal open.png")
         goal_close_image = pygame.image.load("media/goal close.png")
@@ -130,33 +137,32 @@ class GameData:
         door_up_image = pygame.image.load("media/door up.png")
         door_left_image = pygame.image.load("media/door left.png")
 
-        #set images:
+        #set images to classes:
         Diamond.SetImage(diamondimage)
         Goal.SetImage(goal_open_image,goal_close_image)
-        Explosion.SetImage(explosionimage)
+        Explosion.SetImage(explosionimage1,explosionimage2,explosionimage3,explosionimage4)
         Tnt.SetImage(tntimage)
         DefaultTile.SetImage(sandimage)
         Bedrock.SetImage(bedrockimage)
         Brick.SetImage(brickimage)
         Monster.SetImage(monsterimage1,monsterimage2)
 
-        # setimages:
+        #set images:
         Stone.SetImage(stoneimage)
         Door.SetImage(door_right_image, door_down_image, door_left_image, door_up_image)
 
 
         #set players images
         if self.multiplayer_ == True:
-            if self.server_ == True: #server
+            if self.server_ == True: #if server
                 self.local_player_.SetImage(player1image1, player1image2, player1image3)
                 self.remote_player_.SetImage(player2image1, player2image2, player2image3)
 
-            else: #client
+            else: #if client
                 self.local_player_.SetImage(player2image1, player2image2, player2image3)
                 self.remote_player_.SetImage(player1image1, player1image2, player1image3)
 
-
-        else: #singleplayer
+        else: #if singleplayer
             self.local_player_.SetImage(player1image1, player1image2, player1image3)
             self.remote_player_.SetImage(player2image1, player2image2, player2image3)
 
