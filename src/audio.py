@@ -3,9 +3,9 @@ import json
 
 class Audio:
 
-    def __init__(self):
+    def __init__(self,sfx_is_on:bool= True):
 
-        self.sounds_is_on_ = True
+        self.sfx_is_on_ = sfx_is_on
 
         #read audio file paths from json file:
         f = open("media/audio/audio config.json", "r")  #read json file
@@ -48,27 +48,27 @@ class Audio:
         self.channel_step_ = pygame.mixer.Channel(3)
 
     def PlayExplosionSound(self):
-        if self.sounds_is_on_ == True and self.explosion_ != None: #if sounds is on and audio file download was succesful
+        if self.sfx_is_on_ == True and self.explosion_ != None: #if sounds is on and audio file download was succesful
             self.channel_explosion_.play(self.explosion_)
 
 
     def PlayCollectDiamond(self):
-        if self.sounds_is_on_ == True and self.collect_ != None:  #if sounds is on and audio file download was succesful
+        if self.sfx_is_on_ == True and self.collect_ != None:  #if sounds is on and audio file download was succesful
             self.channel_collect_.play(self.collect_)
 
     def PlayPushSound(self):
 
-        if self.sounds_is_on_ == True and self.push_ != None: #if sounds is on and audio file download was succesful
+        if self.sfx_is_on_ == True and self.push_ != None: #if sounds is on and audio file download was succesful
             self.channel_push_.play(self.push_)
 
     def PlayDropSound(self):
-        if self.sounds_is_on_ == True and self.drop_ != None:  # if sounds is on and audio file download was succesful
+        if self.sfx_is_on_ == True and self.drop_ != None:  # if sounds is on and audio file download was succesful
             if  self.channel_drop_.get_busy() == False: #if the sound is already play
                 self.channel_drop_.play(self.drop_)
 
 
     def PlayStepSound(self):
-        if self.sounds_is_on_ == True and self.step_ != None:  # if sound is on and audio file download was succesful
+        if self.sfx_is_on_ == True and self.step_ != None:  # if sound is on and audio file download was succesful
 
             if self.channel_step_.get_busy() == False: #if the sound is already play
                     self.channel_step_.play(self.step_)

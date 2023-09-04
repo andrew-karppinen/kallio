@@ -56,7 +56,7 @@ class Menu:
 
         # create menu theme
 
-        #find any font file from /media/font/ amd load it:
+        #find any font file from /media/font/ and load it:
         self.font_ = f"media/font/{os.listdir('media/font')[0]}"
 
 
@@ -82,6 +82,7 @@ class Menu:
         self.temp_resolution_ = 0
         self.temp_resolution_index_ = 0
         self.temp_fullscreen_ = False
+        self.temp_sfx_is_on_ = False
 
 
         #GAME START DATA
@@ -98,6 +99,7 @@ class Menu:
         self.resolution_ = [1600,900]
         self.resolution_index_ = 0
         self.fullscreen_ = False
+        self.sfx_is_on_ = True #sound effects is on
 
         self.ReadSettings() #read settings from json file
 
@@ -113,6 +115,7 @@ class Menu:
 
             self.resolution_index_ = settings["resolution index"]
             self.resolution_ = settings["resolutions"][settings["resolution index"]] #set resolution
+            self.sfx_is_on_ = settings["sfx is on"]
 
             if settings["fullscreen"] == True:
                 self.fullscreen_ = True
@@ -137,7 +140,8 @@ class Menu:
             "settings":{
                 "fullscreen":self.fullscreen_,
                 "resolution index":self.resolution_index_,
-                "resolutions":[[1600,900],[1920,1080],[1056,594],[1280,720]]
+                "resolutions":[[1600,900],[1920,1080],[1056,594],[1280,720]],
+                "sfx is on":self.sfx_is_on_
             }
         }
 
@@ -186,7 +190,7 @@ class Menu:
 
             #Todo check map cortness before sending it
 
-            gamedata = GameData(True,True,self.font_)  # create gamedata
+            gamedata = GameData(True,True,self.font_, self.sfx_is_on_)  # create gamedata
             gamedata.server_ = True
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
@@ -248,7 +252,7 @@ class Menu:
             #try connect to server
 
 
-            gamedata = GameData(True,False,self.font_) #create gamedata
+            gamedata = GameData(True,False,self.font_, self.sfx_is_on_) #create gamedata
             connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
             if connection.connected_: #if the connection was successful
@@ -299,7 +303,7 @@ class Menu:
     def SinglePlayerMenu(self):
 
         def StartSingleplayer(self):
-            gamedata = GameData(False,False,self.font_)  # create gamedata
+            gamedata = GameData(False, False, self.font_, self.sfx_is_on_)  # create gamedata
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
                 SetMap(gamedata, mapstr,True)  # convert str to map list
@@ -347,6 +351,7 @@ class Menu:
         self.temp_fullscreen_ = self.fullscreen_
         self.temp_resolution_ = self.resolution_
         self.temp_resolution_index_ = self.resolution_index_
+        self.temp_sfx_is_on_ = self.sfx_is_on_
 
         def SetTempResolution(index:int,resolution:tuple):
             self.temp_resolution_index_ = index[1]
@@ -355,12 +360,15 @@ class Menu:
         def SetTempFullscreen(fullscreen:bool):
             self.temp_fullscreen_ = fullscreen
 
+        def SetTempSFX(sfx:bool):
+            self.temp_sfx_is_on_ = sfx
+
         def ApplySettings():
             #apply settings
             self.resolution_ = self.temp_resolution_
             self.resolution_index_ = self.temp_resolution_index_
             self.fullscreen_ =  self.temp_fullscreen_
-
+            self.sfx_is_on_ = self.temp_sfx_is_on_
 
             #update window
             if self.fullscreen_ == True:
@@ -376,8 +384,9 @@ class Menu:
             self.MainMenu() #back to mainmenu
 
         self.menu_.clear() #clear menu
-        self.menu_.add.toggle_switch("Full screen",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
+        self.menu_.add.toggle_switch("Full screen:",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
         self.menu_.add.selector('Resolution: ', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
+        self.menu_.add.toggle_switch('Sound:', default=self.temp_sfx_is_on_, onchange=SetTempSFX)
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("Back",self.MainMenu)
 

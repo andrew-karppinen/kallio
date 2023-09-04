@@ -10,7 +10,7 @@ class GameData:
     game data
     '''
 
-    def __init__(self,multiplayer:bool = False,server:bool = False,font_file_path:str=""):
+    def __init__(self,multiplayer:bool = False,server:bool = False,font_file_path:str="",sfx_is_on:bool=True):
 
 
         #window data:
@@ -98,7 +98,7 @@ class GameData:
 
         self.SetImages() #set tile images
 
-        self.audio_ = Audio() #crate Audio object
+        self.audio_ = Audio(sfx_is_on) #crate Audio object
 
 
         #private variables:

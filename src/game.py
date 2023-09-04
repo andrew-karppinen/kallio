@@ -281,6 +281,8 @@ def Gravity(gamedata,connection):
 
 
                     else: #if map end
+                        gamedata.audio_.PlayDropSound()  # play audio
+
                         if type(gamedata.current_map_[y][x]) == Tnt:
                             CreateExplosion(gamedata,connection, y, x)
 
