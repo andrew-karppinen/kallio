@@ -311,7 +311,6 @@ class Monster:
     image1 = None
     image2 = None
     def SetImage(image1:pygame.surface,image2:pygame.surface=None):
-        Monster.image = image1
         Monster.image1 = image1
         Monster.image2 = image2
 

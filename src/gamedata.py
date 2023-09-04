@@ -1,7 +1,9 @@
 import pygame
 import os
 import json
+
 from src import *
+
 
 class GameData:
     '''
@@ -96,46 +98,59 @@ class GameData:
 
         self.SetImages() #set tile images
 
+        self.audio_ = Audio() #crate Audio object
+
+
         #private variables:
         self.__elapsed_time_ = 0
 
 
 
     def SetImages(self):
+
+
+
+        #read tile image paths from json file
+        f = open("media/tile images config.json", "r")  # read json file
+        json_data = json.load(f)  # read data
+        f.close()  # close file
+
+        player_images = json_data["player images"]
+        tile_images = json_data["other tile images"]
+
         #load tile images:
         sandimage = pygame.image.load("media/sand.png")
 
-        player1image1 = pygame.image.load("media/player1.png")
-        player1image2 = pygame.image.load("media/player1 animate1.png")
-        player1image3 = pygame.image.load("media/player1 animate2.png")
+        player1image1 = pygame.image.load(player_images["player1"][0])
+        player1image2 = pygame.image.load(player_images["player1"][1])
+        player1image3 = pygame.image.load(player_images["player1"][2])
 
-        player2image1 = pygame.image.load("media/player2.png")
-        player2image2 = pygame.image.load("media/player2 animate1.png")
-        player2image3 = pygame.image.load("media/player2 animate2.png")
+        player2image1 = pygame.image.load(player_images["player2"][0])
+        player2image2 = pygame.image.load(player_images["player2"][1])
+        player2image3 = pygame.image.load(player_images["player2"][2])
 
-        monsterimage1 = pygame.image.load("media/monster1.png")
-        monsterimage2 = pygame.image.load("media/monster2.png")
-        stoneimage = pygame.image.load("media/stone.png")
-        tntimage = pygame.image.load("media/tnt.png")
+        monsterimage1 = pygame.image.load(tile_images["Monster"][0])
+        monsterimage2 = pygame.image.load(tile_images["Monster"][1])
+        stoneimage = pygame.image.load(tile_images["Stone"][0])
+        tntimage = pygame.image.load(tile_images["Tnt"][0])
 
-        explosionimage1 = pygame.image.load("media/explosion1.png")
-        explosionimage2 = pygame.image.load("media/explosion2.png")
-        explosionimage3 = pygame.image.load("media/explosion3.png")
-        explosionimage4 = pygame.image.load("media/explosion4.png")
+        explosionimage1 = pygame.image.load(tile_images["Explosion"][0])
+        explosionimage2 = pygame.image.load(tile_images["Explosion"][1])
+        explosionimage3 = pygame.image.load(tile_images["Explosion"][2])
+        explosionimage4 = pygame.image.load(tile_images["Explosion"][3])
 
+        diamondimage = pygame.image.load(tile_images["Diamond"][0])
 
+        goal_open_image = pygame.image.load(tile_images["Goal"][0])
+        goal_close_image = pygame.image.load(tile_images["Goal"][1])
 
-        diamondimage = pygame.image.load("media/diamond.png")
-        goal_open_image = pygame.image.load("media/goal open.png")
-        goal_close_image = pygame.image.load("media/goal close.png")
+        bedrockimage = pygame.image.load(tile_images["Bedrock"][0])
+        brickimage = pygame.image.load(tile_images["Brick"][0])
 
-        bedrockimage = pygame.image.load("media/bedrock.png")
-        brickimage = pygame.image.load("media/brick.png")
-
-        door_right_image = pygame.image.load("media/door right.png")
-        door_down_image = pygame.image.load("media/door down.png")
-        door_up_image = pygame.image.load("media/door up.png")
-        door_left_image = pygame.image.load("media/door left.png")
+        door_right_image = pygame.image.load(tile_images["Door"][0])
+        door_down_image = pygame.image.load(tile_images["Door"][1])
+        door_left_image = pygame.image.load(tile_images["Door"][2])
+        door_up_image = pygame.image.load(tile_images["Door"][3])
 
         #set images to classes:
         Diamond.SetImage(diamondimage)

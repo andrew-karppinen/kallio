@@ -59,6 +59,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.pushing_right_ = 0
 
                     push = True
+                    gamedata.audio_.PlayPushSound() #play audio
                     if gamedata.local_player_.animated_ == True:  # if player is animated
                         gamedata.local_player_.AnimateToRight() #animate player image
 
@@ -95,6 +96,8 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.pushing_left_ = 0
 
                     push = True
+                    gamedata.audio_.PlayPushSound() #play audio
+
 
                     if gamedata.local_player_.animated_ == True:  # if player is animated
                         gamedata.local_player_.AnimateToLeft() #animate player image
@@ -179,6 +182,9 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
         gamedata.current_map_[original_y][original_x] = None
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
 
+        if push == False:
+            gamedata.audio_.PlayStepSound()
+
         if gamedata.multiplayer_ == True: #if multiplayer
 
             #send actions:
@@ -197,6 +203,8 @@ def CollectPoints(gamedata:object,y:int,x:int):
         gamedata.current_map_[y][x] = None
         gamedata.points_collected_ += 1
         gamedata.total_points_collected_ += 1
+        gamedata.audio_.PlayCollectDiamond()  # play sound
+
         return True
 
     return False
@@ -256,6 +264,11 @@ def Gravity(gamedata,connection):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
                 if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
+
+
+                        if gamedata.current_map_[y+1][x] != None: #falls on some tile
+                            gamedata.audio_.PlayDropSound() #play audio
+
                         if type(gamedata.current_map_[y+1][x]) in gamedata.explosive2_: #if something falls on this tile
                             CreateExplosion(gamedata,connection,y+1,x) #create explosion
                             return
@@ -264,6 +277,9 @@ def Gravity(gamedata,connection):
                             if type(gamedata.current_map_[y][x]) == Tnt: #if tnt falls on something
                                 CreateExplosion(gamedata,connection,y,x) #create explosion
                                 return
+
+
+
                     else: #if map end
                         if type(gamedata.current_map_[y][x]) == Tnt:
                             CreateExplosion(gamedata,connection, y, x)
@@ -294,10 +310,11 @@ def Gravity(gamedata,connection):
                                         continue
 
 
-                        gamedata.current_map_[y][x].drop_ = False
-                else:
-                    gamedata.current_map_[y][x].drop_ = False
+                        gamedata.current_map_[y][x].drop_ = False #drop stopping
 
+
+                else:
+                    gamedata.current_map_[y][x].drop_ = False #drop stopping
 
 
 def MoveMonsters(gamedata:object,connection:object):
@@ -467,6 +484,7 @@ def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
 
                     gamedata.current_map_[y+list1[i]][x+list2[i]] = Explosion()
+                    gamedata.audio_.PlayExplosionSound() #play sound
 
 
 
@@ -593,6 +611,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             #move player:
             gamedata.remote_player_position_x_ += 1 #move player
+
+            if type(gamedata.current_map_[position_y][position_x+1]) == Diamond: #if diamond
+                gamedata.total_points_collected_ += 1
+                gamedata.audio_.PlayCollectDiamond() #play audio
+
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -615,6 +638,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             #move player:
             gamedata.remote_player_position_x_ -= 1
+
+            if type(gamedata.current_map_[position_y][position_x-1]) == Diamond: #if diamond
+                gamedata.total_points_collected_ += 1
+                gamedata.audio_.PlayCollectDiamond() #play audio
+
             gamedata.current_map_[position_y][position_x-1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -628,6 +656,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
     elif action[0] == "movedown":
         if action[1] == "0": #no door
             gamedata.remote_player_position_y_ += 1 #move player
+
+            if type(gamedata.current_map_[position_y + 1][position_x]) == Diamond: #if diamond
+                gamedata.total_points_collected_ += 1
+                gamedata.audio_.PlayCollectDiamond() #play audio
+
             gamedata.current_map_[position_y+1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -641,6 +674,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
     elif action[0] == "moveup":
         if action[1] == "0": #no door
             gamedata.remote_player_position_y_ -= 1 #move player
+
+            if type(gamedata.current_map_[position_y - 1][position_x]) == Diamond: #if diamond
+                gamedata.total_points_collected_ += 1
+                gamedata.audio_.PlayCollectDiamond() #play audio
+
             gamedata.current_map_[position_y-1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -661,7 +699,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x + 1] = gamedata.remote_player_ #place the player to new location
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
         gamedata.remote_player_.AnimateToRight()
-
+        gamedata.audio_.PlayPushSound() #play audio
 
 
     elif action[0] == "pushleft":
@@ -674,18 +712,32 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x - 1] = gamedata.remote_player_ #place the player to new location
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
         gamedata.remote_player_.AnimateToLeft()
+        gamedata.audio_.PlayPushSound() #play audio
 
 
     if action[0] == "removeright":
+        if type(gamedata.current_map_[position_y][position_x+1]) == Diamond:  # if diamond
+            gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectDiamond()  # play audio
         gamedata.current_map_[position_y][position_x+1] = None #remove tile next to remoteplayer
 
     elif action[0] == "removedown":
+        if type(gamedata.current_map_[position_y+1][position_x]) == Diamond:  # if diamond
+            gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectDiamond()  # play audio
         gamedata.current_map_[position_y+1][position_x] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeleft":
+        if type(gamedata.current_map_[position_y][position_x-1]) == Diamond:  # if diamond
+            gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectDiamond()  # play audio
         gamedata.current_map_[position_y][position_x - 1] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeup":
+        if type(gamedata.current_map_[position_y-1][position_x]) == Diamond:  # if diamond
+            gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectDiamond()  # play audio
+
         gamedata.current_map_[position_y-1][position_x] = None  # remove tile next to remoteplayer
 
 
@@ -768,13 +820,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                             timelimit2 = pygame.time.get_ticks()
                             gamedata.remote_player_.image_number_ = 0
 
-
-
-                    if connection.data_type_ == "points": #if message is collected points
-                        gamedata.total_points_collected_ = gamedata.points_collected_ + connection.data_
-
-
-                    elif connection.data_type_ == "restartlevel":
+                    if connection.data_type_ == "restartlevel":
                         RestartLevel(gamedata)
 
                     elif connection.data_type_ == "map": #if message is map
@@ -912,11 +958,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                     if gamedata.local_player_.image_number_ != 0:
                         gamedata.local_player_.image_number_ = 0
 
-
-        if gamedata.multiplayer_ == True: #if multiplayer
-            if pygame.time.get_ticks() > timelimit + 1000:  #send collected points every 1 seconds
-                timelimit = pygame.time.get_ticks()
-                connection.SendCollectedPoints(gamedata.points_collected_)
 
         DeleteExplosion(gamedata) #delete exlplosions
 

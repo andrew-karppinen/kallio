@@ -1,0 +1,30 @@
+
+
+{
+    "player images":{
+        "player1":["media/player1.png", "media/player1 animate1.png","media/player1 animate2.png"],
+        "player2":["media/player2.png", "media/player2 animate1.png","media/player2 animate2.png"]
+    },
+
+
+
+
+
+    "other tile images":{
+        "DefaultTile":["media/sand.png"],
+        "Brick":["media/brick.png"],
+        "Bedrock":["media/bedrock.png"],
+        "Stone":["media/stone.png"],
+        "Diamond":["media/diamond.png"],
+        "Tnt":["media/tnt.png"],
+        "Explosion":["media/explosion1.png","media/explosion2.png","media/explosion3.png","media/explosion4.png"],
+        "Goal":["media/goal open.png","media/goal close.png"],
+        "Monster":["media/monster1.png","media/monster2.png"],
+        "Door":["media/door right.png","media/door down.png","media/door left.png","media/door up.png"]
+    }
+
+
+
+}
+
+

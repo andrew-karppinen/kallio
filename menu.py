@@ -61,11 +61,16 @@ class Menu:
 
 
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
-                                    widget_font_color=(255, 255, 255), widget_padding=6,
-                                    title_font_size=49,widget_font = self.font_,widget_font_size=38)
+                                    widget_font_color=(255, 255, 255), widget_padding=6,title_font = self.font_,
+                                    title_font_size=52,widget_font = self.font_,widget_font_size=38)
+
+
 
 
         self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
+
+
+
 
 
         #game return values:
@@ -295,8 +300,6 @@ class Menu:
 
         def StartSingleplayer(self):
             gamedata = GameData(False,False,self.font_)  # create gamedata
-
-
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
                 SetMap(gamedata, mapstr,True)  # convert str to map list

@@ -20,6 +20,11 @@ luo gamedata olio:
 Jos font_file_path on tyhjä käytetään järjestelmän oletusfonttia, ei suositella.
 
 
+oletuksena pelissä äänet ovat päällä, ne saa päälle/pois päältä:
+
+gamedata.audio_.sounds_is_on_ = True
+gamedata.audio_.sounds_is_on_ = False
+
 lue kartan tiedot:
 >> mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = ReadMapFile(map_file_path) #moninpelissä client saa nämä tiedot socketin kautta
 

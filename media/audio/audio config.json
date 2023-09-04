@@ -1,0 +1,9 @@
+{
+    "audio files":{
+        "collect":"media/audio/collectcoin-6075.mp3",
+        "explosion":"media/audio/Boom 1.wav",
+        "push": "media/audio/push-blaster.mp3",
+        "drop":"media/audio/fall-blaster.mp3",
+        "step":""
+    }
+}

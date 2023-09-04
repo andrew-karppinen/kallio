@@ -86,19 +86,13 @@ eat up
 
 
 
-points:
-lähettää kerättyjen pisteiden määrän
-
-esimerkki:
-"points:10"
-
-
-
-
 gameexit
 lopetetaan peli, kartta ei läpi
 
+
 "gameexit"
+
+
 
 ingoal
 lähettää toiselle tietokoneelle tiedon että päästiin maalin
@@ -108,8 +102,4 @@ lähettää toiselle tietokoneelle tiedon että päästiin maalin
 
 
 
-esimerkki:
-"gameexit:True"
-True = kartta läpi
-False = ei läpi
 

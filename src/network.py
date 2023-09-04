@@ -83,9 +83,6 @@ class Server:
                         if message[0:7] == "action:":
                             self.__buffer.append(["action",message[7:]])
 
-                        elif message[0:7] == "points:":
-                            self.__buffer.append(["points",int(message[7:])])
-
                         elif message[0:6] == "ingoal":
                             self.__buffer.append(["ingoal", None])
 
@@ -223,10 +220,6 @@ class Server:
 
         self.__SendMessage(message) #send message
 
-    def SendCollectedPoints(self,points_collected)->None:
-
-        message=f"points:{points_collected}"
-        self.__SendMessage(message) #send message
 
 
 
@@ -289,7 +282,6 @@ class Client:
 
         #data_:
         #map = str
-        #points_collected_ = int
         #startinfo = tuple (map_height,map_width)
         #gameexit = bool
         #restartlevel = None
@@ -321,9 +313,6 @@ class Client:
 
                     if message[0:7] == "action:":
                         self.__buffer.append(["action",message[7:]])
-
-                    elif message[0:7] == "points:":
-                        self.__buffer.append(["points",int(message[7:])])
 
                     elif message[0:6] == "ingoal":
                         self.__buffer.append(["ingoal", None])
@@ -451,10 +440,6 @@ class Client:
         elif up == True:
             message = "action:removeup"
 
-        self.__SendMessage(message)  # send message
-
-    def SendCollectedPoints(self,points_collected)->None:
-        message=f"points:{points_collected}"
         self.__SendMessage(message)  # send message
 
 
