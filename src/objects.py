@@ -95,15 +95,14 @@ class Stone:
     image_right = None
     image_up = None
     image_down = None
-    image = None
 
     def SetImage(image:pygame.surface):
-        Stone.image = image
+
         #rotate images
-        Stone.image_right = image
-        Stone.image_up = pygame.transform.rotate(Stone.image_right,90)
-        Stone.image_left = pygame.transform.rotate(Stone.image_right,180)
-        Stone.image_down = pygame.transform.rotate(Stone.image_right,270)
+        Stone.image_up = image
+        Stone.image_right = pygame.transform.rotate(image,-90)
+        Stone.image_left = pygame.transform.rotate(image,90)
+        Stone.image_down = pygame.transform.rotate(image,180)
 
     def ScaleImages(tile_size:int):
         Stone.image_left = pygame.transform.scale(Stone.image_left, (tile_size, tile_size))
@@ -157,10 +156,10 @@ class Diamond:
     def SetImage(image:pygame.surface):
         Diamond.image = image
         #rotate images
-        Diamond.image_right = image
-        Diamond.image_up = pygame.transform.rotate(Diamond.image_right,90)
-        Diamond.image_left = pygame.transform.rotate(Diamond.image_right,180)
-        Diamond.image_down = pygame.transform.rotate(Diamond.image_right,270)
+        Diamond.image_up =  image
+        Diamond.image_right = pygame.transform.rotate(Diamond.image,-90)
+        Diamond.image_left = pygame.transform.rotate(Diamond.image,90)
+        Diamond.image_down = pygame.transform.rotate(Diamond.image,180)
 
     def ScaleImages(tile_size:int):
         Diamond.image_left = pygame.transform.scale(Diamond.image_left, (tile_size, tile_size))
