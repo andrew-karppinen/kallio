@@ -4,6 +4,7 @@ import random
 import os
 import json
 
+
 from src import * #import py-boulderdash
 
 
@@ -17,7 +18,7 @@ def ReturnMaps(multiplayer:bool):
 
     return files from:
 
-     /maps/sigleplayer
+    /maps/sigleplayer
      or
     /maps/multiplayer
 
@@ -49,25 +50,16 @@ class Menu:
 
     def __init__(self) -> None: #constructor
 
-        #MENUDATA
-        self.screen_ =  pygame.display.set_mode((1600, 900)) #create window
-        pygame.display.set_caption('py-boulderdash') #rename window
 
+        with open("media/font/font config.json") as json_data: #read font file path from json file
+            self.font_ = json.load(json_data)["font file path"]
 
-        # create menu theme
-
-        #find any font file from /media/font/ and load it:
-        self.font_ = f"media/font/{os.listdir('media/font')[0]}"
-
-
+        #create menu theme:
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
                                     widget_font_color=(255, 255, 255), widget_padding=6,title_font = self.font_,
-                                    title_font_size=52,widget_font = self.font_,widget_font_size=38)
+                                    title_font_size=52,widget_font = self.font_,widget_font_size=38) #create menu theme
 
 
-
-
-        self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590,surface=self.screen_, theme=self.menu_theme_)  #create pygame_menu object
 
 
 
@@ -82,7 +74,7 @@ class Menu:
         self.temp_resolution_ = 0
         self.temp_resolution_index_ = 0
         self.temp_fullscreen_ = False
-        self.temp_sfx_is_on_ = False
+        self.temp_sfx_is_on_ = False #sound effects is on
 
 
         #GAME START DATA
@@ -101,7 +93,8 @@ class Menu:
         self.fullscreen_ = False
         self.sfx_is_on_ = True #sound effects is on
 
-        self.ReadSettings() #read settings from json file
+        self.ReadSettings() #read settings from json file, create screen, menu object
+
 
     def ReadSettings(self):
         '''
@@ -125,6 +118,7 @@ class Menu:
                 self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
 
             self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            pygame.display.set_caption('Py-boulderdash') #rename window
         except: #invalid json file
             self.SaveSettings() #save default settings to json file
             self.ReadSettings()
@@ -206,7 +200,7 @@ class Menu:
 
 
                         connection.SendMap(mapstr)  #and send map to client
-                        SetMap(gamedata, mapstr, True)  # set map(local) convert str to map list
+                        SetMap(gamedata, mapstr)  # set map(local) convert str to map list
 
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
                         connection.SetTimeout(0.001) #set new timeout
@@ -265,13 +259,12 @@ class Menu:
 
                     connection.Read()  # read messages
                     if connection.data_type_ == "map":  #if message is map
-                        SetMap(gamedata, connection.data_,True)  #set map
+                        SetMap(gamedata, connection.data_)  #set map
                         connection.BufferNext() #delete first message from buffer
 
                         gamedata.InitDisplay(self.screen_)  # set window to gamedata object
                         connection.SetTimeout(0.001) #set new timeout
                         connection.compress_messages_ = False #disable message compression
-
                         self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
 
                         del gamedata  # delete gamedata object from memory
@@ -306,7 +299,7 @@ class Menu:
             gamedata = GameData(False, False, self.font_, self.sfx_is_on_)  # create gamedata
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
-                SetMap(gamedata, mapstr,True)  # convert str to map list
+                SetMap(gamedata, mapstr)  # convert str to map list
             except: #if incorrect map file
 
                 self.menu_.clear()#clear menu
@@ -415,7 +408,7 @@ class Menu:
         This is used when returning to the menu from the game.
         '''
         self.menu_.clear()
-        pygame.display.set_caption('py-boulderdash') #rename window
+        pygame.display.set_caption('Py-boulderdash') #rename window
 
 
         if self.connection_lost_ == True:

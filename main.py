@@ -12,7 +12,7 @@ pygame.init()
 if 0:  # client
     gamedata = GameData(True, False) #create gamedata object
 
-    connection = Client("localhost", 1234,True) #create client object
+    connection = Client("localhost", 1234) #create client object
 
     if connection.connected_:
         connection.SendReadyToStart("55664")
@@ -58,7 +58,7 @@ if 0:  # server
                 connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_)  #send start info
 
                 connection.SendMap(mapstr)  # and send map
-                SetMap(gamedata, mapstr, True)  #set map(local)
+                SetMap(gamedata, mapstr)  #set map(local)
 
                 screen = pygame.display.set_mode((1600, 900))  # create screen
 
@@ -71,7 +71,7 @@ if 0:  # server
                 print(level_completed)
 
 
-if 0:  # if singleplayer
+if 1:  # if singleplayer
     gamedata = GameData(False, False)  # create gamedata
 
 
@@ -79,7 +79,7 @@ if 0:  # if singleplayer
 
     mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(
         "maps/singleplayer/singleplayer1.txt") #read map file
-    SetMap(gamedata, mapstr,True)  # convert str to map list
+    SetMap(gamedata, mapstr)  # convert str to map list
 
     screen = pygame.display.set_mode((1600, 900)) #create screen
 

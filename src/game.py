@@ -258,7 +258,6 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
 
 
 def Gravity(gamedata,connection):
-
     for y in range(gamedata.map_height_-1,-1,-1):
         for x in range(gamedata.map_width_-1,-1,-1):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
@@ -344,6 +343,7 @@ def MoveMonsters(gamedata:object,connection:object):
             if gamedata.current_map_[y - 1][x] == None or type(gamedata.current_map_[y - 1][x]) == Player:
                 return True
         return False
+
 
     for y in range(gamedata.map_height_):
         for x in range(gamedata.map_width_):
@@ -441,6 +441,7 @@ def MoveMonsters(gamedata:object,connection:object):
 
 
 
+
     #moved_during_this_function_call_ variable to false
     #and change monster image
     for y in range(gamedata.map_height_):
@@ -453,6 +454,8 @@ def MoveMonsters(gamedata:object,connection:object):
                     gamedata.current_map_[y][x].image_number_ = 2
                 else:
                     gamedata.current_map_[y][x].image_number_ = 1
+
+
 
 
 def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
@@ -568,7 +571,7 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
             connection.SendRestartLevel() #send restart level message
 
 
-    SetMap(gamedata, gamedata.original_mapstr_, True)  #set original map to current map
+    SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
 
     #init gamedata:
     gamedata.points_collected_ = 0
@@ -924,7 +927,7 @@ def Run(gamedata:object,connection:object = None)->bool:
 
         if pygame.time.get_ticks() > movelimit3 + 200: #monster moving 200ms
             movelimit3 = pygame.time.get_ticks()
-            MoveMonsters(gamedata,connection)
+            MoveMonsters(gamedata,connection) #move monsters
 
 
 

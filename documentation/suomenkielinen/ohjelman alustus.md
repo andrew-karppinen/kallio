@@ -5,44 +5,44 @@
 
 Ennen kuin peli pyörii se vaatii alustamista:
 
-importtaa src kansio:
+Importtaa src kansio:
 >> from src import *
 
-ohjelman joka importta tämän on oltava src kansion ylähakemistossa
+Ohjelman joka importta tämän on oltava src kansion ylähakemistossa
 (eli se missä on media,src,maps kansiot)
 
 
 
 
-luo gamedata olio:
+Luo gamedata olio:
 >> gamedata = Gamedata(moninpeli:bool,server:bool,font_file_path:str,sfx_is_on:bool):
 
 Jos font_file_path on tyhjä käytetään järjestelmän oletusfonttia, ei suositella.
 sfx_is_on merkitsee sitä onko ääni efektit päällä vai pois päältä
 
 
-lue kartan tiedot:
+Lue kartan tiedot:
 >> mapstr, gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = ReadMapFile(map_file_path) #moninpelissä client saa nämä tiedot socketin kautta
 
-aseta mapstr gamedata olioon:
+Aseta mapstr gamedata olioon:
 >> SetMap(gamedata, mapstr) #muuttaa merkkijonon pelin kartaksi ja asettaa sen gamedata olioon
 
 
-luo pygame ikkuna:
+Luo pygame ikkuna:
 >>  screen = pygame.display.set_mode(resolution:tuple) #create screen
 
-tätä samaa ikkunaa voidaan käytää esim valikossa
+Tätä samaa ikkunaa voidaan käytää esim valikossa
 
-aseta näyttö gamedata olioon:
+Aseta näyttö gamedata olioon:
 
 >> gamedata.InitDisplay(screen)
 
-tämä alustaa näyttöön liittyviä tietoja
+Tämä alustaa näyttöön liittyviä tietoja
 HUOM!, tämä pitää tehdä aina kartan asettamisen jälkeen, koska se tarvitsee kartan tietoja
 
 
 
-huomaa että itse peli ei sulje tätä ikkunaa koskaan vaan sen voi tehdä halutessaan itse kun pelistä on poistuttu:
+Huomaa että itse peli ei sulje tätä ikkunaa koskaan vaan sen voi tehdä halutessaan itse kun pelistä on poistuttu:
 >> pygame.display.quit() #close screen
 
 
@@ -50,7 +50,7 @@ huomaa että itse peli ei sulje tätä ikkunaa koskaan vaan sen voi tehdä halut
 
 
 
-tämän jälkeen pelin alustus on valmis ja se voidaan aloittaa mikäli se on yksinpeli:
+Tämän jälkeen pelin alustus on valmis ja se voidaan aloittaa mikäli se on yksinpeli:
 >> Run(gamedata:object,connection:object = None)
 
 
@@ -60,51 +60,51 @@ tämän jälkeen pelin alustus on valmis ja se voidaan aloittaa mikäli se on yk
 
 ## CLIENT:
 
-luo client olion ja yrittää yhdistää serveriin:
+Luo client olion ja yrittää yhdistää serveriin:
 >> connection = Client(ip-osoite,portti,viestien_pakkaus)  #create connection object
 
 
-jos yhteys luotu onnistuneesti
+Jos yhteys luotu onnistuneesti
 voi tarkistaa näin:
 >> if connection.connected_: #if the connection was successful
 
-client lähettää viestin että on valmis aloittamaan pelin ja lähettää liittymis tunnuksen:
+Client lähettää viestin että on valmis aloittamaan pelin ja lähettää liittymis tunnuksen:
 >> connection.SendReadyToStart(gameid)
 
 
 
-serveri vastaa tähän lähettämällä aloitusinfon, odotetaan näitä
+Serveri vastaa tähän lähettämällä aloitusinfon, odotetaan näitä
 
-joten sockettia pitää lukea:
+Joten sockettia pitää lukea:
 
 >> connection.read()
 
-varmista että pakeetti on aloitusinfo ja lue se:
+Varmista että pakeetti on aloitusinfo ja lue se:
 >> if connection.data_type_ == "startinfo":  #if start info
 >
 > gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ 
 
-kun viestin tyyppi ja sisältö on luettu pitää puskurin ensimäinen viesti poistaa jotta seuraava viesti päästään lukemaan:
+Kun viestin tyyppi ja sisältö on luettu pitää puskurin ensimäinen viesti poistaa jotta seuraava viesti päästään lukemaan:
 
 >> connection.BufferNext() 
 
 
-heti tämän perään lue kartta
+Heti tämän perään lue kartta
 >> connection.Read()  # read messages
 > 
 >> if connection.data_type_ == "map":  #if message is map
 
-aseta kartta:
->> SetMap(gamedata, connection.data_,True)  #set map
+Aseta kartta:
+>> SetMap(gamedata, connection.data_)  #set map
 >
 >> connection.BufferNext() 
 
-tämän jälkeen pitää pelin sujuvuuden takia asettaa uusi timeout socketille:
+Tämän jälkeen pitää pelin sujuvuuden takia asettaa uusi timeout socketille:
 >> connection.SetTimeout(0.001) #set new timeout
 
-on tärkeää että serverillä ja clientillä on sama timeout 
+On tärkeää että serverillä ja clientillä on sama timeout 
 
-ota viestien pakkaus pois käytöstä:
+Ota viestien pakkaus pois käytöstä:
 >> connection.compress_messages_ = False
 
 
@@ -113,21 +113,21 @@ Pelinalustus on valmis, käynnistä se:
 
 
 ## SERVER:
-lataa kartta
+Lataa kartta
 
-luo Server olio:
-ja odottaa aikakatkaisun verran yhdistääkö joku:
+Luo Server olio:
+Ja odottaa aikakatkaisun verran yhdistääkö joku:
 
 >> connection = Server(port,timeout,viestien_pakkaus) #create connection object
 
-tarkista yhdistikö joku:
+Tarkista yhdistikö joku:
 >> if connection.connected_: #if someone connected
 
 
-jos yhdisti lue viesti:
+Jos yhdisti lue viesti:
  >> connection.Read()  # read messages
 
-tarkista viestin tyyppi ja tarkista liittymistunnus:
+Tarkista viestin tyyppi ja tarkista liittymistunnus:
 
 >> if connection.data_type_ == "readytostart":  # if client ready to start the game 
 > 
@@ -135,20 +135,20 @@ tarkista viestin tyyppi ja tarkista liittymistunnus:
 >
 >> connection.BufferNext() 
 
-lähetä clientille kartan koko, vaadittavat pisteet, kartan aikaraja:
+Lähetä clientille kartan koko, vaadittavat pisteet, kartan aikaraja:
 
 >> connection.SendStartInfo(map_height,map_width,required_score,timelimit)  # send start info
 
-tämän jälkeen pittää lähettää kartta clientille:
+Tämän jälkeen pittää lähettää kartta clientille:
 >> connection.SendMap(mapstr)  #send map
 
 
 
-soccketille pitää asettaa uusi timeout:
+Soccketille pitää asettaa uusi timeout:
 >> connection.SetTimeout(0.001) #set new timeout
 
 
-ota viestine pakkaus pois käytöstä:
+Ota viestine pakkaus pois käytöstä:
 >> connection.compress_messages_ = False
 
 
@@ -159,7 +159,7 @@ Pelin alustus on valmis, käynnistä se:
 
 
 # Huomioitavaa
-jos yhteys katkeaa serverin eikä client olioiden Read() metodi eikä viestien lähetys aiheuta virheitä
+Jos yhteys katkeaa serverin eikä client olioiden Read() metodi eikä viestien lähetys aiheuta virheitä
 mutta connected_ atribuutti muutta False muotoon
 
 
@@ -168,7 +168,7 @@ mutta connected_ atribuutti muutta False muotoon
 
 >> Run(gamedata:object,connection:object = None)
 
-funktio on itse pelin pääfunktio ja paluattaa kaksi bool tyyppistä muuttujaa, ensimmäinen kertoo päästiinkö kartta läpi, ja toinen katkesiko yhteys(singelplayerissä aina False)
+Funktio on itse pelin pääfunktio ja paluattaa kaksi bool tyyppistä muuttujaa, ensimmäinen kertoo päästiinkö kartta läpi, ja toinen katkesiko yhteys(singelplayerissä aina False)
 
 
 
