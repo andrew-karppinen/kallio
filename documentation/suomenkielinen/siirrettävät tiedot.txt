@@ -16,8 +16,24 @@ readytostart:
 client lähettää serverille tiedon että on valmis aloittamaan pelin
 lisäksi client lähettää 5 numeroa pitkän numerosarjan jonka pitää olla oikea
 
-esimerkki:
-"readytostart:01234"
+sen lisäksi lähetetään ohjelman versio, jonka oltava sama serverillä ja clientillä
+
+
+Syntaksi:
+"readytostart:joinid:versio"
+
+Esimerkki:
+"readytostart:01234:0.0.7"
+
+
+
+
+wrongversion:
+
+"wrongversion"
+
+Serveri lähettää clientille mikäli sillä eri versionumero kuin clientillä,
+muista virheistä kuten väärästä joinid:eestä serveri ei lähetä mitään viestiä vaan lopettaa yhteydenpidon
 
 
 

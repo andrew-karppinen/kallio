@@ -1,9 +1,7 @@
 import pygame
+
 from src.objects import *
-import json
-
-
-
+from src.config.tile_commands_config import mapsymbols #import mapsymbols
 
 def SetMap(gamedata:object,mapstr:str)->None:
     '''
@@ -14,7 +12,7 @@ def SetMap(gamedata:object,mapstr:str)->None:
     "initial" parameter must be true, If the level is started from the beginning
 
     data:
-    src/config/tile commands config.json
+    src/config/tile commands_config.py
 
     '''
 
@@ -57,12 +55,12 @@ def SetMap(gamedata:object,mapstr:str)->None:
                 gamedata.remote_player_position_x_ = x
 
 
-            command = gamedata.mapsymbols_[number]['command'] #convert numbers to objects
+            command = mapsymbols[number]['command'] #convert numbers to objects
             exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
 
             #if command2 exist
-            if gamedata.mapsymbols_[number]['command2'] != None:
-                exec(str(gamedata.mapsymbols_[number]['command2']))
+            if mapsymbols[number]['command2'] != None:
+                exec(mapsymbols[number]['command2'])
 
 
 
@@ -81,12 +79,12 @@ def SetMap(gamedata:object,mapstr:str)->None:
 
 
 
-            command = gamedata.mapsymbols_[number]['command']  # convert numbers to objects
+            command = mapsymbols[number]['command']  # convert numbers to objects
             exec(f"maplist2d[y][x] = {command}") #convert numbers to objects
 
             #if command2 exist
-            if gamedata.mapsymbols_[number]['command2'] != None:
-                exec(str(gamedata.mapsymbols_[number]['command2']))
+            if mapsymbols[number]['command2'] != None:
+                exec(str(mapsymbols[number]['command2']))
 
 
 

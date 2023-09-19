@@ -84,11 +84,6 @@ class GameData:
         self.map_height_ = 0 #y
 
 
-        #read configs from json file
-        f = open("src/config/tile commands config.json", "r")  # read json file
-        self.mapsymbols_ = json.load(f)["commands"]  # read mapsymbols
-        f.close()  # close file
-
         #map data
         self.original_mapstr_ = ""
         self.previous_map_ = []

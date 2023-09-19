@@ -68,12 +68,11 @@ Jos yhteys luotu onnistuneesti
 voi tarkistaa näin:
 >> if connection.connected_: #if the connection was successful
 
-Client lähettää viestin että on valmis aloittamaan pelin ja lähettää liittymis tunnuksen:
->> connection.SendReadyToStart(gameid)
+Client lähettää viestin että on valmis aloittamaan pelin ja lähettää liittymis tunnuksen ja ohjelman version:
+>> connection.SendReadyToStart(gameid,programversion)
 
 
-
-Serveri vastaa tähän lähettämällä aloitusinfon, odotetaan näitä
+Jos kaikki onnistuu serveri vastaa tähän lähettämällä aloitusinfon, odotetaan näitä
 
 Joten sockettia pitää lukea:
 
@@ -84,12 +83,20 @@ Varmista että pakeetti on aloitusinfo ja lue se:
 >
 > gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ 
 
+
+Jos viesti ei ole "startinfo" voit katsoa onko se :
+
+"wrongversion"
+
+Serveri lähettää tämän jos version väärä, muista virheistä kuten väärästä liittymis koodista serveri ei lähetä mitään vaan katkaisee yhteydenpidon.
+
+
 Kun viestin tyyppi ja sisältö on luettu pitää puskurin ensimäinen viesti poistaa jotta seuraava viesti päästään lukemaan:
 
 >> connection.BufferNext() 
 
 
-Heti tämän perään lue kartta
+Start infon jälkeen lue kartta
 >> connection.Read()  # read messages
 > 
 >> if connection.data_type_ == "map":  #if message is map

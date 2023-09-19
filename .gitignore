@@ -2,7 +2,7 @@
 
 
 
-
+#needed for the program to work:
 
 #needed directory "/save"
 
@@ -12,6 +12,10 @@
 
 
 #not important:
+
+/src/__pycache__/*
+
+/src/config/__pycache__/*
 
 /maps/singleplayer/korkea.txt
 
@@ -26,3 +30,5 @@
 /maps/singleplayer/testikartta.txt
 
 /maps/multiplayer/multiplayertext.txt
+
+/src/network_game_server.py

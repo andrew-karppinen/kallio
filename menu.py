@@ -4,12 +4,17 @@ import random
 import os
 import json
 
-
 from src import * #import py-boulderdash
 
 
-
 pygame.init() #init pygame module
+
+
+
+PROGRAM_VERSION = "0.0.7"
+
+
+
 
 
 def ReturnMaps(multiplayer:bool):
@@ -194,24 +199,33 @@ class Menu:
 
                 connection.Read()  # read messages
                 if connection.data_type_ == "readytostart":  # if client ready to start the game
-                    if connection.data_ == self.join_id_:
-                        connection.BufferNext() #delete first message from buffer
-                        connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_, gamedata.required_score_, gamedata.level_timelimit_)  # send start info
+
+                    if connection.data_[1] == PROGRAM_VERSION: #check program version
+                        pass
+
+                        if connection.data_[0] == self.join_id_: #chec join id
+
+                            connection.BufferNext() #delete first message from buffer
+                            connection.SendStartInfo(gamedata.map_height_, gamedata.map_width_, gamedata.required_score_, gamedata.level_timelimit_)  # send start info
 
 
-                        connection.SendMap(mapstr)  #and send map to client
-                        SetMap(gamedata, mapstr)  # set map(local) convert str to map list
+                            connection.SendMap(mapstr)  #and send map to client
+                            SetMap(gamedata, mapstr)  # set map(local) convert str to map list
 
-                        gamedata.InitDisplay(self.screen_)  # set window to gamedata object
-                        connection.SetTimeout(0.001) #set new timeout
-                        connection.compress_messages_ = False #disable message compression
+                            gamedata.InitDisplay(self.screen_)  # set window to gamedata object
+                            connection.SetTimeout(0.001) #set new timeout
+                            connection.compress_messages_ = False #disable message compression
 
-                        self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
+                            self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
 
-                        del gamedata  # delete gamedata object from memory
-                        del connection  # delete connection object from memory
+                            del gamedata  # delete gamedata object from memory
+                            del connection  # delete connection object from memory
 
-                        self.BackToMenu()
+                            self.BackToMenu()
+
+
+                    else: #if incorrect version
+                        connection.SendWrongVersion()
 
 
             #if the connection failed
@@ -243,6 +257,11 @@ class Menu:
 
     def ClientMenu(self):
         def StartClient(self):
+
+
+            self.menu_.clear() #clear menu
+
+
             #try connect to server
 
 
@@ -250,7 +269,7 @@ class Menu:
             connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
             if connection.connected_: #if the connection was successful
-                connection.SendReadyToStart(self.join_id_)
+                connection.SendReadyToStart(self.join_id_,PROGRAM_VERSION)
                 connection.Read()  # read messages
                 if connection.data_type_ == "startinfo":  #if start info
 
@@ -272,11 +291,12 @@ class Menu:
 
                         self.BackToMenu()
 
+                elif connection.data_type_ == "wrongversion" : #if the program version differs from the server version
+                    self.menu_.add.label("The version of the program is different from the host!",max_char=30)
 
 
             #if the connection failed
             connection.CloseSocket() #close socket
-            self.menu_.clear()
 
             self.menu_.add.label(connection.error_message_,max_char = 30)
 
@@ -324,6 +344,33 @@ class Menu:
         self.menu_.add.button("Back",self.MainMenu)
 
 
+
+    def MultiPlayerMenu(self):
+
+        def InternetMenu():
+            self.menu_.clear()  # clear menu
+            self.menu_.add.label("This feature coming soon!")
+            self.menu_.add.label("In the meantime, play on the local network!",max_char=24)
+            self.menu_.add.button('Back', self.MultiPlayerMenu)
+
+
+        def LanMenu():
+            self.menu_.clear()  # clear menu
+            self.menu_.add.button('Join game', self.ClientMenu)
+            self.menu_.add.button('Server', self.ServerMenu)
+            self.menu_.add.button('Back', self.MultiPlayerMenu)
+
+
+
+        self.menu_.clear()  # clear menu
+        self.menu_.add.button('Local area network', LanMenu)
+
+        self.menu_.add.button('Internet', InternetMenu)
+        self.menu_.add.button('Back', self.MainMenu)
+
+
+
+
     def InfoMenu(self):
         self.menu_.clear() #clear menu
 
@@ -336,6 +383,7 @@ class Menu:
         self.menu_.add.label("")
 
         self.menu_.add.button("Back to main menu",self.MainMenu)
+
 
 
     def SettingsMenu(self):
@@ -384,12 +432,6 @@ class Menu:
         self.menu_.add.button("Back",self.MainMenu)
 
 
-    def MultiPlayerMenu(self):
-        self.menu_.clear() #clear menu
-
-        self.menu_.add.button('Join game', self.ClientMenu)
-        self.menu_.add.button('Server', self.ServerMenu)
-        self.menu_.add.button('Back', self.MainMenu)
 
 
 

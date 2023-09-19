@@ -4,7 +4,9 @@ from src import *
 import sys
 
 
-
+'''
+Network features for local area network
+'''
 
 
 class Server:
@@ -50,7 +52,7 @@ class Server:
         #action = str
         #points:int
         #points_collected_ = int
-        #readytostart = str
+        #readytostart = tuple, (join id,program version)
         #gameexit = None
         #restartlevel = None
         #other = str
@@ -65,42 +67,42 @@ class Server:
 
 
         try:
-            try:
-                messages = self.client_.recv(10000) #read messages
-                if self.compress_messages_ == True:
-                    messages = zlib.decompress(messages).decode()  # decompress and decode
+
+            messages = self.client_.recv(10000) #read messages
+            if self.compress_messages_ == True:
+                messages = zlib.decompress(messages).decode()  # decompress and decode
+            else:
+                messages = messages.decode()  # only decode
+
+            messages = messages.split(";") #split messages to list
+
+
+            for message in messages:
+                if len(message) == 0: #if no message or message is empty
+                    pass
                 else:
-                    messages = messages.decode()  # only decode
+                    # exmine message data type and set data
+                    if message[0:7] == "action:":
+                        self.__buffer.append(["action",message[7:]])
 
-                messages = messages.split(";") #split messages to list
+                    elif message[0:6] == "ingoal":
+                        self.__buffer.append(["ingoal", None])
 
+                    elif message[0:4] == "map:":  # if message is map
+                        self.__buffer.append(["map",message[4:]])
 
-                for message in messages:
-                    if len(message) == 0: #if no message or message is empty
-                        pass
-                    else:
-                        # exmine message data type and set data
-                        if message[0:7] == "action:":
-                            self.__buffer.append(["action",message[7:]])
+                    elif message[0:13] == "readytostart:": #if message is "readytostart"
+                        self.__buffer.append(["readytostart",(message[13:18],message[18:])])
 
-                        elif message[0:6] == "ingoal":
-                            self.__buffer.append(["ingoal", None])
+                    elif message[0:9] == "gameexit":  # if message is gameexit
+                        self.__buffer.append(["gameexit",None])
 
-                        elif message[0:4] == "map:":  # if message is map
-                            self.__buffer.append(["map",message[4:]])
-
-                        elif message[0:13] == "readytostart:": #if message is "readytostart"
-                            self.__buffer.append(["readytostart",message[13:]])
-
-                        elif message[0:9] == "gameexit":  # if message is gameexit
-                            self.__buffer.append(["gameexit",None])
-
-                        elif message[0:13] == "restartlevel":
-                            self.__buffer.append(["restartlevel",None])
+                    elif message[0:13] == "restartlevel":
+                        self.__buffer.append(["restartlevel",None])
 
 
-            except TimeoutError: #if timeouterror
-                pass
+        except TimeoutError: #if timeouterror
+            pass
         except: #connection failed
             self.connected_ = False
 
@@ -234,6 +236,11 @@ class Server:
         self.__SendMessage(message) #send message
 
 
+    def SendWrongVersion(self):
+        #send wrong version message
+        message = "wrongversion"
+        self.__SendMessage(message)
+
     def SendInGoal(self):
         message = "ingoal"
 
@@ -283,6 +290,7 @@ class Client:
         #data_:
         #map = str
         #startinfo = tuple (map_height,map_width)
+        #wrongversion = None
         #gameexit = bool
         #restartlevel = None
         #other = str
@@ -298,47 +306,50 @@ class Client:
 
 
         try:
-            try:
-                messages = self.socket_.recv(10000) #read socket
 
-                if self.compress_messages_ == True:
-                    messages = zlib.decompress(messages).decode() #decompress and decode
-                else:
-                    messages = messages.decode() #only decode
+            messages = self.socket_.recv(10000) #read socket
 
-
-                messages = messages.split(";")  # split messages to list
-
-                for message in messages:
-
-                    if message[0:7] == "action:":
-                        self.__buffer.append(["action",message[7:]])
-
-                    elif message[0:6] == "ingoal":
-                        self.__buffer.append(["ingoal", None])
-
-                    elif message[0:4] == "map:":  # if message is map
-                        self.__buffer.append(["map",message[4:]])
+            if self.compress_messages_ == True:
+                messages = zlib.decompress(messages).decode() #decompress and decode
+            else:
+                messages = messages.decode() #only decode
 
 
-                    elif message[0:10] == "startinfo:": #if message is startinfo
-                        datalist = message[10:].split(',') #split str to list
-                        map_height = int(datalist[0])  #map size y
-                        map_width = int(datalist[1])  #map size x
-                        required_score = int(datalist[2]) #required_score
-                        timelimit = int(datalist[3]) #timelimit
+            messages = messages.split(";")  # split messages to list
 
-                        self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
+            for message in messages:
 
-                    elif message[0:8] == "gameexit": #if message is gameexit
-                        self.__buffer.append(["gameexit",None])
+                if message[0:7] == "action:":
+                    self.__buffer.append(["action",message[7:]])
 
-                    elif message[0:13] == "restartlevel":
-                        self.__buffer.append(["restartlevel",None])
+                elif message[0:6] == "ingoal":
+                    self.__buffer.append(["ingoal", None])
+
+                elif message[0:4] == "map:":  # if message is map
+                    self.__buffer.append(["map",message[4:]])
 
 
-            except TimeoutError: #if timeouterror
-                pass
+                elif message[0:10] == "startinfo:": #if message is startinfo
+                    datalist = message[10:].split(',') #split str to list
+                    map_height = int(datalist[0])  #map size y
+                    map_width = int(datalist[1])  #map size x
+                    required_score = int(datalist[2]) #required_score
+                    timelimit = int(datalist[3]) #timelimit
+
+                    self.__buffer.append(["startinfo",(map_height,map_width,required_score,timelimit)])
+
+                elif message[0:13] == "wrongversion":
+                    self.__buffer.append(["wrongversion",None])
+
+                elif message[0:8] == "gameexit": #if message is gameexit
+                    self.__buffer.append(["gameexit",None])
+
+                elif message[0:13] == "restartlevel":
+                    self.__buffer.append(["restartlevel",None])
+
+
+        except TimeoutError: #if timeouterror
+            pass
         except: #connection failed
             self.connected_ = False
 
@@ -390,8 +401,8 @@ class Client:
         except: #if connection lost
             self.connected_ = False
 
-    def SendReadyToStart(self,check_number:str)->None:
-        message = f"readytostart:{check_number}"
+    def SendReadyToStart(self,check_number:str,program_version:str)->None:
+        message = f"readytostart:{check_number}{program_version}"
 
         self.__SendMessage(message) #send message
 
