@@ -68,18 +68,12 @@ class Menu:
 
 
 
-
-
         #game return values:
         self.level_completed_ = False
         self.connection_lost_ = False
 
 
-        #settings temp variables:
-        self.temp_resolution_ = 0
-        self.temp_resolution_index_ = 0
-        self.temp_fullscreen_ = False
-        self.temp_sfx_is_on_ = False #sound effects is on
+
 
 
         #GAME START DATA
@@ -90,7 +84,15 @@ class Menu:
         self.map_file_path_ = ""  #mapfile path  #if server or singleplayer
 
 
-        self.resolutions_ = [('1600x900',(1600,900)),('1920x1080',(1920,1080)),('1056x594',(1056,594)),('1280x720', (1280,720))] #resolutions list
+        self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions list
+
+
+        #settings temp variables:
+        self.temp_resolution_ = 0
+        self.temp_resolution_index_ = 0
+        self.temp_fullscreen_ = False
+        self.temp_sfx_is_on_ = False #sound effects is on
+
 
         #default settings:
         self.resolution_ = [1600,900]
@@ -139,7 +141,7 @@ class Menu:
             "settings":{
                 "fullscreen":self.fullscreen_,
                 "resolution index":self.resolution_index_,
-                "resolutions":[[1600,900],[1920,1080],[1056,594],[1280,720]],
+                "resolutions":[[1600,900],[1920,1080],[2560,1440],[1056,594],[1280,720]],
                 "sfx is on":self.sfx_is_on_
             }
         }
@@ -160,7 +162,6 @@ class Menu:
         except:
             pass
     def SetJoinid(self, id:str = ""):
-
         if id == "": #if id is no given
             self.join_id_ = ""
             for i in range(5): #generate random join id
@@ -405,17 +406,26 @@ class Menu:
             self.temp_sfx_is_on_ = sfx
 
         def ApplySettings():
-            #apply settings
-            self.resolution_ = self.temp_resolution_
-            self.resolution_index_ = self.temp_resolution_index_
-            self.fullscreen_ =  self.temp_fullscreen_
-            self.sfx_is_on_ = self.temp_sfx_is_on_
+            '''
+            Save changes
 
-            #update window
-            if self.fullscreen_ == True:
-                self.screen_ = pygame.display.set_mode(self.resolution_,pygame.FULLSCREEN) #crete fullscreen window
-            else:
-                self.screen_ = pygame.display.set_mode(self.resolution_,pygame.WINDOWMOVED) #create noremal window
+            set temp variable -->
+            '''
+
+
+            if self.temp_fullscreen_ != self.fullscreen_ or self.temp_resolution_ != self.resolution_: #if the screen settings has been changed
+                self.resolution_ = self.temp_resolution_
+                self.fullscreen_ = self.temp_fullscreen_
+                self.resolution_index_ = self.temp_resolution_index_
+
+                if self.fullscreen_ == True:
+                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.FULLSCREEN)  # crete fullscreen window
+                else:
+                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # create noremal window
+
+
+            #apply settings
+            self.sfx_is_on_ = self.temp_sfx_is_on_
 
             self.SaveSettings() #save settings to json file
 
