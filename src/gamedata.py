@@ -1,6 +1,5 @@
 import pygame
 import os
-import json
 
 from src import *
 
@@ -274,12 +273,54 @@ class GameData:
         #y = 16
 
 
-        temp_surface = pygame.Surface((self.map_width_*self.tile_size_,self.map_height_*self.tile_size_)) #create pygame surface
 
 
-        #draw full map to temp surface
-        for i in range(self.map_height_): #y
-            for j in range(self.map_width_): #x
+        #calculate drawing area from map:
+
+        if self.draw_area_x_ < self.map_width_: #only if draw area x < map width
+            left = self.local_player_position_x_ - self.draw_area_x_ // 2
+            right = self.local_player_position_x_ + self.draw_area_x_ // 2
+            while True: #move draw area x
+                if left < 0:
+                    left += 1
+                    right += 1
+
+                elif right > self.map_width_:
+                    right -= 1
+                    left -= 1
+
+                else:
+                    break
+        else:#draw the whole map vertically
+            left = 0
+            right = self.map_width_
+
+
+
+        if self.draw_area_y_ < self.map_height_: #only if draw area y < map height
+            up = self.local_player_position_y_ - self.draw_area_y_ // 2
+            down = self.local_player_position_y_ + self.draw_area_y_ // 2
+
+            while True: #move draw area x
+                if up < 0:
+                    up += 1
+                    down += 1
+                elif down > self.map_height_:
+                    down -= 1
+                    up -= 1
+                else:
+                    break
+        else: #draw the whole map horizontally
+            up = 0
+            down = self.map_height_
+
+
+        y = -1
+        for i in range(up,down): #y
+            x = -1
+            y += 1
+            for j in range(left,right): #x
+                x += 1
 
                 if i >= 0 and j >= 0: #if map not end
                     if i < self.map_height_ and j < self.map_width_: #if map not end
@@ -287,40 +328,9 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            temp_surface.blit(self.current_map_[i][j].image_, (j * self.tile_size_, i * self.tile_size_)) #draw tiles to surface
+                            self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_,y * self.tile_size_ +self.margin_y_)) #draw tiles to surface
 
 
-
-
-
-        #CROP DRAWAREA FROM TEMP SURFACE:
-        top = (self.local_player_position_y_-self.draw_area_y_//2)*self.tile_size_
-        left = (self.local_player_position_x_-self.draw_area_x_//2) *self.tile_size_
-
-        width = self.draw_area_x_*self.tile_size_
-        height = self.draw_area_y_*self.tile_size_
-
-
-        if top+height > self.map_height_*self.tile_size_: #if the drawing area goes beyond the edges of the map
-            top -= abs(top+height-self.map_height_*self.tile_size_) #move drawing area
-
-
-        if left+width > self.map_width_*self.tile_size_: #if the drawing area goes beyond the edges of the map
-            left -= left+width-self.map_width_*self.tile_size_  #move drawing area
-
-
-        if top <0: #if the drawing area goes beyond the edges of the map
-            height += abs(top-height) #move drawing area
-            top = 0
-
-        if left <0: #if the drawing area goes beyond the edges of the map
-            width += abs(left-width) #move drawing area
-            left = 0
-
-
-
-        clip_rect = pygame.Rect(left, top, width, height) #create pygame rect object
-        self.screen_.blit(temp_surface,(self.margin_x_,self.margin_y_),clip_rect) #DRAW MAP TO DISPLAY
 
 
 
