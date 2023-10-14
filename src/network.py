@@ -21,6 +21,7 @@ class Server:
         self.socket_.settimeout(connection_timeout)
         self.connected_ = False
 
+        self.message_sended_this_loop_round_ = False  #send some message every loop round
 
         try:
             self.socket_.bind(('', port)) #bind socket
@@ -31,7 +32,7 @@ class Server:
             try:
                 self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
                 self.connected_ = True
-                self.client_.settimeout(0.1)
+                self.client_.settimeout(0.09)
             except Exception as message:
                 self.error_message_ = str(message)
                 self.connected_ = False
@@ -101,8 +102,6 @@ class Server:
                         self.__buffer.append(["restartlevel",None])
 
 
-        except TimeoutError: #if timeouterror
-            pass
         except: #connection failed
             self.connected_ = False
 
@@ -152,8 +151,20 @@ class Server:
 
         try:
             self.client_.send(message) #send message
+            self.message_sended_this_loop_round_ = True
         except: #if connection lost
             self.connected_ = False
+
+
+    def SendPass(self):
+        '''
+        send "pass;" message
+        '''
+
+        message = "pass"
+        self.__SendMessage(message)
+
+
 
     def SendMap(self,mapstr:str)->None:
         #send full map
@@ -273,10 +284,13 @@ class Client:
 
         self.compress_messages_ = compress_messages #compress sent message and decompress incoming messages
 
+        self.message_sended_this_loop_round_ = False #send some message every loop round
+
+
         try: #try connect to server
             self.socket_.connect((ipaddress, port))
             self.connected_ = True
-            self.socket_.settimeout(0.1)
+            self.socket_.settimeout(0.09)
         except Exception as message:
             self.error_message_ = str(message)
             self.connected_ = False
@@ -348,9 +362,8 @@ class Client:
                     self.__buffer.append(["restartlevel",None])
 
 
-        except TimeoutError: #if timeouterror
-            pass
-        except: #connection failed
+        except Exception as error_message: #connection failed
+            self.error_message_ = str(error_message)
             self.connected_ = False
 
 
@@ -400,6 +413,18 @@ class Client:
             self.socket_.send(message) #send message
         except: #if connection lost
             self.connected_ = False
+
+        self.message_sended_this_loop_round_ = True
+
+
+    def SendPass(self):
+        '''
+        send "pass;" message
+        '''
+
+        message = "pass"
+        self.__SendMessage(message)
+
 
     def SendReadyToStart(self,check_number:str,program_version:str)->None:
         message = f"readytostart:{check_number}{program_version}"

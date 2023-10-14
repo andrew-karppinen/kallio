@@ -32,3 +32,7 @@
 /maps/multiplayer/multiplayertext.txt
 
 /src/network_game_server.py
+
+test_game_server.py
+
+/.idea/*

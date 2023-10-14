@@ -46,6 +46,6 @@ mapsymbols = {
     "19":{"name":"falling diamond","command":"Diamond(True)","command2": None},
     "20":{"name":"Door up","command":"Door(1)","command2": None},
     "21":{"name":"Door right","command":"Door(2)","command2": None},
-    "22":{"name":"Door right","command":"Door(3)","command2": None},
-    "23":{"name":"Door right","command":"Door(4)","command2": None}
+    "22":{"name":"Door down","command":"Door(3)","command2": None},
+    "23":{"name":"Door left","command":"Door(4)","command2": None}
 }

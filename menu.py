@@ -161,14 +161,15 @@ class Menu:
             self.port_ = int(port)
         except:
             pass
-    def SetJoinid(self, id:str = ""):
-        if id == "": #if id is no given
-            self.join_id_ = ""
-            for i in range(5): #generate random join id
-                self.join_id_ += str(random.randint(0, 9))
-        else:
-            self.join_id_ = id
 
+    def GenerateJoinid(self):
+        #generate random join id
+        self.join_id_ = ""
+        for i in range(5): #generate random join id
+            self.join_id_ += str(random.randint(0, 9))
+        return self.join_id_
+    def SetJoinid(self,id:str):
+        self.join_id_ = id
 
     def SetTimeout(self,timeout):
         try:
@@ -214,7 +215,6 @@ class Menu:
                             SetMap(gamedata, mapstr)  # set map(local) convert str to map list
 
                             gamedata.InitDisplay(self.screen_)  # set window to gamedata object
-                            connection.SetTimeout(0.001) #set new timeout
                             connection.compress_messages_ = False #disable message compression
 
                             self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
@@ -234,7 +234,7 @@ class Menu:
             self.menu_.clear()
             self.menu_.add.label(connection.error_message_,max_char=30)
             self.menu_.add.label(f"Server ip:{socket.gethostbyname(socket.gethostname())}")  # print ip address
-            self.menu_.add.label(f"Join number: {self.join_id_}") #print gameid
+            self.menu_.add.label(f"Join id: {self.join_id_}") #print join id
             self.menu_.add.label(f"Port: {connection.port_}")  # print port
             self.menu_.add.button("Try again",StartServer,self)
             self.menu_.add.button("Back",self.ServerMenu)
@@ -243,13 +243,13 @@ class Menu:
 
         self.menu_.clear() #clear menu
         if self.join_id_ == "": #if join id is not exist
-            self.SetJoinid() #generate random join id
+            self.GenerateJoinid()#generate random join id
 
         self.menu_.add.label(f"your ip address:")
         self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
+        self.menu_.add.label(f"Join id: {self.join_id_}")
         self.menu_.add.selector("Map: ", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
         self.menu_.add.text_input('Port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
-        self.menu_.add.text_input('Join number:', default= self.join_id_, onchange=self.SetJoinid) #set join id
         self.menu_.add.text_input('Timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
         self.menu_.add.button("Start server", StartServer,self)
         self.menu_.add.button("Back", self.MultiPlayerMenu)
@@ -260,47 +260,48 @@ class Menu:
         def StartClient(self):
 
 
+            error_message = ""
             self.menu_.clear() #clear menu
 
+            if len(self.join_id_) == 5:
 
-            #try connect to server
+                #try connect to server
 
+                gamedata = GameData(True,False,self.font_, self.sfx_is_on_) #create gamedata
+                connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
-            gamedata = GameData(True,False,self.font_, self.sfx_is_on_) #create gamedata
-            connection = Client(self.server_ip_, self.port_,True)  #create connection object
-
-            if connection.connected_: #if the connection was successful
-                connection.SendReadyToStart(self.join_id_,PROGRAM_VERSION)
-                connection.Read()  # read messages
-                if connection.data_type_ == "startinfo":  #if start info
-
-                    gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ #set map size, required_score and level timelimit
-                    connection.BufferNext()  #delete first message from buffer
-
+                if connection.connected_: #if the connection was successful
+                    connection.SendReadyToStart(self.join_id_,PROGRAM_VERSION)
                     connection.Read()  # read messages
-                    if connection.data_type_ == "map":  #if message is map
-                        SetMap(gamedata, connection.data_)  #set map
-                        connection.BufferNext() #delete first message from buffer
+                    if connection.data_type_ == "startinfo":  #if start info
 
-                        gamedata.InitDisplay(self.screen_)  # set window to gamedata object
-                        connection.SetTimeout(0.001) #set new timeout
-                        connection.compress_messages_ = False #disable message compression
-                        self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
+                        gamedata.map_height_, gamedata.map_width_,gamedata.required_score_,gamedata.level_timelimit_ = connection.data_ #set map size, required_score and level timelimit
+                        connection.BufferNext()  #delete first message from buffer
 
-                        del gamedata  # delete gamedata object from memory
-                        del connection  # delete connection object from memory
+                        connection.Read()  # read messages
+                        if connection.data_type_ == "map":  #if message is map
+                            SetMap(gamedata, connection.data_)  #set map
+                            connection.BufferNext() #delete first message from buffer
 
-                        self.BackToMenu()
+                            gamedata.InitDisplay(self.screen_)  # set window to gamedata object
+                            connection.compress_messages_ = False #disable message compression
+                            self.level_completed_, self.connection_lost_ = Run(gamedata, connection)  # start game
 
-                elif connection.data_type_ == "wrongversion" : #if the program version differs from the server version
-                    self.menu_.add.label("The version of the program is different from the host!",max_char=30)
+                            del gamedata  # delete gamedata object from memory
+                            del connection  # delete connection object from memory
+
+                            self.BackToMenu()
+
+                    elif connection.data_type_ == "wrongversion" : #if the program version differs from the server version
+                         error_message = "The version of the program is different from the host!"
+                else: #if the connection failed
+                    error_message = connection.error_message_
+                    connection.CloseSocket() #close socket
+            else:
+                error_message = "joind id must be 5 characters long"
 
 
-            #if the connection failed
-            connection.CloseSocket() #close socket
-
-            self.menu_.add.label(connection.error_message_,max_char = 30)
-
+            self.menu_.add.label(error_message,max_char = 30) #show error message
             self.menu_.add.button("Try again",StartClient,self)
             self.menu_.add.button("Back ",self.ClientMenu)
 
@@ -309,7 +310,7 @@ class Menu:
         self.menu_.clear()
         self.menu_.add.text_input('Server ip:', default=self.server_ip_, onchange=self.SetIpaddress) #set server ip
         self.menu_.add.text_input('Port:', default='1234', onchange=self.SetPort) #set port
-        self.menu_.add.text_input('Join number:', default=self.join_id_, onchange=self.SetJoinid) #set join id
+        self.menu_.add.text_input('Join number:', default=self.join_id_, onchange=self.SetJoinid,maxchar=5) #set join id
         self.menu_.add.button("Connect",StartClient,self)
         self.menu_.add.button("Back", self.MultiPlayerMenu)
 

@@ -86,16 +86,16 @@ push left:
 "action:pushleft"
 
 
-eat right:
+remove right:
 "action:removeright"
 
-eat down:
+remove down:
 "action:removedown"
 
-eat left
+remove left
 "action:removeleft"
 
-eat up
+remove up
 "action:removeup"
 
 
@@ -116,6 +116,15 @@ lähettää toiselle tietokoneelle tiedon että päästiin maalin
 "ingoal"
 
 
+
+pass
+
+lähetetään mikäli mitään muuta ei lähetetä pääsilmukan kierroksen aikana
+
+idea on että pääsilmukan jokaisen kierroksen aikana lähetetään jokin viesti jota
+pelin kulku pystytään synkronoimaan tietokoneiden välillä
+
+"pass"
 
 
 

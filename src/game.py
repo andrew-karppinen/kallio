@@ -611,8 +611,8 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             #bug check:
             #if a remote player tries to go through a stone
             #move the stone downwards
-            if type(gamedata.current_map_[position_y][position_x + 1]) in gamedata.pushing_objects_ :
-                gamedata.current_map_[position_y+1][position_x + 1] = gamedata.current_map_[position_y][position_x + 1]
+            #if type(gamedata.current_map_[position_y][position_x + 1]) in gamedata.pushing_objects_ :
+            #    gamedata.current_map_[position_y+1][position_x + 1] = gamedata.current_map_[position_y][position_x + 1]
 
             #move player:
             gamedata.remote_player_position_x_ += 1 #move player
@@ -638,8 +638,8 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             #bug check:
             #if a remote player tries to go through a stone
             #move the stone downwards
-            if type(gamedata.current_map_[position_y][position_x - 1]) in gamedata.pushing_objects_ :
-                gamedata.current_map_[position_y+1][position_x - 1] = gamedata.current_map_[position_y][position_x - 1]
+            #if type(gamedata.current_map_[position_y][position_x - 1]) in gamedata.pushing_objects_ :
+            #    gamedata.current_map_[position_y+1][position_x - 1] = gamedata.current_map_[position_y][position_x - 1]
 
             #move player:
             gamedata.remote_player_position_x_ -= 1
@@ -767,16 +767,34 @@ def Run(gamedata:object,connection:object = None)->bool:
 
     clock = pygame.time.Clock() #fps limit
 
-    movelimit = 0 #gravity
-    movelimit2 = 0 #player move
-    movelimit3 = 0 #monster move
+    #set speed control variables:
+    if gamedata.multiplayer_ == True: #if multiplayer
+        gravity_counter,gravity_speed = 0,4  #execute gravity every 4 loops
+        player_move_counter,player_speed = 0,3 #player speedlimit
+        monstermove_counter,monster_speed = 0,5 #move monster every 5 loops
 
-    timelimit = 0 #send collected points every 1 seconds
-    timelimit2 = 0 #sets player image to default image if no move
+    else: #singelplayer
+        gravity_counter,gravity_speed = 0,5  #execute gravity every 5 loops
+        player_move_counter,player_speed = 0,3 #player speecd limit
+        monstermove_counter,monster_speed = 0,6 #move monster every 6 loops
+
+
+    image_switching_counter, image_switching_speed = 0,5 #set remoteplayer image to default image if not move
+
 
     gamedata.InitTimer() #init timer
 
+    if connection != None and gamedata.server_ == False:  # if multiplayer and this is client
+        #client send first message
+        connection.SendPass()
+
+    loopcount = 0 #Variable loopCount keeps track of how many times the main loop has been executed
+
     while True: #game main loop
+
+        if connection != None: #if multiplayer
+            # send some message every loop round
+            connection.message_sended_this_loop_round_ = False
 
         #Todo update this?
         if gamedata.total_points_collected_ >= gamedata.required_score_: #if required score have been collected
@@ -795,7 +813,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                     return True,False # back to menu, level completed
 
             else: #if singleplayer
-
                 return True,False #back to menu
 
 
@@ -812,26 +829,19 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                 connection.Read()  # read socket
 
-
                 try: # read the content of the message
 
                     if connection.data_type_ == "action": #if message is action
                         ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
-                        timelimit2 = pygame.time.get_ticks()
-
-                    else: #if remoteplayer no move
-                        #set player image to default image:
-                        if pygame.time.get_ticks() > timelimit2 +150: #timelimit
-                            timelimit2 = pygame.time.get_ticks()
-                            gamedata.remote_player_.image_number_ = 0
+                        image_switching_counter = loopcount
+                    else: #if no action
+                        if loopcount > image_switching_counter + image_switching_speed: #timelimit
+                            image_switching_counter = loopcount
+                            gamedata.remote_player_.image_number_ = 0 #set remote player image to default image
 
                     if connection.data_type_ == "restartlevel":
                         RestartLevel(gamedata)
 
-                    elif connection.data_type_ == "map": #if message is map
-                        #this feature is not used!!!
-                        mapstr = connection.data_
-                        SetMap(gamedata,mapstr) #set map
 
                     elif connection.data_type_ == "ingoal":
                         gamedata.remote_player_in_goal_ = True
@@ -840,6 +850,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                     elif connection.data_type_ == "gameexit":
                         connection.CloseSocket()  # close socket
                         return False,False #back to menu, level not completed
+
 
                     connection.BufferNext() #delete first message from buffer
 
@@ -852,6 +863,7 @@ def Run(gamedata:object,connection:object = None)->bool:
 
             else: #if connection lost
                 connection.CloseSocket()  # close socket
+                print(connection.error_message_)
                 return False, True  # back to menu, level not completed
 
         for event in pygame.event.get(): #pygame event loop
@@ -868,7 +880,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                     space = True
 
 
-                #keyboards
+                #arrowkeys
                 if event.key == pygame.K_LEFT:
                     left = True
                 if event.key == pygame.K_RIGHT:
@@ -892,7 +904,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                     up = False
                 if event.key == pygame.K_DOWN:
                     down = False
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE: #space
                     space = False
 
 
@@ -919,22 +931,22 @@ def Run(gamedata:object,connection:object = None)->bool:
 
 
 
-        if pygame.time.get_ticks() > movelimit + 140: #gravity 140ms
-            movelimit = pygame.time.get_ticks()
-            Gravity(gamedata,connection)
+        if loopcount > gravity_counter+gravity_speed: #gravity
+            gravity_counter = loopcount
+            Gravity(gamedata,connection) #gravity
 
 
 
-        if pygame.time.get_ticks() > movelimit3 + 200: #monster moving 200ms
-            movelimit3 = pygame.time.get_ticks()
+        if loopcount > monstermove_counter+monster_speed: #move monster
+            monstermove_counter = loopcount
             MoveMonsters(gamedata,connection) #move monsters
 
 
 
 
         if [right, left, up, down].count(True) > 0:  #if arrow key is pressed
-            if pygame.time.get_ticks() > movelimit2 + 100: #speed limit 100ms
-                movelimit2 = pygame.time.get_ticks()
+            if loopcount > player_move_counter+player_speed: #speed limit
+                player_move_counter = loopcount
                 if pausemenu_is_active == False:
 
                     if gamedata.local_player_in_goal_ == False: #if player in goal, can't move
@@ -957,7 +969,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                             pausemenu_number = 3
 
         else: #no move
-            if pygame.time.get_ticks() > movelimit2 + 150: #speed limit
+            if loopcount > player_move_counter+player_speed: #speed limit
                 #set player image to defaultimage
                 if gamedata.local_player_.animated_ == True:
                     if gamedata.local_player_.image_number_ != 0:
@@ -966,7 +978,6 @@ def Run(gamedata:object,connection:object = None)->bool:
 
         DeleteExplosion(gamedata) #delete exlplosions
 
-
         gamedata.screen_.fill((0, 0, 0))  # set backcolor
         gamedata.DrawMap()  #draw map
         gamedata.DrawInfoPanel() #draw infopanel
@@ -974,6 +985,15 @@ def Run(gamedata:object,connection:object = None)->bool:
         if pausemenu_is_active == True: #if pausemenu is active
             DrawPauseMenu(gamedata,pausemenu_number) #draw pausemenu
         pygame.display.flip()  #update screen
+
+
+
+
+        if connection != None: #if multiplayer
+            if connection.message_sended_this_loop_round_ == False:
+                #send some message every loop round
+                connection.SendPass() #send pass message
+
+
         clock.tick(30) #fps limit
-
-
+        loopcount += 1

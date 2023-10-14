@@ -106,11 +106,6 @@ Aseta kartta:
 >
 >> connection.BufferNext() 
 
-Tämän jälkeen pitää pelin sujuvuuden takia asettaa uusi timeout socketille:
->> connection.SetTimeout(0.001) #set new timeout
-
-On tärkeää että serverillä ja clientillä on sama timeout 
-
 Ota viestien pakkaus pois käytöstä:
 >> connection.compress_messages_ = False
 
@@ -150,12 +145,7 @@ Tämän jälkeen pittää lähettää kartta clientille:
 >> connection.SendMap(mapstr)  #send map
 
 
-
-Soccketille pitää asettaa uusi timeout:
->> connection.SetTimeout(0.001) #set new timeout
-
-
-Ota viestine pakkaus pois käytöstä:
+Ota viestien pakkaus pois käytöstä:
 >> connection.compress_messages_ = False
 
 
