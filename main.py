@@ -12,7 +12,7 @@ PROGRAM_VERSION = "0.0.7"
 
 
 
-if 0:  # client
+if 1:  # client
     gamedata = GameData(True, False) #create gamedata object
 
     connection = Client("localhost", 1234) #create client object
@@ -36,7 +36,6 @@ if 0:  # client
 
                 gamedata.InitDisplay(screen)  # set window to gamedata object
 
-                connection.SetTimeout(0.001)  # set new timeout
                 connection.compress_messages_ = False  # disable message compression
 
                 level_completed,connection_lost  = Run(gamedata, connection)  # start game
@@ -44,7 +43,7 @@ if 0:  # client
 
 
 
-if 0:  # server
+if 1:  # server
     gamedata = GameData(True,True)  # create gamedata
 
     mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer1.txt") #read map file
@@ -66,14 +65,13 @@ if 0:  # server
 
                 gamedata.InitDisplay(screen)  # set window to gamedata object
 
-                connection.SetTimeout(0.001)  # set new timeout
                 connection.compress_messages_ = False  # disable message compression
 
                 level_completed,connection_lost = Run(gamedata, connection)
                 print(level_completed)
 
 
-if 1:  # if singleplayer
+if 0:  # if singleplayer
     gamedata = GameData(False, False)  # create gamedata
 
 
