@@ -1,0 +1,30 @@
+
+
+Level set on kansio joka sisältää kartta tiedostot,
+sekä json tiedosto joka sisältää tiedot,
+karttojen järjestyksestä, karttatiedostojen polut, karttojen nimet, karttojen määrän, onko level setin kartat tarkoitettu pelattavaksi moninpelinä vai yksinpelinä.
+
+json tiedosto jonka nimi on "level set config.json",
+näyttää tältä:
+
+{
+  "levels are intended for multiplayer": false,
+
+  "map count": 9,
+
+  "maps": {
+    "1":["maps/singleplayer/deep in the mine","deep in the mine"],
+    "2":["maps/singleplayer/monsters","monsters"],
+    "3":["maps/singleplayer/no time!","no time!"],
+    "4":["maps/singleplayer/down they fall","down they fall"],
+    "5":["maps/singleplayer/stones and sand","stones and sand"],
+    "6":["maps/singleplayer/accident","accident"],
+    "7":["maps/singleplayer/out of here","out of here!"],
+    "8":["maps/singleplayer/up","up"],
+    "9":["maps/singleplayer/shaft","shaft"]
+  }
+
+}
+
+
+Tällä hetkellä ohjelma hakee vain multiplayer tai singelplayer kansiot, ja json tiedostoa käytetään vain karttojen näyttämis järjestyksen määrittämiseen.

@@ -1,7 +1,7 @@
 
 
-Tiedosto on seuraavanlainen:
-ensimmäinen rivi on "True" tai "False" True kertoo että kartta on tarkotus pelata moninpelinä
+utf-8 koodattu tiedosto on seuraavanlainen:
+ensimmäinen rivi on "True" tai "False" True kertoo että kartta on tarkotus pelata moninpelinä (ei käytetä tällä hetkellä)
 
 toisella rivillä on luku joka kertoo vaadittavien pisteiden määrän
 
@@ -27,4 +27,4 @@ True
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 
-kartan numeroiden merkitys on tallennettu /src/config/tile commands config.json tiedostoon
+kartan numeroiden merkitys on tallennettu /src/config/tile_commands_config.py tiedostoon

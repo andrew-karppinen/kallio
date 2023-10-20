@@ -1,0 +1,15 @@
+
+
+{
+  "levels are intended for multiplayer": true,
+
+  "map count": 4,
+
+
+  "maps": {
+    "1": ["maps/multiplayer/diamond mine","diamond mine"],
+    "2": ["maps/multiplayer/go go!","go go!"],
+    "3": ["maps/multiplayer/gravity","gravity"],
+    "4": ["maps/multiplayer/stones","stones"]
+  }
+}

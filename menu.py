@@ -19,34 +19,46 @@ PROGRAM_VERSION = "0.0.7"
 
 def ReturnMaps(multiplayer:bool):
     '''
-    return map file path
-
-    return files from:
+    return map files path from:
 
     /maps/sigleplayer
      or
     /maps/multiplayer
 
+    reads the map files to be used and their order from the json file
+
+    syntax of the list to be returned:
+    [("map number: map name","map file path")]
+
+    if level set is incorect return None
     '''
 
-    path = os.getcwd()
     maplist = []
 
-    if  multiplayer == True: #multiplayer maps
-        path += "/maps/multiplayer"
-        for i in os.listdir(path):
-            maplist.append((str(i), f"maps/multiplayer/{i}"))
-
-
+    if multiplayer == True: #multiplayer maps
+        try:
+            with open("maps/multiplayer/level set config.json") as multiplayer_maps: #reads the map files to be used and their order from the json file
+                multiplayer_maps = json.load(multiplayer_maps)
+                for i in range(1,multiplayer_maps["map count"]+1):
+                    if os.path.isfile(multiplayer_maps["maps"][str(i)][0]) == False: #check if file is exist
+                        raise
+                    maplist.append((f"{i}: {multiplayer_maps['maps'][str(i)][1]}",multiplayer_maps["maps"][str(i)][0])) #append: ("map number: map name","map file path")
+        except: #if error
+            return (None)
 
     elif multiplayer == False: #singleplayer maps
-        path += "/maps/singleplayer"
-        for i in os.listdir(path):
-            maplist.append((str(i), f"maps/singleplayer/{i}"))
+        try:
+            with open("maps/singleplayer/level set config.json") as singleplayer_maps: #reads the map files to be used and their order from the json file
+                singleplayer_maps = json.load(singleplayer_maps)
+                for i in range(1,singleplayer_maps["map count"]+1):
+                    if os.path.isfile(singleplayer_maps["maps"][str(i)][0]) == False: #check if file is exist
+                        raise
+                    maplist.append((f"{i}: {singleplayer_maps['maps'][str(i)][1]}",singleplayer_maps["maps"][str(i)][0])) #append: ("map number: map name","map file path")
+        except: #if error
+            return(None)
 
 
-
-    return(maplist)  # return maps
+    return(maplist)  #return maps
 
 
 
@@ -63,8 +75,6 @@ class Menu:
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
                                     widget_font_color=(255, 255, 255), widget_padding=6,title_font = self.font_,
                                     title_font_size=52,widget_font = self.font_,widget_font_size=38) #create menu theme
-
-
 
 
 
@@ -241,18 +251,26 @@ class Menu:
 
 
 
-        self.menu_.clear() #clear menu
-        if self.join_id_ == "": #if join id is not exist
-            self.GenerateJoinid()#generate random join id
+        #error check:
+        maps_list = ReturnMaps(True)
+        if maps_list == None: #if level set is incorrect
+            pass
 
-        self.menu_.add.label(f"your ip address:")
-        self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
-        self.menu_.add.label(f"Join id: {self.join_id_}")
-        self.menu_.add.selector("Map: ", ReturnMaps(True), onchange=self.SetMapFilepath,default=1) #select map
-        self.menu_.add.text_input('Port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
-        self.menu_.add.text_input('Timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
-        self.menu_.add.button("Start server", StartServer,self)
-        self.menu_.add.button("Back", self.MultiPlayerMenu)
+        else:
+            self.map_file_path_ = maps_list[0][1] # set default map file path, due to a bug in the pygame menu!
+
+            self.menu_.clear() #clear menu
+            if self.join_id_ == "": #if join id is not exist
+                self.GenerateJoinid()#generate random join id
+
+            self.menu_.add.label(f"your ip address:")
+            self.menu_.add.label(socket.gethostbyname(socket.gethostname()))  # print ip address
+            self.menu_.add.label(f"Join id: {self.join_id_}")
+            self.menu_.add.selector("Map: ", maps_list, onchange=self.SetMapFilepath) #select map
+            self.menu_.add.text_input('Port:', default=f"{str(self.port_)}",onchange=self.SetPort)  #set port
+            self.menu_.add.text_input('Timeout:', default="10", onchange=self.SetTimeout) #set socket timeout
+            self.menu_.add.button("Start server", StartServer,self)
+            self.menu_.add.button("Back", self.MultiPlayerMenu)
 
 
 
@@ -324,11 +342,10 @@ class Menu:
                 SetMap(gamedata, mapstr)  # convert str to map list
             except: #if incorrect map file
 
-                self.menu_.clear()#clear menu
+                self.menu_.clear() #clear menu
                 self.menu_.add.label("Incorrect map file!")
-                self.menu_.add.button("Play", StartSingleplayer, self)
-                self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath,default=1)  # map select
-                self.menu_.add.button("Back", self.MainMenu)
+                self.menu_.add.button("Ok", self.SinglePlayerMenu)
+
 
             else: #no error
                 gamedata.InitDisplay(self.screen_)  #set window to gamedata object
@@ -340,18 +357,25 @@ class Menu:
                 self.BackToMenu()
 
 
-        self.menu_.clear()#clear menu
-        self.menu_.add.button("Play",StartSingleplayer,self)
-        self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath,default=1) #map select
-        self.menu_.add.button("Back",self.MainMenu)
+        #error check:
+        maps_list = ReturnMaps(False)
+        if maps_list == None: #if level set is incorrect
+            pass
 
+        else:
+            self.map_file_path_ = maps_list[0][1] # set default map file path, due to a bug in the pygame menu!
+            self.menu_.clear() #clear menu
+            self.menu_.add.button("Play",StartSingleplayer,self)
+            self.menu_.add.selector("Map: ", ReturnMaps(False), onchange=self.SetMapFilepath) #map select
+
+            self.menu_.add.button("Back",self.MainMenu)
 
 
     def MultiPlayerMenu(self):
 
         def InternetMenu():
             self.menu_.clear()  # clear menu
-            self.menu_.add.label("This feature coming soon!")
+            self.menu_.add.label("This feature coming!")
             self.menu_.add.label("In the meantime, play on the local network!",max_char=24)
             self.menu_.add.button('Back', self.MultiPlayerMenu)
 

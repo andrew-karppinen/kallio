@@ -12,7 +12,7 @@ PROGRAM_VERSION = "0.0.7"
 
 
 
-if 1:  # client
+if 0:  # client
     gamedata = GameData(True, False) #create gamedata object
 
     connection = Client("localhost", 1234) #create client object
@@ -43,10 +43,10 @@ if 1:  # client
 
 
 
-if 1:  # server
+if 0:  # server
     gamedata = GameData(True,True)  # create gamedata
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer1.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/multiplayer/multiplayer1") #read map file
 
 
     connection = Server(1234,10,True) #create server object
@@ -71,13 +71,13 @@ if 1:  # server
                 print(level_completed)
 
 
-if 0:  # if singleplayer
+if 1:  # if singleplayer
     gamedata = GameData(False, False)  # create gamedata
 
 
 
 
-    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/singleplayer/singleplayer1.txt") #read map file
+    mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile("maps/singleplayer/deep in the mine") #read map file
     SetMap(gamedata, mapstr)  # convert str to map list
 
     screen = pygame.display.set_mode((1600, 900)) #create screen
