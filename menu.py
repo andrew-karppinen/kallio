@@ -74,7 +74,7 @@ class Menu:
         #create menu theme:
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
                                     widget_font_color=(255, 255, 255), widget_padding=6,title_font = self.font_,
-                                    title_font_size=52,widget_font = self.font_,widget_font_size=38) #create menu theme
+                                    title_font_size=52,widget_font = self.font_,widget_font_size=38,title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_UNDERLINE) #create menu theme
 
 
 
@@ -95,6 +95,12 @@ class Menu:
 
 
         self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions list
+
+        #remove resolutions higher than the screen resolution from the list
+        display_resolution = pygame.display.set_mode().get_size() #get screen resolution
+        for i in range(len(self.resolutions_)-1,0,-1):
+            if self.resolutions_[i][1][0] > display_resolution[0] or self.resolutions_[i][1][1] > display_resolution[1]:
+                self.resolutions_.pop(i)
 
 
         #settings temp variables:
@@ -123,9 +129,15 @@ class Menu:
             settings = json.load(f)["settings"]  #read settings
             f.close()  #close file
 
-            self.resolution_index_ = settings["resolution index"]
+
             self.resolution_ = settings["resolutions"][settings["resolution index"]] #set resolution
             self.sfx_is_on_ = settings["sfx is on"]
+
+            display_resolution = pygame.display.set_mode().get_size() #get screen resolution
+
+            if self.resolution_[0] > display_resolution[0] and self.resolution_[1] > display_resolution[1]: #if saved resolution > screen resolution
+                raise
+            self.resolution_index_ = settings["resolution index"]
 
             if settings["fullscreen"] == True:
                 self.fullscreen_ = True
@@ -136,7 +148,8 @@ class Menu:
 
             self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
             pygame.display.set_caption('Py-boulderdash') #rename window
-        except: #invalid json file
+
+        except Exception: #invalid json file or file not exist
             self.SaveSettings() #save default settings to json file
             self.ReadSettings()
 
