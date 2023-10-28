@@ -823,48 +823,7 @@ def Run(gamedata:object,connection:object = None)->bool:
 
 
 
-        #read socket
-        if gamedata.multiplayer_:
-            if connection.connected_ == True:
 
-                connection.Read()  # read socket
-
-                try: # read the content of the message
-
-                    if connection.data_type_ == "action": #if message is action
-                        ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
-                        image_switching_counter = loopcount
-                    else: #if no action
-                        if loopcount > image_switching_counter + image_switching_speed: #timelimit
-                            image_switching_counter = loopcount
-                            gamedata.remote_player_.image_number_ = 0 #set remote player image to default image
-
-                    if connection.data_type_ == "restartlevel":
-                        RestartLevel(gamedata)
-
-
-                    elif connection.data_type_ == "ingoal":
-                        gamedata.remote_player_in_goal_ = True
-                        gamedata.current_map_[gamedata.remote_player_position_y_][gamedata.remote_player_position_x_] = None
-
-                    elif connection.data_type_ == "gameexit":
-                        connection.CloseSocket()  # close socket
-                        return False,False #back to menu, level not completed
-
-
-                    connection.BufferNext() #delete first message from buffer
-
-
-                except Exception as error_message: #incorrect message
-                    print("incorrect socket message")
-                    print(error_message)
-                    connection.CloseSocket()  # close socket
-                    return False,True  # back to menu, level not completed
-
-            else: #if connection lost
-                connection.CloseSocket()  # close socket
-                print(connection.error_message_)
-                return False, True  # back to menu, level not completed
 
         for event in pygame.event.get(): #pygame event loop
             #read keyboard
@@ -993,6 +952,54 @@ def Run(gamedata:object,connection:object = None)->bool:
             if connection.message_sended_this_loop_round_ == False:
                 #send some message every loop round
                 connection.SendPass() #send pass message
+
+
+
+
+        '''
+        read socket and execute another player actions
+        '''
+        if gamedata.multiplayer_: #if multiplayer
+            if connection.connected_ == True:
+
+                connection.Read()  # read socket
+
+                try: # read the content of the message
+
+                    if connection.data_type_ == "action": #if message is action
+                        ExecuteAction(gamedata,connection,connection.data_) #execute a other player actions
+                        image_switching_counter = loopcount
+                    else: #if no action
+                        if loopcount > image_switching_counter + image_switching_speed: #timelimit
+                            image_switching_counter = loopcount
+                            gamedata.remote_player_.image_number_ = 0 #set remote player image to default image
+
+                    if connection.data_type_ == "restartlevel":
+                        RestartLevel(gamedata)
+
+                    elif connection.data_type_ == "ingoal":
+                        gamedata.remote_player_in_goal_ = True
+                        gamedata.current_map_[gamedata.remote_player_position_y_][gamedata.remote_player_position_x_] = None
+
+                    elif connection.data_type_ == "gameexit":
+                        connection.CloseSocket()  # close socket
+                        return False,False #back to menu, level not completed
+
+                    connection.BufferNext() #delete first message from buffer
+
+                except Exception as error_message: #incorrect message
+                    print("incorrect socket message")
+                    print(error_message)
+                    connection.CloseSocket()  # close socket
+                    return False,True  # back to menu, level not completed
+
+            else: #if connection lost
+                connection.CloseSocket()  # close socket
+                print(connection.error_message_)
+                return False, True  # back to menu, level not completed
+
+
+
 
 
         clock.tick(30) #fps limit
