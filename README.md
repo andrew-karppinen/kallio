@@ -4,7 +4,7 @@
 
 ### Download the latest version from [releases tab](https://github.com/andrew-karppinen/py-boulderdash/releases/latest)
 
-![kuva](https://github.com/andrew-karppinen/py-boulderdash/assets/99529988/5d5a6fda-5480-4e00-92cb-05900156f761)
+![kuva](https://github.com/andrew-karppinen/py-boulderdash/assets/99529988/d8d231aa-1ffc-468a-a902-602dfe7ddcc8)
 
 
 Required librarys:
