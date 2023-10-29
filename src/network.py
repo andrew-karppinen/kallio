@@ -32,7 +32,7 @@ class Server:
             try:
                 self.client_, self.addr_ = self.socket_.accept()  # waiting for someone to connect
                 self.connected_ = True
-                self.client_.settimeout(0.09)
+                self.client_.settimeout(1)
             except Exception as message:
                 self.error_message_ = str(message)
                 self.connected_ = False
@@ -290,7 +290,7 @@ class Client:
         try: #try connect to server
             self.socket_.connect((ipaddress, port))
             self.connected_ = True
-            self.socket_.settimeout(0.09)
+            self.socket_.settimeout(1)
         except Exception as message:
             self.error_message_ = str(message)
             self.connected_ = False

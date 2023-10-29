@@ -11,7 +11,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.7"
+PROGRAM_VERSION = "0.0.8"
 
 
 
@@ -77,11 +77,9 @@ class Menu:
                                     title_font_size=52,widget_font = self.font_,widget_font_size=38,title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_UNDERLINE) #create menu theme
 
 
-
         #game return values:
         self.level_completed_ = False
         self.connection_lost_ = False
-
 
 
 
@@ -94,7 +92,7 @@ class Menu:
         self.map_file_path_ = ""  #mapfile path  #if server or singleplayer
 
 
-        self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions list
+        self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions 16:9 list
 
         #remove resolutions higher than the screen resolution from the list
         display_resolution = pygame.display.set_mode().get_size() #get screen resolution
@@ -122,6 +120,8 @@ class Menu:
     def ReadSettings(self):
         '''
         read settings from save/settings.json
+
+        create menu object and window
         '''
 
         try:
@@ -135,8 +135,7 @@ class Menu:
 
             display_resolution = pygame.display.set_mode().get_size() #get screen resolution
 
-            if self.resolution_[0] > display_resolution[0] and self.resolution_[1] > display_resolution[1]: #if saved resolution > screen resolution
-                raise
+
             self.resolution_index_ = settings["resolution index"]
 
             if settings["fullscreen"] == True:
