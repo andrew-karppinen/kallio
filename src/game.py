@@ -278,6 +278,14 @@ def Gravity(gamedata,connection):
                                 return
 
 
+                        if gamedata.current_map_[y+1][x] != None: #player dead
+                            if type(gamedata.current_map_[y+1][x]) == Player:
+                                RestartLevel(gamedata,connection)
+                                return
+
+
+
+
 
                     else: #if map end
                         gamedata.audio_.PlayDropSound()  # play audio
