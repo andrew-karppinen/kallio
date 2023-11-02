@@ -265,6 +265,65 @@ class GameData:
 
 
 
+
+        #calculate pause menu texts positions
+
+
+
+        #get text size
+        self.head_text_size_x_ = self.font_.render('Pause Menu', True, (255, 255, 255)).get_width()
+
+        self.text_1_size_x_ = self.font_.render('Resume game', True, (0, 0, 0)).get_width()
+        self.text_1_size_y_ = self.font_.render('Resume game', True, (0, 0, 0)).get_height()
+
+        self.text_2_size_x_ = self.font_.render('Restart level', True, (0, 0, 0)).get_width()
+        self.text_2_size_y_ = self.font_.render('Restart level', True, (0, 0, 0)).get_height()
+
+        self.text_3_size_x_ = self.font_.render('Exit level', True, (0, 0, 0)).get_width()
+        self.text_3_size_y_ = self.font_.render('Exit level', True, (0, 0, 0)).get_height()
+
+
+        x, y = self.screen_.get_size() #get window size
+
+
+        #calculate the text position
+        self.text1_position_x_ = x // 2
+        self.text1_position_x_ -= self.text_1_size_x_ // 2
+        self.text1_position_y_ = y // 2
+
+        self.text2_position_x_ = x // 2
+        self.text2_position_x_ -= self.text_2_size_x_ // 2
+        self.text2_position_y_ = y // 2 - 50
+
+        self.text3_position_x_ = x // 2
+        self.text3_position_x_ -= self.text_3_size_x_ // 2
+        self.text3_position_y_ = y // 2 - 100
+
+        self.head_text_position_x_ = x // 2
+        self.head_text_position_x_ -= self.head_text_size_x_ // 2
+        self.head_text_position_y_ = y // 2 - 190
+
+
+
+    def GetPauseMenuButtonNumber(self, mouse_position:tuple):
+        '''
+        returns the pause menu button number of that the mouse touches
+        if the mouse is not touching anything, return None
+        '''
+
+
+        if mouse_position[0] >= self.text1_position_x_ and mouse_position[0] <= self.text1_position_x_ + self.text_1_size_x_:
+            if mouse_position[1] >= self.text1_position_y_ and mouse_position[1] <= self.text1_position_y_ + self.text_1_size_y_:
+                return 1
+
+        if mouse_position[0] >= self.text2_position_x_ and mouse_position[0] <= self.text2_position_x_ + self.text_2_size_x_:
+            if mouse_position[1] >= self.text2_position_y_ and mouse_position[1] <= self.text2_position_y_ + self.text_2_size_y_:
+                return 2
+
+        if mouse_position[0] >= self.text3_position_x_ and mouse_position[0] <= self.text3_position_x_ + self.text_3_size_x_:
+            if mouse_position[1] >= self.text3_position_y_ and mouse_position[1] <= self.text3_position_y_ + self.text_3_size_y_:
+                return 3
+
     def DrawMap(self):
         #draw current map
         #camera follow player

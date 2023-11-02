@@ -549,28 +549,13 @@ def DrawPauseMenu(gamedata, pausemenu_number: int = 1):
 
     pygame.draw.rect(gamedata.screen_, (50, 50, 50), pygame.Rect(x // 2 - 200, y // 2 - 200, 400, 400))  #draw a box in the center of the screen
 
-    #centering the text position
-    text1_x = x // 2
-    text1_x -= text1.get_width() // 2
-    text1_y = y // 2
 
-    text2_x = x // 2
-    text2_x -= text2.get_width() // 2
-    text2_y = y // 2
-
-    text3_x = x // 2
-    text3_x -= text3.get_width() // 2
-    text3_y = y // 2
-
-    head_x = x // 2
-    head_x -= head_text.get_width() // 2
-    head_y = y // 2 - 190
 
     # draw the texts:
-    gamedata.screen_.blit(head_text, (head_x, head_y))  # draw title
-    gamedata.screen_.blit(text1, (text1_x, text1_y))
-    gamedata.screen_.blit(text2, (text2_x, text2_y - 50))
-    gamedata.screen_.blit(text3, (text3_x, text3_y - 100))
+    gamedata.screen_.blit(head_text, (gamedata.head_text_position_x_, gamedata.head_text_position_y_))  # draw title
+    gamedata.screen_.blit(text1, (gamedata.text1_position_x_, gamedata.text1_position_y_))
+    gamedata.screen_.blit(text2, (gamedata.text2_position_x_, gamedata.text2_position_y_))
+    gamedata.screen_.blit(text3, (gamedata.text3_position_x_, gamedata.text3_position_y_))
 
 
 def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = True):
@@ -877,10 +862,27 @@ def Run(gamedata:object,connection:object = None)->bool:
 
 
             if event.type == pygame.QUIT:  #exit program
-                if gamedata.multiplayer_:
+                if gamedata.multiplayer_: #if multiplayer
                     connection.SendGameExit()
                     connection.CloseSocket()  #close socket
                 return False,False #back to menu
+
+
+            if event.type == pygame.MOUSEBUTTONUP: #if mouse button click
+                if pausemenu_is_active == True:
+                    mouse_position = pygame.mouse.get_pos() #get mouse position
+                    number = gamedata.GetPauseMenuButtonNumber(mouse_position) #check is the mouse touches the button
+
+                    if number != None:
+                        if number == 1: #return game
+                            pausemenu_is_active = False
+                        elif number == 2: #restart level
+                            RestartLevel(gamedata,connection)
+                        elif number == 3: #exit level
+                            if gamedata.multiplayer_: #if multiplayer
+                                connection.SendGameExit()
+                                connection.CloseSocket()  # close socket
+                            return False, False  #back to menu
 
         if enter == True: #if enter is pressed
             if pausemenu_is_active == True: #if pausemenu is active
