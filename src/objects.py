@@ -7,6 +7,17 @@ class Player:
         self.local_player_ = local_player
         self.animated_ = False
         self.image_number_ = 0
+
+        #variables related to motion animation:
+        self.movement_going_up_ = False
+        self.movement_going_down_ = False
+        self.movement_going_left_ = False
+        self.movement_going_right_ = False
+
+        self.moved_ = 0
+        self.moved_counter_ = 0
+
+
         #0 = no move,1 left1, 2 = left2, 3 = right1, 4 = right2
 
     def SetImage(self,nomove,move1 = None,move2 = None):
@@ -58,6 +69,15 @@ class Player:
             else:
                 self.AnimateToLeft()
 
+    @property
+    def MovementGoing_(self): #if motion aimation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
+
+
+    def StopMovementAnimation(self):
+        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_ = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -83,6 +103,9 @@ class DefaultTile:
 
     def __init__(self):
         pass
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return False  #allways False in this class
 
     @property
     def image_(self):
@@ -113,6 +136,15 @@ class Stone:
         self.drop_ = drop
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
+        #variables related to motion animation:
+        self.movement_going_up_ = False
+        self.movement_going_down_ = False
+        self.movement_going_left_ = False
+        self.movement_going_right_ = False
+
+        self.moved_ = 0
+        self.moved_counter_ = 0
+
 
     def Rotate(self,direction:int):
         #direction = 1 or 2
@@ -131,7 +163,14 @@ class Stone:
             else:
                 self.direction_ -= 1
 
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
 
+    def StopMovementAnimation(self):
+        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
     @property
     def image_(self):
         if self.direction_ == 1:
@@ -172,6 +211,16 @@ class Diamond:
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
+        #variables related to motion animation:
+        self.movement_going_up_ = False
+        self.movement_going_down_ = False
+        self.movement_going_left_ = False
+        self.movement_going_right_ = False
+
+        self.moved_ = 0
+        self.moved_counter_ = 0
+
+
     def Rotate(self,direction:int):
         #direction = 1 or 2
         #1 = clockwise
@@ -189,6 +238,15 @@ class Diamond:
             else:
                 self.direction_ -= 1
 
+
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
+
+    def StopMovementAnimation(self):
+        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -214,8 +272,23 @@ class Tnt:
     def __init__(self,drop:bool=False):
         self.drop_ = drop  # if currently dropping
 
+        #variables related to motion animation:
+        self.movement_going_up_ = False
+        self.movement_going_down_ = False
+        self.movement_going_left_ = False
+        self.movement_going_right_ = False
 
+        self.moved_ = 0
+        self.moved_counter_ = 0
 
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
+
+    def StopMovementAnimation(self):
+        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
     @property
     def image_(self):
         return (Tnt.image)
@@ -236,6 +309,12 @@ class Explosion:
     def __init__(self,counter:int = 0):
         self.counter_ = counter
 
+
+
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return False #allways False in this class
+
     @property
     def image_(self):
         return(Explosion.images[self.counter_//4])
@@ -254,8 +333,13 @@ class Bedrock:
         pass
 
     @property
+    def MovementGoing_(self): #if motion animation is going
+         return False #allways False in this class
+
+    @property
     def image_(self):
         return (Bedrock.image)
+
 
 class Brick:
     #class variables:
@@ -270,6 +354,10 @@ class Brick:
     def __init__(self):
         pass
 
+
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return False #allways False in this class
     @property
     def image_(self):
         return (Brick.image)
@@ -292,6 +380,10 @@ class Goal:
 
     def __init__(self):
         pass
+
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return False  #allways False in this class
 
     @property
     def image_(self):
@@ -324,8 +416,23 @@ class Monster:
 
         self.moved_during_this_function_call_ = False
 
+        #variables related to motion animation:
+        self.movement_going_up_ = False
+        self.movement_going_down_ = False
+        self.movement_going_left_ = False
+        self.movement_going_right_ = False
 
+        self.moved_ = 0
+        self.moved_counter_ = 0
 
+    @property
+    def MovementGoing_(self): #if motion animation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
+
+    def StopMovementAnimation(self): #init movement animation variablse
+        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -358,6 +465,12 @@ class Door:
     def __init__(self, direction):
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
+
+
+    @property
+    def MovementGoing_(self): #if motion animation is going
+        #allways False in this class
+         return False
 
     @property
     def image_(self):

@@ -4,7 +4,6 @@ from src import *
 
 
 
-
 def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:bool):
     '''
     move local player
@@ -15,7 +14,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     #can move only 1 direction:
     if right == True:
-        left == False;up = False; down = False;
+        left = False;up = False; down = False;
     elif left == True:
         up = False; down = False;right = False;
     elif down == True:
@@ -43,7 +42,9 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             gamedata.local_player_position_x_ += 1 #move player
             move = True
 
-            gamedata.local_player_.AnimateToRight() #animate player image
+            gamedata.local_player_.AnimateToRight() #change player image
+            gamedata.local_player_.movement_going_right_ = True #animate movement
+
 
         #if no default tile or diamond
         #if pushing objects
@@ -60,14 +61,13 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
                     push = True
                     gamedata.audio_.PlayPushSound() #play audio
-                    if gamedata.local_player_.animated_ == True:  # if player is animated
-                        gamedata.local_player_.AnimateToRight() #animate player image
+                    gamedata.local_player_.AnimateToRight() #change player image
 
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
                     gamedata.local_player_position_x_ += 2 #move player
-                    gamedata.local_player_.AnimateToRight()  # animate player image
+                    gamedata.local_player_.AnimateToRight()  #change player image
 
                     door = True
 
@@ -79,9 +79,8 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             gamedata.local_player_position_x_ -= 1 #move player
             move = True
 
-
-            if gamedata.local_player_.animated_ == True: #if player is animated
-                gamedata.local_player_.AnimateToLeft() #animate player image
+            gamedata.local_player_.AnimateToLeft() #change player image
+            gamedata.local_player_.movement_going_left_ = True #animate movement
 
         #if pushing objects
         elif gamedata.local_player_position_x_-2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 2] == None: #if map not end if index is empty
@@ -99,14 +98,13 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.audio_.PlayPushSound() #play audio
 
 
-                    if gamedata.local_player_.animated_ == True:  # if player is animated
-                        gamedata.local_player_.AnimateToLeft() #animate player image
+                    gamedata.local_player_.AnimateToLeft() #change player image
 
             #if door
             elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].direction_ == 4: #if the direction of the door is to the left
                     gamedata.local_player_position_x_ -= 2 #move player
-                    gamedata.local_player_.AnimateToLeft()  # animate player image
+                    gamedata.local_player_.AnimateToLeft()  #change player image
                     door = True
 
 
@@ -120,15 +118,16 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             move = True
 
 
-            if gamedata.local_player_.animated_ == True: #if player is animated
-                gamedata.local_player_.AnimateToHorizontal() #animate player image
+
+            gamedata.local_player_.AnimateToHorizontal() #change player image
+            gamedata.local_player_.movement_going_up_ = True #animate movement
 
         #if door
         elif gamedata.local_player_position_y_ - 2 >= 0 and gamedata.current_map_[gamedata.local_player_position_y_-2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_].direction_ == 1: #if the direction of the door is to the up
                     gamedata.local_player_position_y_ -= 2 #move player
-                    gamedata.local_player_.AnimateToHorizontal()  # animate player image
+                    gamedata.local_player_.AnimateToHorizontal()  #change player image
 
                     door = True
 
@@ -142,14 +141,16 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             move = True
 
 
-            if gamedata.local_player_.animated_ == True:  # if player is animated
-                gamedata.local_player_.AnimateToHorizontal() #animate player image
+
+            gamedata.local_player_.AnimateToHorizontal() #change player image
+            gamedata.local_player_.movement_going_down_ = True #animate movement
+
         #if door
         elif gamedata.local_player_position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_position_y_+2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
                     gamedata.local_player_position_y_ += 2  # move player
-                    gamedata.local_player_.AnimateToHorizontal()  # animate player image
+                    gamedata.local_player_.AnimateToHorizontal()  #change player image
 
                     door = True
 
@@ -285,8 +286,6 @@ def Gravity(gamedata,connection):
 
 
 
-
-
                     else: #if map end
                         gamedata.audio_.PlayDropSound()  # play audio
 
@@ -296,8 +295,11 @@ def Gravity(gamedata,connection):
 
                 if y + 1 < gamedata.map_height_:  # if map not end
                     if gamedata.current_map_[y+1][x] == None: #if below is empty
-                        #move downwards
+                        #move downwards:
                         gamedata.current_map_[y][x].drop_ = True
+                        gamedata.current_map_[y][x].movement_going_down_ = True #animate movement
+
+                        #set object to new location
                         gamedata.current_map_[y+1][x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
                     else:
@@ -306,16 +308,26 @@ def Gravity(gamedata,connection):
 
                                 if x +1 < gamedata.map_width_:
                                     if gamedata.current_map_[y][x+1] == None and gamedata.current_map_[y+1][x+1] == None: #if empty on the right
-                                        gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x] #move stone to right
-                                        gamedata.current_map_[y][x].Rotate(1)
+
+                                        gamedata.current_map_[y][x].movement_going_right_ = True #animate movement
+                                        gamedata.current_map_[y][x].Rotate(1) #rotate image
+
+                                        #set object to new location:
+                                        gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x]
                                         gamedata.current_map_[y][x] = None
+
                                         continue
 
                                 if x-1 >= 0: #if map not end
                                     if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
+
+                                        gamedata.current_map_[y][x].movement_going_left_ = True #animate movement
+                                        gamedata.current_map_[y][x].Rotate(2) #rotate image
+
+                                        #set object to new location:
                                         gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move stone to left
-                                        gamedata.current_map_[y][x].Rotate(2)
                                         gamedata.current_map_[y][x] = None
+
                                         continue
 
 
@@ -353,11 +365,14 @@ def MoveMonsters(gamedata:object,connection:object):
         return False
 
 
-    for y in range(gamedata.map_height_):
+    for y in range(gamedata.map_height_): #iterated map
         for x in range(gamedata.map_width_):
-            if type(gamedata.current_map_[y][x]) == Monster:
-                move_x = x
-                move_y = y
+            if type(gamedata.current_map_[y][x]) == Monster: #if monster
+
+                move_up = False #move up
+                move_down = False #move down
+                move_right = False #move right
+                move_left = False #move left
 
                 ##############
                 if gamedata.current_map_[y][x].direction_ == 1: #right
@@ -368,15 +383,15 @@ def MoveMonsters(gamedata:object,connection:object):
                                     pass
                                 else:
                                     gamedata.current_map_[y][x].direction_ = 3  # set direction to left
-                                    move_x -= 1
+                                    move_left = True
                             else:
                                 gamedata.current_map_[y][x].direction_ = 4  # set direction to up
-                                move_y -= 1
+                                move_up = True
                         else:
                             gamedata.current_map_[y][x].direction_ = 2 #set direction to down
-                            move_y += 1
+                            move_down = True
                     else:
-                        move_x += 1
+                        move_right = True
 
                 ##############
                 elif gamedata.current_map_[y][x].direction_ == 2: #down
@@ -387,14 +402,14 @@ def MoveMonsters(gamedata:object,connection:object):
                                     pass
                                 else:
                                     gamedata.current_map_[y][x].direction_ = 4 #set direction to up
-                                    move_y -= 1
+                                    move_up = True
                             else:
                                 gamedata.current_map_[y][x].direction_ = 1 #set direction to right
-                                move_x += 1
+                                move_right = True
                         else:
                             gamedata.current_map_[y][x].direction_ = 3 #set direction to left
                     else:
-                        move_y += 1
+                        move_down = True
 
                 ##############
                 elif gamedata.current_map_[y][x].direction_ == 3: #left
@@ -405,13 +420,13 @@ def MoveMonsters(gamedata:object,connection:object):
                                     pass
                                 else:
                                     gamedata.current_map_[y][x].direction_ = 1 #set direction to right
-                                    move_x += 1
+                                    move_right = True
                             else:
                                 gamedata.current_map_[y][x].direction_ = 2 #set direction to down
                         else:
                             gamedata.current_map_[y][x].direction_ = 4 #set direction to up
                     else:
-                        move_x -= 1
+                        move_left = True
 
                 ################
                 elif gamedata.current_map_[y][x].direction_ == 4: #up
@@ -422,26 +437,48 @@ def MoveMonsters(gamedata:object,connection:object):
                                     pass
                                 else:
                                     gamedata.current_map_[y][x].direction_ = 2 #set direcion to down
-                                    move_y += 1
+                                    move_down = True
 
                             else:
                                 gamedata.current_map_[y][x].direction_ = 3 #set direction to left
-                                move_x -= 1
+                                move_left = True
                         else:
                             gamedata.current_map_[y][x].direction_ = 1 #set direction to right
-                            move_x += 1
+                            move_right = True
                     else:
-                        move_y -= 1
+                        move_up = True
 
 
-                if x != move_x or y != move_y:
+
+                #move monster:
+                if any([move_right, move_left, move_up, move_down]):
+
                     if gamedata.current_map_[y][x].moved_during_this_function_call_ == False: #the monster is moved only once in function call
+
+                        if move_up:
+                            move_y = y - 1
+                            move_x = x
+                            gamedata.current_map_[y][x].movement_going_up_ = True #animate movement
+                        elif move_down:
+                            move_y = y + 1
+                            move_x = x
+                            gamedata.current_map_[y][x].movement_going_down_ = True #animate movement
+                        elif move_right:
+                            move_x = x + 1
+                            move_y = y
+                            gamedata.current_map_[y][x].movement_going_right_ = True #animate movement
+                        elif move_left:
+                            move_x = x - 1
+                            move_y = y
+                            gamedata.current_map_[y][x].movement_going_left_ = True #animate movement
+
                         if type(gamedata.current_map_[move_y][move_x]) == Player: #a monster hits a player
                             RestartLevel(gamedata,connection) #level failed
                             return #exit function
 
 
-                        #move monster:
+
+                        #set monster to new location:
                         gamedata.current_map_[move_y][move_x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
                         gamedata.current_map_[move_y][move_x].moved_during_this_function_call_ = True
@@ -450,11 +487,12 @@ def MoveMonsters(gamedata:object,connection:object):
 
 
 
+
     #moved_during_this_function_call_ variable to false
     #and change monster image
-    for y in range(gamedata.map_height_):
+    for y in range(gamedata.map_height_): #iterated map
         for x in range(gamedata.map_width_):
-            if type(gamedata.current_map_[y][x]) == Monster:
+            if type(gamedata.current_map_[y][x]) == Monster: #if monster
                 gamedata.current_map_[y][x].moved_during_this_function_call_ = False
 
                 # change monster image
@@ -600,12 +638,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
     if action[0] == "moveright":
         if action[1] == "0": #no door
-
-            #bug check:
-            #if a remote player tries to go through a stone
-            #move the stone downwards
-            #if type(gamedata.current_map_[position_y][position_x + 1]) in gamedata.pushing_objects_ :
-            #    gamedata.current_map_[position_y+1][position_x + 1] = gamedata.current_map_[position_y][position_x + 1]
+            gamedata.remote_player_.movement_going_right_ = True #animate movement
 
             #move player:
             gamedata.remote_player_position_x_ += 1 #move player
@@ -622,17 +655,12 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.current_map_[position_y][position_x+2] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
-        gamedata.remote_player_.AnimateToRight()
+        gamedata.remote_player_.AnimateToRight() #change player image
 
     elif action[0] ==  "moveleft":
         if action[1] == "0": #no door
+            gamedata.remote_player_.movement_going_left_ = True #animate movement
 
-
-            #bug check:
-            #if a remote player tries to go through a stone
-            #move the stone downwards
-            #if type(gamedata.current_map_[position_y][position_x - 1]) in gamedata.pushing_objects_ :
-            #    gamedata.current_map_[position_y+1][position_x - 1] = gamedata.current_map_[position_y][position_x - 1]
 
             #move player:
             gamedata.remote_player_position_x_ -= 1
@@ -649,12 +677,14 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.current_map_[position_y][position_x-2] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
-        gamedata.remote_player_.AnimateToLeft()
+        gamedata.remote_player_.AnimateToLeft() #change player image
 
     elif action[0] == "movedown":
         if action[1] == "0": #no door
-            gamedata.remote_player_position_y_ += 1 #move player
+            gamedata.remote_player_.movement_going_down_ = True #animate movement
 
+
+            gamedata.remote_player_position_y_ += 1 #move player
             if type(gamedata.current_map_[position_y + 1][position_x]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectDiamond() #play audio
@@ -667,10 +697,12 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.current_map_[position_y+2][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
-        gamedata.remote_player_.AnimateToHorizontal()
+        gamedata.remote_player_.AnimateToHorizontal() #change player image
 
     elif action[0] == "moveup":
         if action[1] == "0": #no door
+            gamedata.remote_player_.movement_going_up_ = True #animate movement
+
             gamedata.remote_player_position_y_ -= 1 #move player
 
             if type(gamedata.current_map_[position_y - 1][position_x]) == Diamond: #if diamond
@@ -685,7 +717,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.current_map_[position_y-2][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
-        gamedata.remote_player_.AnimateToHorizontal()
+        gamedata.remote_player_.AnimateToHorizontal() #change player image
 
     elif action[0] == "pushright":
 
@@ -696,7 +728,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x+2] = gamedata.current_map_[position_y][position_x+1] #place the pushing object to new location
         gamedata.current_map_[position_y][position_x + 1] = gamedata.remote_player_ #place the player to new location
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
-        gamedata.remote_player_.AnimateToRight()
+        gamedata.remote_player_.AnimateToRight() #change player image
         gamedata.audio_.PlayPushSound() #play audio
 
 
@@ -709,7 +741,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
         gamedata.current_map_[position_y][position_x-2] = gamedata.current_map_[position_y][position_x-1] #place the pushing object to new location
         gamedata.current_map_[position_y][position_x - 1] = gamedata.remote_player_ #place the player to new location
         gamedata.current_map_[position_y][position_x] = None  # remote player from current position
-        gamedata.remote_player_.AnimateToLeft()
+        gamedata.remote_player_.AnimateToLeft() #change player image
         gamedata.audio_.PlayPushSound() #play audio
 
 
@@ -782,6 +814,9 @@ def Run(gamedata:object,connection:object = None)->bool:
         connection.SendPass()
 
     loopcount = 0 #Variable loopCount keeps track of how many times the main loop has been executed
+
+    liikkuminen_menossa = 0
+    liikuttu = 0
 
     while True: #game main loop
 
@@ -1007,7 +1042,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                 connection.CloseSocket()  # close socket
                 print(connection.error_message_)
                 return False, True  # back to menu, level not completed
-
 
 
 

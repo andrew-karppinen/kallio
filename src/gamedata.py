@@ -266,9 +266,9 @@ class GameData:
 
 
 
+
+
         #calculate pause menu texts positions
-
-
 
         #get text size
         self.head_text_size_x_ = self.font_.render('Pause Menu', True, (255, 255, 255)).get_width()
@@ -374,6 +374,11 @@ class GameData:
             down = self.map_height_
 
 
+
+
+
+
+
         y = -1
         for i in range(up,down): #y
             x = -1
@@ -387,11 +392,34 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_,y * self.tile_size_ +self.margin_y_)) #draw tiles to surface
+                            if not self.current_map_[i][j].MovementGoing_: #normal tile drawing
+                                self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_,y * self.tile_size_ +self.margin_y_)) #draw tiles to surface
+
+
+                            else:
+                                if self.current_map_[i][j].movement_going_down_: #animate tile down
+                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y-1) * self.tile_size_ + self.margin_y_+self.current_map_[i][j].moved_)) #draw tiles
+
+                                elif self.current_map_[i][j].movement_going_up_: #animate tile up
+                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y+1) * self.tile_size_ + self.margin_y_-self.current_map_[i][j].moved_)) #draw tiles
+
+                                elif self.current_map_[i][j].movement_going_right_: #animate tile right
+                                    self.screen_.blit(self.current_map_[i][j].image_, ((x-1) * self.tile_size_ + self.margin_x_+self.current_map_[i][j].moved_, y * self.tile_size_ + self.margin_y_)) #draw tiles
+
+                                elif self.current_map_[i][j].movement_going_left_: #animate tile left
+                                    self.screen_.blit(self.current_map_[i][j].image_, ((x+1) * self.tile_size_ + self.margin_x_-self.current_map_[i][j].moved_, y * self.tile_size_ + self.margin_y_)) #draw tiles
 
 
 
+                                '''
+                                the tile is moved 3 times 1/3 the size of the tile
+                                '''
 
+                                if self.current_map_[i][j].moved_counter_ > 2:
+                                    self.current_map_[i][j].StopMovementAnimation() #init movement variables
+                                else:
+                                    self.current_map_[i][j].moved_ += self.tile_size_ / 3
+                                    self.current_map_[i][j].moved_counter_ += 1
 
 
     def DrawInfoPanel(self):
