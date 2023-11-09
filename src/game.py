@@ -918,7 +918,7 @@ def Run(gamedata:object,connection:object = None)->bool:
                                 connection.SendGameExit()
                                 connection.CloseSocket()  # close socket
                             return False, False  #back to menu
-
+                        pausemenu_is_active = False #diasble the pause menu if menu button is pressed with the mouse.
         if enter == True: #if enter is pressed
             if pausemenu_is_active == True: #if pausemenu is active
                 if pausemenu_number == 1: #exit pause menu
