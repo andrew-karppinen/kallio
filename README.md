@@ -6,6 +6,8 @@
 
 ![Kuvakaappaus_2023-11-03_18-25-18](https://github.com/andrew-karppinen/py-boulderdash/assets/99529988/9a1b0dd5-be96-4cd6-a74c-56892390603e)
 
+![ezgif com-video-to-gif](https://github.com/andrew-karppinen/py-boulderdash/assets/99529988/3a42cf29-0c55-40b5-990d-40fb8e9b9496)
+
 
 
 Required librarys:
