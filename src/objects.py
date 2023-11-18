@@ -1,21 +1,90 @@
 import pygame
 
 
-class Player:
+
+
+
+class Tile: #tile upper class
+
+    def __init__(self):
+        #variables related to motion animation:
+        self.__movement_going_up_ = False
+        self.__movement_going_down_ = False
+        self.__movement_going_left_ = False
+        self.__movement_going_right_ = False
+
+        self.moved_ = 0
+        self.moved_counter_ = 0
+
+
+    @property
+    def movement_going_(self): #if motion aimation is going
+         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
+
+
+
+    @property
+    def movement_going_up_(self):
+        return self.__movement_going_up_
+
+    @property
+    def movement_going_down_(self):
+        return self.__movement_going_down_
+
+    @property
+    def movement_going_right_(self):
+        return self.__movement_going_right_
+
+    @property
+    def movement_going_left_(self):
+        return self.__movement_going_left_
+
+
+
+
+    @movement_going_up_.setter
+    def movement_going_up_(self,a):
+        self.StopMovementAnimation() #init movement animation variables
+        self.__movement_going_up_ = a
+
+
+    @movement_going_down_.setter
+    def movement_going_down_(self,a):
+        self.StopMovementAnimation() #init movement animation variables
+        self.__movement_going_down_ = a
+
+    @movement_going_right_.setter
+    def movement_going_right_(self,a):
+
+        self.StopMovementAnimation() #init movement animation variables
+        self.__movement_going_right_ = a
+
+    @movement_going_left_.setter
+    def movement_going_left_(self,a):
+        self.StopMovementAnimation() #init movement animation variables
+        self.__movement_going_left_ = a
+
+
+    def StopMovementAnimation(self):
+        #init movement animation variables
+        self.__movement_going_down_, self.__movement_going_up_, self.__movement_going_left_, self.__movement_going_right_ = False,False,False,False
+        self.moved_ = 0
+        self.moved_counter_ = 0
+
+
+
+
+class Player(Tile):
     def __init__(self,local_player:bool = True):
+        super().__init__()
         self.images_ = []
         self.local_player_ = local_player
         self.animated_ = False
         self.image_number_ = 0
 
-        #variables related to motion animation:
-        self.movement_going_up_ = False
-        self.movement_going_down_ = False
-        self.movement_going_left_ = False
-        self.movement_going_right_ = False
 
-        self.moved_ = 0
-        self.moved_counter_ = 0
+
+
 
 
         #0 = no move,1 left1, 2 = left2, 3 = right1, 4 = right2
@@ -69,15 +138,6 @@ class Player:
             else:
                 self.AnimateToLeft()
 
-    @property
-    def MovementGoing_(self): #if motion aimation is going
-         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
-
-
-    def StopMovementAnimation(self):
-        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_ = False,False,False,False
-        self.moved_ = 0
-        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -91,7 +151,7 @@ class Player:
 
 
 
-class DefaultTile:
+class DefaultTile(Tile):
     #class variables:
     image = None
 
@@ -102,17 +162,15 @@ class DefaultTile:
         DefaultTile.image = pygame.transform.scale(DefaultTile.image, (tile_size, tile_size))
 
     def __init__(self):
-        pass
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return False  #allways False in this class
+        super().__init__()
+
 
     @property
     def image_(self):
         return (DefaultTile.image)
 
 
-class Stone:
+class Stone(Tile):
     #class variables:
     image_left = None
     image_right = None
@@ -133,17 +191,14 @@ class Stone:
         Stone.image_up = pygame.transform.scale(Stone.image_up, (tile_size, tile_size))
         Stone.image_down = pygame.transform.scale(Stone.image_down, (tile_size, tile_size))
     def __init__(self, drop:bool,direction:int = 1):
+        super().__init__()
         self.drop_ = drop
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
-        #variables related to motion animation:
-        self.movement_going_up_ = False
-        self.movement_going_down_ = False
-        self.movement_going_left_ = False
-        self.movement_going_right_ = False
 
-        self.moved_ = 0
-        self.moved_counter_ = 0
+
+
+
 
 
     def Rotate(self,direction:int):
@@ -163,14 +218,7 @@ class Stone:
             else:
                 self.direction_ -= 1
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
 
-    def StopMovementAnimation(self):
-        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
-        self.moved_ = 0
-        self.moved_counter_ = 0
     @property
     def image_(self):
         if self.direction_ == 1:
@@ -184,7 +232,7 @@ class Stone:
 
 
 
-class Diamond:
+class Diamond(Tile):
     #class variables:
     image_left = None
     image_right = None
@@ -207,18 +255,12 @@ class Diamond:
         Diamond.image_down = pygame.transform.scale(Diamond.image_down, (tile_size, tile_size))
 
     def __init__(self, drop:bool,direction:int = 1):
+        super().__init__()
         self.drop_ = drop
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
-        #variables related to motion animation:
-        self.movement_going_up_ = False
-        self.movement_going_down_ = False
-        self.movement_going_left_ = False
-        self.movement_going_right_ = False
 
-        self.moved_ = 0
-        self.moved_counter_ = 0
 
 
     def Rotate(self,direction:int):
@@ -239,14 +281,6 @@ class Diamond:
                 self.direction_ -= 1
 
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
-
-    def StopMovementAnimation(self):
-        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
-        self.moved_ = 0
-        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -261,7 +295,7 @@ class Diamond:
 
 
 
-class Tnt:
+class Tnt(Tile):
     #class variables:
     image = None
 
@@ -270,32 +304,17 @@ class Tnt:
     def ScaleImages(tile_size:int):
         Tnt.image = pygame.transform.scale(Tnt.image, (tile_size, tile_size))
     def __init__(self,drop:bool=False):
+        super().__init__()
         self.drop_ = drop  # if currently dropping
 
-        #variables related to motion animation:
-        self.movement_going_up_ = False
-        self.movement_going_down_ = False
-        self.movement_going_left_ = False
-        self.movement_going_right_ = False
 
-        self.moved_ = 0
-        self.moved_counter_ = 0
-
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
-
-    def StopMovementAnimation(self):
-        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
-        self.moved_ = 0
-        self.moved_counter_ = 0
     @property
     def image_(self):
         return (Tnt.image)
 
 
 
-class Explosion:
+class Explosion(Tile):
     #class variables:
     images = []
 
@@ -307,19 +326,16 @@ class Explosion:
         for i in range(len(Explosion.images)):
             Explosion.images[i] = pygame.transform.scale(Explosion.images[i], (tile_size, tile_size))
     def __init__(self,counter:int = 0):
+        super().__init__()
         self.counter_ = counter
 
 
 
     @property
-    def MovementGoing_(self): #if motion animation is going
-         return False #allways False in this class
-
-    @property
     def image_(self):
         return(Explosion.images[self.counter_//4])
 
-class Bedrock:
+class Bedrock(Tile):
     #class variables:
     image = None
 
@@ -330,18 +346,16 @@ class Bedrock:
         Bedrock.image = pygame.transform.scale(Bedrock.image, (tile_size, tile_size))
 
     def __init__(self):
-        pass
+        super().__init__()
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return False #allways False in this class
+
 
     @property
     def image_(self):
         return (Bedrock.image)
 
 
-class Brick:
+class Brick(Tile):
     #class variables:
     image = None
 
@@ -352,18 +366,15 @@ class Brick:
         Brick.image = pygame.transform.scale(Brick.image, (tile_size, tile_size))
 
     def __init__(self):
-        pass
+        super().__init__()
 
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return False #allways False in this class
     @property
     def image_(self):
         return (Brick.image)
 
 
-class Goal:
+class Goal(Tile):
     #class variables:
     image_open = None
     image_close = None
@@ -379,11 +390,8 @@ class Goal:
         Goal.image_close = pygame.transform.scale(Goal.image_close, (tile_size, tile_size))
 
     def __init__(self):
-        pass
+        super().__init__()
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return False  #allways False in this class
 
     @property
     def image_(self):
@@ -397,7 +405,7 @@ class Goal:
 
 
 
-class Monster:
+class Monster(Tile):
     #class variables:
     image1 = None
     image2 = None
@@ -411,28 +419,13 @@ class Monster:
             Monster.image2 = pygame.transform.scale(Monster.image2, (tile_size, tile_size))
 
     def __init__(self,direction):
+        super().__init__()
         self.direction_ = direction #1 = right, 2 = down, 3 = left, 4= up
         self.image_number_ = 1 #1, 2
 
         self.moved_during_this_function_call_ = False
 
-        #variables related to motion animation:
-        self.movement_going_up_ = False
-        self.movement_going_down_ = False
-        self.movement_going_left_ = False
-        self.movement_going_right_ = False
 
-        self.moved_ = 0
-        self.moved_counter_ = 0
-
-    @property
-    def MovementGoing_(self): #if motion animation is going
-         return any([self.movement_going_down_,self.movement_going_up_,self.movement_going_left_,self.movement_going_right_])
-
-    def StopMovementAnimation(self): #init movement animation variablse
-        self.movement_going_down_, self.movement_going_up_, self.movement_going_left_, self.movement_going_right_  = False,False,False,False
-        self.moved_ = 0
-        self.moved_counter_ = 0
 
     @property
     def image_(self):
@@ -443,7 +436,7 @@ class Monster:
 
 
 
-class Door:
+class Door(Tile):
     image_left = None
     image_right = None
     image_up = None
@@ -463,14 +456,11 @@ class Door:
         Door.image_down = pygame.transform.scale(Door.image_down, (tile_size, tile_size))
 
     def __init__(self, direction):
+        super().__init__()
         self.direction_ = direction  # 1 = up, 2 = right, 3 = down, 4 = left
 
 
 
-    @property
-    def MovementGoing_(self): #if motion animation is going
-        #allways False in this class
-         return False
 
     @property
     def image_(self):

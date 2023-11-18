@@ -19,7 +19,7 @@ class GameData:
             self.font_ = self.font_ = pygame.font.Font(font_file_path,30) #load font from file, font size 30
             self.big_size_font_ = pygame.font.Font(font_file_path,60) #load font from file, font size 60
         else: #file path is not given, load default sysfont
-            self.font_ = self.font_ = pygame.font.SysFont("", 30)  # load sysfont
+            self.font_ = pygame.font.SysFont("", 30)  # load sysfont
             self.big_size_font_ = pygame.font.SysFont("", 60)  # load sysfont
 
 
@@ -91,6 +91,12 @@ class GameData:
 
 
         self.SetImages() #set tile images
+
+        #display / map draw data
+        self.camera_up_ = 0
+        self.camera_left_ = 0
+        self.update_camera_ = 0
+
 
         self.audio_ = Audio(sfx_is_on) #crate Audio object
 
@@ -324,6 +330,19 @@ class GameData:
             if mouse_position[1] >= self.text3_position_y_ and mouse_position[1] <= self.text3_position_y_ + self.text_3_size_y_:
                 return 3
 
+
+
+
+    def UpdateCameraHorizontal(self):
+        #centre the player horizontal in the middle of the screen
+        self.camera_up_ = self.local_player_position_y_ - self.draw_area_y_ // 2
+
+
+    def UpdateCameraVerticaly(self):
+        #centre the player vertically in the middle of the screen
+        self.camera_left_ = self.local_player_position_x_ - self.draw_area_x_ // 2
+
+
     def DrawMap(self):
         #draw current map
         #camera follow player
@@ -333,12 +352,26 @@ class GameData:
 
 
 
+        #if player are on the edge of the drawing area update the camera:
+        if self.camera_left_ >= self.local_player_position_x_-3:
+            self.UpdateCameraVerticaly()
+
+        if self.camera_left_+self.draw_area_x_ <= self.local_player_position_x_+3:
+            self.UpdateCameraVerticaly()
+
+
+        if self.camera_up_ >= self.local_player_position_y_-3:
+            self.UpdateCameraHorizontal()
+
+        if self.camera_up_ +self.draw_area_y_ <= self.local_player_position_y_+3:
+            self.UpdateCameraHorizontal()
+
+
 
         #calculate drawing area from map:
-
         if self.draw_area_x_ < self.map_width_: #only if draw area x < map width
-            left = self.local_player_position_x_ - self.draw_area_x_ // 2
-            right = self.local_player_position_x_ + self.draw_area_x_ // 2
+            left = self.camera_left_
+            right = left + self.draw_area_x_
             while True: #move draw area x
                 if left < 0:
                     left += 1
@@ -356,9 +389,10 @@ class GameData:
 
 
 
+
         if self.draw_area_y_ < self.map_height_: #only if draw area y < map height
-            up = self.local_player_position_y_ - self.draw_area_y_ // 2
-            down = self.local_player_position_y_ + self.draw_area_y_ // 2
+            up = self.camera_up_
+            down = up + self.draw_area_y_
 
             while True: #move draw area x
                 if up < 0:
@@ -392,22 +426,29 @@ class GameData:
                         if self.current_map_[i][j] == None: #if empty
                             pass
                         else:
-                            if not self.current_map_[i][j].MovementGoing_: #normal tile drawing
+                            if not self.current_map_[i][j].movement_going_: #normal tile drawing
                                 self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_,y * self.tile_size_ +self.margin_y_)) #draw tiles to surface
 
 
-                            else:
-                                if self.current_map_[i][j].movement_going_down_: #animate tile down
-                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y-1) * self.tile_size_ + self.margin_y_+self.current_map_[i][j].moved_)) #draw tiles
 
-                                elif self.current_map_[i][j].movement_going_up_: #animate tile up
-                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y+1) * self.tile_size_ + self.margin_y_-self.current_map_[i][j].moved_)) #draw tiles
+                            else:
+
+                                if self.current_map_[i][j].movement_going_left_: #animate tile left
+                                    self.screen_.blit(self.current_map_[i][j].image_, ((x+1) * self.tile_size_ + self.margin_x_-self.current_map_[i][j].moved_, y * self.tile_size_ + self.margin_y_)) #draw tiles
+
 
                                 elif self.current_map_[i][j].movement_going_right_: #animate tile right
                                     self.screen_.blit(self.current_map_[i][j].image_, ((x-1) * self.tile_size_ + self.margin_x_+self.current_map_[i][j].moved_, y * self.tile_size_ + self.margin_y_)) #draw tiles
 
-                                elif self.current_map_[i][j].movement_going_left_: #animate tile left
-                                    self.screen_.blit(self.current_map_[i][j].image_, ((x+1) * self.tile_size_ + self.margin_x_-self.current_map_[i][j].moved_, y * self.tile_size_ + self.margin_y_)) #draw tiles
+
+                                elif self.current_map_[i][j].movement_going_up_: #animate tile up
+                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y+1) * self.tile_size_ + self.margin_y_-self.current_map_[i][j].moved_)) #draw tiles
+
+
+
+                                elif self.current_map_[i][j].movement_going_down_: #animate tile down
+                                    self.screen_.blit(self.current_map_[i][j].image_, (x * self.tile_size_ + self.margin_x_, (y-1) * self.tile_size_ + self.margin_y_+self.current_map_[i][j].moved_)) #draw tiles
+
 
 
 
