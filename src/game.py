@@ -179,6 +179,8 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             gamedata.local_player_position_y_ = original_y
             gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_  # set player to map list
 
+            gamedata.local_player_.StopMovementAnimation() #no movement animations if the player is not moved
+
     else: #no goal or level not failed
         gamedata.current_map_[original_y][original_x] = None
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
@@ -195,6 +197,8 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                 connection.SendPush(right,left)
             elif move == True: #if normal move
                 connection.SendMove(right, left, up, down, False) #normal move
+
+
 
 
 def CollectPoints(gamedata:object,y:int,x:int):
@@ -258,10 +262,17 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         connection.SendRemove(right,left,up,down) #send remove action
 
 
+
 def Gravity(gamedata,connection):
+    moved_left = False
     for y in range(gamedata.map_height_-1,-1,-1):
         for x in range(gamedata.map_width_-1,-1,-1):
             if type((gamedata.current_map_[y][x])) in gamedata.gravity_objects_: #if gravity objects
+
+                if moved_left == True: #if the stone is moved to the left, the left square is skipped.
+                    moved_left = False
+                    continue
+
                 if gamedata.current_map_[y][x].drop_: #if currently drop
                     if y + 1 < gamedata.map_height_: #if map not end
 
@@ -297,38 +308,43 @@ def Gravity(gamedata,connection):
                     if gamedata.current_map_[y+1][x] == None: #if below is empty
                         #move downwards:
                         gamedata.current_map_[y][x].drop_ = True
+
                         gamedata.current_map_[y][x].movement_going_down_ = True #animate movement
 
                         #set object to new location
                         gamedata.current_map_[y+1][x] = gamedata.current_map_[y][x]
                         gamedata.current_map_[y][x] = None
                     else:
+
                         if type(gamedata.current_map_[y][x]) in [Stone,Diamond]: #if stone or diamond
                             if type(gamedata.current_map_[y+1][x]) in gamedata.gravity_objects_2_: #if below is stone or diamond
 
-                                if x +1 < gamedata.map_width_:
+                                if x-1 >= 0: #if map not end
+                                    if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
+                                        gamedata.current_map_[y][x].movement_going_left_ = True #animate movement
+                                        gamedata.current_map_[y][x].Rotate(2) #rotate image
+
+                                        moved_left = True
+                                        #set object to new location:
+                                        gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move object to left
+                                        gamedata.current_map_[y][x] = None
+
+                                        continue
+
+
+                                if x +1 < gamedata.map_width_: #if map not end
                                     if gamedata.current_map_[y][x+1] == None and gamedata.current_map_[y+1][x+1] == None: #if empty on the right
 
                                         gamedata.current_map_[y][x].movement_going_right_ = True #animate movement
                                         gamedata.current_map_[y][x].Rotate(1) #rotate image
 
                                         #set object to new location:
-                                        gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x]
+                                        gamedata.current_map_[y][x+1] = gamedata.current_map_[y][x] #move object to right
                                         gamedata.current_map_[y][x] = None
 
                                         continue
 
-                                if x-1 >= 0: #if map not end
-                                    if gamedata.current_map_[y][x-1] == None and gamedata.current_map_[y+1][x-1] == None: #if empty on the left
 
-                                        gamedata.current_map_[y][x].movement_going_left_ = True #animate movement
-                                        gamedata.current_map_[y][x].Rotate(2) #rotate image
-
-                                        #set object to new location:
-                                        gamedata.current_map_[y][x-1] = gamedata.current_map_[y][x] #move stone to left
-                                        gamedata.current_map_[y][x] = None
-
-                                        continue
 
 
                         gamedata.current_map_[y][x].drop_ = False #drop stopping
@@ -815,8 +831,8 @@ def Run(gamedata:object,connection:object = None)->bool:
 
     loopcount = 0 #Variable loopCount keeps track of how many times the main loop has been executed
 
-    liikkuminen_menossa = 0
-    liikuttu = 0
+
+
 
     while True: #game main loop
 
@@ -1042,7 +1058,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                 connection.CloseSocket()  # close socket
                 print(connection.error_message_)
                 return False, True  # back to menu, level not completed
-
 
 
 
