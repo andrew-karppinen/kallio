@@ -91,7 +91,6 @@ class Menu:
         self.timeout_ = 10 #server, socket timeout
         self.map_file_path_ = ""  #mapfile path  #if server or singleplayer
 
-
         self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions 16:9 list
 
         #remove resolutions higher than the screen resolution from the list
@@ -110,7 +109,6 @@ class Menu:
 
         #default settings:
         self.resolution_ = [1600,900]
-        self.resolution_index_ = 0
         self.fullscreen_ = False
         self.sfx_is_on_ = True #sound effects is on
 
@@ -130,13 +128,16 @@ class Menu:
             f.close()  #close file
 
 
-            self.resolution_ = settings["resolutions"][settings["resolution index"]] #set resolution
             self.sfx_is_on_ = settings["sfx is on"]
 
             display_resolution = pygame.display.set_mode().get_size() #get screen resolution
+            resolution = settings["resolution"] #saved resolution
 
+            if resolution[0] > display_resolution[0] and resolution[1] > display_resolution[1]: #if saved resolution > screen resolution
+                raise
+            else: #no error
+                 self.resolution_ = resolution
 
-            self.resolution_index_ = settings["resolution index"]
 
             if settings["fullscreen"] == True:
                 self.fullscreen_ = True
@@ -162,8 +163,7 @@ class Menu:
         settings = {
             "settings":{
                 "fullscreen":self.fullscreen_,
-                "resolution index":self.resolution_index_,
-                "resolutions":[[1600,900],[1920,1080],[2560,1440],[1056,594],[1280,720]],
+                "resolution":self.resolution_,
                 "sfx is on":self.sfx_is_on_
             }
         }
@@ -429,11 +429,9 @@ class Menu:
 
         self.temp_fullscreen_ = self.fullscreen_
         self.temp_resolution_ = self.resolution_
-        self.temp_resolution_index_ = self.resolution_index_
         self.temp_sfx_is_on_ = self.sfx_is_on_
 
         def SetTempResolution(index:int,resolution:tuple):
-            self.temp_resolution_index_ = index[1]
             self.temp_resolution_ = resolution
 
         def SetTempFullscreen(fullscreen:bool):
@@ -453,12 +451,11 @@ class Menu:
             if self.temp_fullscreen_ != self.fullscreen_ or self.temp_resolution_ != self.resolution_: #if the screen settings has been changed
                 self.resolution_ = self.temp_resolution_
                 self.fullscreen_ = self.temp_fullscreen_
-                self.resolution_index_ = self.temp_resolution_index_
 
                 if self.fullscreen_ == True:
                     self.screen_ = pygame.display.set_mode(self.resolution_, pygame.FULLSCREEN)  # crete fullscreen window
                 else:
-                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # create noremal window
+                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # create normal window
 
 
             #apply settings
@@ -467,13 +464,22 @@ class Menu:
             self.SaveSettings() #save settings to json file
 
             # update menu object:
-            self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 600, 500, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            self.ReadSettings()
 
             self.MainMenu() #back to mainmenu
 
+
+        def FindReslutionIndex(resolution, resoluutions_list):
+            for index, item in enumerate(resoluutions_list):
+                if resolution == item[1]:
+                    return index
+            return -1  #Resolution not found in the list
+
+
         self.menu_.clear() #clear menu
         self.menu_.add.toggle_switch("Full screen:",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
-        self.menu_.add.selector('Resolution: ', self.resolutions_,default = self.temp_resolution_index_, onchange=SetTempResolution) #change resolution
+
+        self.menu_.add.selector('Resolution: ', self.resolutions_,default=FindReslutionIndex(self.resolution_,self.resolutions_), onchange=SetTempResolution) #change resolution
         self.menu_.add.toggle_switch('Sound:', default=self.temp_sfx_is_on_, onchange=SetTempSFX)
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("Back",self.MainMenu)
