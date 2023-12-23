@@ -27,7 +27,6 @@ maps/singleplayer/labyrint.txt
 
 /maps/singleplayer/testi.txt
 
-
 /maps/singleplayer/testikartta.txt
 
 /maps/multiplayer/multiplayertext.txt
@@ -35,5 +34,7 @@ maps/singleplayer/labyrint.txt
 /src/network_game_server.py
 
 test_game_server.py
+
+documentation/suomenkielinen/ongelmia.txt
 
 /.idea/*
