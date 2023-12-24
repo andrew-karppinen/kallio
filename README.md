@@ -15,9 +15,12 @@
 
 
 
-Required librarys:
+Required libraries if the game is run with python:
 Pygame, 
 Pygame-menu 
+
+
+For playing on a LAN network, a wired network is recommended, not wifi!
 
 Controls:
 Move: arrows keys
@@ -27,3 +30,5 @@ space + arrows keys
 
 Pause menu:
 esc 
+
+
