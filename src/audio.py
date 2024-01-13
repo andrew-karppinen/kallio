@@ -3,7 +3,7 @@ import json
 
 class Audio:
 
-    def __init__(self,sfx_is_on:bool= True):
+    def __init__(self,sfx_is_on:bool= True,volume:float=0.5):
 
         self.sfx_is_on_ = sfx_is_on
 
@@ -26,7 +26,7 @@ class Audio:
 
         try:
             self.push_ = pygame.mixer.Sound(self.audio_files_["push"]) #push sound
-        except: #file not found:d
+        except: #file not found
             self.push_ = None
 
         try:
@@ -40,12 +40,28 @@ class Audio:
             self.step_ = None
 
 
+        self.volume_ = volume
+        self.__CreateChannels()
+
+
+    def __CreateChannels(self):
         #create channels:
         self.channel_collect_ = pygame.mixer.Channel(0)
         self.channel_explosion_ = pygame.mixer.Channel(1)
         self.channel_push_ = pygame.mixer.Channel(2)
         self.channel_drop_ = pygame.mixer.Channel(3)
         self.channel_step_ = pygame.mixer.Channel(3)
+
+        self.channel_collect_.set_volume(self.volume_)
+        self.channel_explosion_.set_volume(self.volume_)
+        self.channel_push_.set_volume(self.volume_)
+        self.channel_drop_.set_volume(self.volume_)
+        self.channel_step_.set_volume(self.volume_)
+
+
+    def SetVolume(self,volume):
+        self.volume_ = volume #default volume
+        self.__CreateChannels() #update channels
 
     def PlayExplosionSound(self):
         if self.sfx_is_on_ == True and self.explosion_ != None: #if sounds is on and audio file download was succesful

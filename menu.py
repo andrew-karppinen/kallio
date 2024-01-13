@@ -105,12 +105,13 @@ class Menu:
         self.temp_resolution_index_ = 0
         self.temp_fullscreen_ = False
         self.temp_sfx_is_on_ = False #sound effects is on
-
+        self.temp_volume_ = 0
 
         #default settings:
         self.resolution_ = [1600,900]
         self.fullscreen_ = False
         self.sfx_is_on_ = True #sound effects is on
+        self.volume_ = 0.5
 
         self.ReadSettings() #read settings from json file, create screen, menu object
 
@@ -129,6 +130,7 @@ class Menu:
 
 
             self.sfx_is_on_ = settings["sfx is on"]
+            self.volume_ = settings["volume"]
 
             display_resolution = pygame.display.set_mode().get_size() #get screen resolution
             resolution = settings["resolution"] #saved resolution
@@ -164,7 +166,8 @@ class Menu:
             "settings":{
                 "fullscreen":self.fullscreen_,
                 "resolution":self.resolution_,
-                "sfx is on":self.sfx_is_on_
+                "sfx is on":self.sfx_is_on_,
+                "volume":self.volume_
             }
         }
 
@@ -200,8 +203,6 @@ class Menu:
             pass
 
 
-
-
     def SetMapFilepath(self,useless_argument,path:str):
         self.map_file_path_ = path
 
@@ -213,7 +214,7 @@ class Menu:
 
             #Todo check map cortness before sending it
 
-            gamedata = GameData(True,True,self.font_, self.sfx_is_on_)  # create gamedata
+            gamedata = GameData(True,True,self.font_, self.sfx_is_on_,self.volume_)  # create gamedata
             gamedata.server_ = True
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
@@ -297,7 +298,7 @@ class Menu:
 
                 #try connect to server
 
-                gamedata = GameData(True,False,self.font_, self.sfx_is_on_) #create gamedata
+                gamedata = GameData(True,False,self.font_, self.sfx_is_on_,self.volume_) #create gamedata
                 connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
                 if connection.connected_: #if the connection was successful
@@ -348,7 +349,7 @@ class Menu:
     def SinglePlayerMenu(self):
 
         def StartSingleplayer(self):
-            gamedata = GameData(False, False, self.font_, self.sfx_is_on_)  # create gamedata
+            gamedata = GameData(False, False, self.font_, self.sfx_is_on_,self.volume_)  # create gamedata
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
                 SetMap(gamedata, mapstr)  # convert str to map list
@@ -361,6 +362,7 @@ class Menu:
 
             else: #no error
                 gamedata.InitDisplay(self.screen_)  #set window to gamedata object
+
 
                 self.level_completed_,self.connection_lost_ = Run(gamedata) #start game
 
@@ -440,6 +442,8 @@ class Menu:
         def SetTempSFX(sfx:bool):
             self.temp_sfx_is_on_ = sfx
 
+        def SetTempVolume(volume:float):
+            self.temp_volume_ = volume /10
         def ApplySettings():
             '''
             Save changes
@@ -448,23 +452,19 @@ class Menu:
             '''
 
 
+            #apply settings
+            self.sfx_is_on_ = self.temp_sfx_is_on_
+            self.volume_ = self.temp_volume_
+
             if self.temp_fullscreen_ != self.fullscreen_ or self.temp_resolution_ != self.resolution_: #if the screen settings has been changed
                 self.resolution_ = self.temp_resolution_
                 self.fullscreen_ = self.temp_fullscreen_
+                self.SaveSettings()  # save settings to json file
+                #update menu object:
+                self.ReadSettings()
 
-                if self.fullscreen_ == True:
-                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.FULLSCREEN)  # crete fullscreen window
-                else:
-                    self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # create normal window
-
-
-            #apply settings
-            self.sfx_is_on_ = self.temp_sfx_is_on_
 
             self.SaveSettings() #save settings to json file
-
-            # update menu object:
-            self.ReadSettings()
 
             self.MainMenu() #back to mainmenu
 
@@ -481,6 +481,9 @@ class Menu:
 
         self.menu_.add.selector('Resolution: ', self.resolutions_,default=FindReslutionIndex(self.resolution_,self.resolutions_), onchange=SetTempResolution) #change resolution
         self.menu_.add.toggle_switch('Sound:', default=self.temp_sfx_is_on_, onchange=SetTempSFX)
+
+        self.menu_.add.range_slider(title="Volume: ",default=int(self.volume_*10),range_values=(0, 10),increment=1,onchange=SetTempVolume) #set volume
+
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("Back",self.MainMenu)
 

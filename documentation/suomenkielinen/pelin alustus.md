@@ -15,7 +15,7 @@ Ohjelman joka importta tämän on oltava src kansion ylähakemistossa
 
 
 Luo gamedata olio:
->> gamedata = Gamedata(moninpeli:bool,server:bool,font_file_path:str,sfx_is_on:bool):
+>> gamedata = Gamedata(moninpeli:bool,server:bool,font_file_path:str,sfx_is_on:bool,volume:float=0.5):
 
 Jos font_file_path on tyhjä käytetään järjestelmän oletusfonttia, ei suositella.
 sfx_is_on merkitsee sitä onko ääni efektit päällä vai pois päältä

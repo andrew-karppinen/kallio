@@ -9,7 +9,7 @@ class GameData:
     game data
     '''
 
-    def __init__(self,multiplayer:bool = False,server:bool = False,font_file_path:str="",sfx_is_on:bool=True):
+    def __init__(self,multiplayer:bool = False,server:bool = False,font_file_path:str="",sfx_is_on:bool=True,volume:float=0.5):
 
 
         #window data:
@@ -98,7 +98,7 @@ class GameData:
         self.update_camera_ = 0
 
 
-        self.audio_ = Audio(sfx_is_on) #crate Audio object
+        self.audio_ = Audio(sfx_is_on,volume) #crate Audio object
 
 
         #private variables:
