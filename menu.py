@@ -432,6 +432,7 @@ class Menu:
         self.temp_fullscreen_ = self.fullscreen_
         self.temp_resolution_ = self.resolution_
         self.temp_sfx_is_on_ = self.sfx_is_on_
+        self.temp_volume_ = self.volume_
 
         def SetTempResolution(index:int,resolution:tuple):
             self.temp_resolution_ = resolution
