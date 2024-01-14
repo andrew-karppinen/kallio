@@ -3,7 +3,7 @@
 {
   "levels are intended for multiplayer": false,
 
-  "map count": 10,
+  "map count": 11,
 
 
 
@@ -14,10 +14,11 @@
     "4":["maps/singleplayer/down they fall","down they fall"],
     "5":["maps/singleplayer/stones and sand","stones and sand"],
     "6":["maps/singleplayer/accident","accident"],
-    "7":["maps/singleplayer/aijankallio","äijänkallio"],
-    "8":["maps/singleplayer/up","up!"],
-    "9":["maps/singleplayer/shaft","shaft"],
-    "10": ["maps/singleplayer/out of here","out of here"]
+    "7":["maps/singleplayer/chaos","chaos"],
+    "8":["maps/singleplayer/aijankallio","äijänkallio"],
+    "9":["maps/singleplayer/up","up!"],
+    "10":["maps/singleplayer/shaft","shaft"],
+    "11": ["maps/singleplayer/out of here","out of here"]
   }
 
 }
