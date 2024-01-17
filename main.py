@@ -8,7 +8,7 @@ pygame.init()
 
 
 
-PROGRAM_VERSION = "0.0.9"
+PROGRAM_VERSION = "0.0.10"
 
 
 
@@ -89,4 +89,6 @@ if 1:  # if singleplayer
     pygame.display.quit() #close screen
 
     print(level_completed)
+
+
 

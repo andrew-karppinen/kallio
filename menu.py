@@ -11,7 +11,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.9"
+PROGRAM_VERSION = "0.0.10"
 
 
 
@@ -148,8 +148,8 @@ class Menu:
                 self.fullscreen_ = False
                 self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
 
-            self.menu_ = pygame_menu.Menu('PY-BOULDERDASH', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
-            pygame.display.set_caption('Py-boulderdash') #rename window
+            self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            pygame.display.set_caption('KALLIO') #rename window
 
         except Exception: #invalid json file or file not exist
             self.SaveSettings() #save default settings to json file
@@ -507,7 +507,7 @@ class Menu:
         This is used when returning to the menu from the game.
         '''
         self.menu_.clear()
-        pygame.display.set_caption('Py-boulderdash') #rename window
+        pygame.display.set_caption('KALLIO') #rename window
 
 
         if self.connection_lost_ == True:
