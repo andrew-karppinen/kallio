@@ -119,7 +119,6 @@ class Menu:
     def ReadSettings(self):
         '''
         read settings from save/settings.json
-
         create menu object and window
         '''
 
@@ -452,6 +451,9 @@ class Menu:
             set temp variable -->
             '''
 
+            if self.temp_resolution_ == [1056,594]: #prevent setting full screen if the resolution is too low
+                self.temp_fullscreen_ = False
+
 
             #apply settings
             self.sfx_is_on_ = self.temp_sfx_is_on_
@@ -478,6 +480,8 @@ class Menu:
 
 
         self.menu_.clear() #clear menu
+
+
         self.menu_.add.toggle_switch("Full screen:",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
 
         self.menu_.add.selector('Resolution: ', self.resolutions_,default=FindReslutionIndex(self.resolution_,self.resolutions_), onchange=SetTempResolution) #change resolution
