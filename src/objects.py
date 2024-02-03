@@ -198,9 +198,6 @@ class Stone(Tile):
 
 
 
-
-
-
     def Rotate(self,direction:int):
         #direction = 1 or 2
         #1 = clockwise
@@ -218,7 +215,6 @@ class Stone(Tile):
             else:
                 self.direction_ -= 1
 
-
     @property
     def image_(self):
         if self.direction_ == 1:
@@ -230,6 +226,62 @@ class Stone(Tile):
         elif self.direction_ == 4:
             return(Stone.image_left)
 
+
+class Key(Tile):
+    # class variables:
+    green_image = None
+    blue_image = None
+
+    def SetImage(green_image,blue_image):
+        #rotate images
+
+        Key.green_image = green_image
+        Key.blue_image = blue_image
+
+    def ScaleImages(tile_size: int):
+        Key.green_image = pygame.transform.scale(Key.green_image, (tile_size, tile_size))
+        Key.blue_image = pygame.transform.scale(Key.blue_image, (tile_size, tile_size))
+
+
+    def __init__(self,key_type:str="green"):
+        super().__init__()
+
+        self.key_type_ = key_type #green,red,orange
+
+    @property
+    def image_(self):
+        if self.key_type_ == "green":
+            return(Key.green_image)
+        elif self.key_type_ == "blue":
+            return(Key.blue_image)
+
+
+class LockedDoor(Tile):
+    #class variables:
+    green_image = None
+    blue_image  = None
+
+
+    def SetImage(green_image,blue_image):
+        LockedDoor.green_image = green_image
+        LockedDoor.blue_image = blue_image
+
+    def ScaleImages(tile_size:int):
+        LockedDoor.green_image = pygame.transform.scale(LockedDoor.green_image, (tile_size, tile_size))
+        LockedDoor.blue_image = pygame.transform.scale(LockedDoor.blue_image, (tile_size, tile_size))
+
+
+    def __init__(self,door_type:str = "green"):
+        self.door_type_ = door_type #green, blue
+        super().__init__()
+
+    @property
+    def image_(self):
+
+        if self.door_type_ == "green":
+            return (LockedDoor.green_image)
+        elif self.door_type_ == "blue":
+            return (LockedDoor.blue_image)
 
 
 class Diamond(Tile):
@@ -372,6 +424,7 @@ class Brick(Tile):
     @property
     def image_(self):
         return (Brick.image)
+
 
 
 class Goal(Tile):

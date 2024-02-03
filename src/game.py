@@ -38,7 +38,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     if right:
         if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in gamedata.collision_objects_:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_+1) #try collect point
+            Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ + 1) #try collect point
             gamedata.local_player_position_x_ += 1 #move player
             move = True
 
@@ -68,14 +68,23 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                 if gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].direction_ == 2: #if the direction of the door is to the right
                     gamedata.local_player_position_x_ += 2 #move player
                     gamedata.local_player_.AnimateToRight()  #change player image
-
                     door = True
 
-
+            #if keydoor
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].door_type_ == "green":
+                if gamedata.local_player_have_green_key_ == True:
+                    gamedata.local_player_position_x_ += 2  # move player
+                    gamedata.local_player_.AnimateToRight()  # change player image
+                    door = True
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1].door_type_ == "blue":
+                if gamedata.local_player_have_blue_key_ == True:
+                    gamedata.local_player_position_x_ += 2  # move player
+                    gamedata.local_player_.AnimateToRight()  # change player image
+                    door = True
 
     elif left:
         if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in gamedata.collision_objects_:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_-1) #try collect point
+            Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ - 1) #try collect point
             gamedata.local_player_position_x_ -= 1 #move player
             move = True
 
@@ -106,14 +115,24 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.local_player_position_x_ -= 2 #move player
                     gamedata.local_player_.AnimateToLeft()  #change player image
                     door = True
-
-
+            #if keydoor
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_-1]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].door_type_ == "green":
+                if gamedata.local_player_have_green_key_ == True:
+                    gamedata.local_player_position_x_ -= 2  # move player
+                    gamedata.local_player_.AnimateToLeft()  # change player image
+                    door = True
+            #if keydoor
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_-1]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1].door_type_ == "blue":
+                if gamedata.local_player_have_blue_key_ == True:
+                    gamedata.local_player_position_x_ -= 2  # move player
+                    gamedata.local_player_.AnimateToLeft()  # change player image
+                    door = True
 
 
 
     elif up:
         if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in gamedata.collision_objects_:  #if map not end and if no collision
-            CollectPoints(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
+            Collect(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ -= 1 #move player
             move = True
 
@@ -130,13 +149,23 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
                     gamedata.local_player_.AnimateToHorizontal()  #change player image
 
                     door = True
-
-
+            #if keydoor
+            if type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_ - 1][gamedata.local_player_position_x_].door_type_ == "green":
+                    if gamedata.local_player_have_green_key_ == True:
+                        gamedata.local_player_position_y_ -= 2  # move player
+                        gamedata.local_player_.AnimateToHorizontal()  # change player image
+                        door = True
+            #if keydoor
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_ - 1][gamedata.local_player_position_x_].door_type_ == "blue":
+                if gamedata.local_player_have_blue_key_ == True:
+                    gamedata.local_player_position_y_ -= 2  # move player
+                    gamedata.local_player_.AnimateToHorizontal()  # change player image
+                    door = True
 
 
     elif down:
         if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in gamedata.collision_objects_:  #if map not end and if no collision
-            CollectPoints(gamedata,gamedata.local_player_position_y_ +1,gamedata.local_player_position_x_) #try collect point
+            Collect(gamedata, gamedata.local_player_position_y_ + 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ += 1 #move player
             move = True
 
@@ -145,7 +174,6 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
             gamedata.local_player_.AnimateToHorizontal() #change player image
             gamedata.local_player_.movement_going_down_ = True #animate movement
 
-        #if door
         elif gamedata.local_player_position_y_ + 2 < gamedata.map_height_ and gamedata.current_map_[gamedata.local_player_position_y_+2][gamedata.local_player_position_x_] == None: #if map not end and if index is empty
             if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == Door: #if door
                 if gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_].direction_ == 3:  # if the direction of the door is to the down
@@ -154,7 +182,18 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
                     door = True
 
-
+            #if key door
+            if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_ + 1][gamedata.local_player_position_x_].door_type_ == "green":
+                if gamedata.local_player_have_green_key_ == True:
+                    gamedata.local_player_position_y_ += 2  # move player
+                    gamedata.local_player_.AnimateToHorizontal()  # change player image
+                    door = True
+            #if keydoor
+            elif type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_]) == LockedDoor and gamedata.current_map_[gamedata.local_player_position_y_ + 1][gamedata.local_player_position_x_].door_type_ == "blue":
+                if gamedata.local_player_have_blue_key_ == True:
+                    gamedata.local_player_position_y_ += 2  # move player
+                    gamedata.local_player_.AnimateToHorizontal()  # change player image
+                    door = True
 
 
 
@@ -201,19 +240,28 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
 
 
-def CollectPoints(gamedata:object,y:int,x:int):
-    #try collect point from given location
-    #return True/False
+def Collect(gamedata:object, y:int, x:int):
+    #try collect point/key from given location
     if type(gamedata.current_map_[y][x]) == Diamond:
         gamedata.current_map_[y][x] = None
         gamedata.points_collected_ += 1
         gamedata.total_points_collected_ += 1
-        gamedata.audio_.PlayCollectDiamond()  # play sound
-
+        gamedata.audio_.PlayCollectSound()  # play sound
         return True
 
-    return False
+    elif type(gamedata.current_map_[y][x]) == Key:
+        if gamedata.current_map_[y][x].key_type_ == "green":
+            gamedata.local_player_have_green_key_ = True
+            gamedata.current_map_[y][x] = None
+            gamedata.audio_.PlayCollectSound()  # play sound
+            return  True
 
+        elif gamedata.current_map_[y][x].key_type_ == "blue":
+            gamedata.local_player_have_blue_key_ = True
+            gamedata.current_map_[y][x] = None
+            gamedata.audio_.PlayCollectSound()  # play sound
+            return  True
+    return  False
 def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:bool):
     '''
     remove tile next to player
@@ -223,7 +271,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_x_ +1 < gamedata.map_width_: #if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1] = None
-            elif CollectPoints(gamedata,gamedata.local_player_position_y_,gamedata.local_player_position_x_+1): #try collect points
+            elif Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ + 1): #try collect
                 pass
             else:
                 return #exit function
@@ -232,7 +280,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_x_ -1 >= 0:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1] = None
-            elif CollectPoints(gamedata,gamedata.local_player_position_y_,gamedata.local_player_position_x_-1): #try collect points
+            elif Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ - 1): #try collect
                 pass
             else:
                 return #exit function
@@ -241,7 +289,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_y_ - 1 >= 0:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_] = None
-            elif CollectPoints(gamedata,gamedata.local_player_position_y_-1,gamedata.local_player_position_x_): #try  #try collect pointscollect points
+            elif Collect(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_): #try  #try collect
                 pass
             else:
                 return #exit function
@@ -251,7 +299,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
             if type(gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_] = None
 
-            elif CollectPoints(gamedata,gamedata.local_player_position_y_+1,gamedata.local_player_position_x_): #try collect points
+            elif Collect(gamedata, gamedata.local_player_position_y_ + 1, gamedata.local_player_position_x_): #try collect
                 pass
             else:
                 return #exit function
@@ -558,7 +606,6 @@ def CreateExplosion(gamedata:object,connection:object,y:int,x:int):
 
 def DeleteExplosion(gamedata:object):
     #return true if explosion removed, else false
-
     removed = False
     for y in range(gamedata.map_height_):
         for x in range(gamedata.map_width_):
@@ -617,7 +664,6 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel() #send restart level message
 
-
     SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
 
     #init gamedata:
@@ -627,6 +673,8 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
 
     gamedata.local_player_in_goal_ = False
     gamedata.remote_player_in_goal_ = False
+    gamedata.local_player_have_green_key_ = False
+    gamedata.local_player_have_blue_key_ = False
 
     #draw map:
     gamedata.screen_.fill((0,0,0))
@@ -661,7 +709,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             if type(gamedata.current_map_[position_y][position_x+1]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
-                gamedata.audio_.PlayCollectDiamond() #play audio
+                gamedata.audio_.PlayCollectSound() #play audio
 
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -683,7 +731,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             if type(gamedata.current_map_[position_y][position_x-1]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
-                gamedata.audio_.PlayCollectDiamond() #play audio
+                gamedata.audio_.PlayCollectSound() #play audio
 
             gamedata.current_map_[position_y][position_x-1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -703,7 +751,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.remote_player_position_y_ += 1 #move player
             if type(gamedata.current_map_[position_y + 1][position_x]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
-                gamedata.audio_.PlayCollectDiamond() #play audio
+                gamedata.audio_.PlayCollectSound() #play audio
 
             gamedata.current_map_[position_y+1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -723,7 +771,7 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             if type(gamedata.current_map_[position_y - 1][position_x]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
-                gamedata.audio_.PlayCollectDiamond() #play audio
+                gamedata.audio_.PlayCollectSound() #play audio
 
             gamedata.current_map_[position_y-1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -764,25 +812,25 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
     if action[0] == "removeright":
         if type(gamedata.current_map_[position_y][position_x+1]) == Diamond:  # if diamond
             gamedata.total_points_collected_ += 1
-            gamedata.audio_.PlayCollectDiamond()  # play audio
+            gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x+1] = None #remove tile next to remoteplayer
 
     elif action[0] == "removedown":
         if type(gamedata.current_map_[position_y+1][position_x]) == Diamond:  # if diamond
             gamedata.total_points_collected_ += 1
-            gamedata.audio_.PlayCollectDiamond()  # play audio
+            gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y+1][position_x] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeleft":
         if type(gamedata.current_map_[position_y][position_x-1]) == Diamond:  # if diamond
             gamedata.total_points_collected_ += 1
-            gamedata.audio_.PlayCollectDiamond()  # play audio
+            gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x - 1] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeup":
         if type(gamedata.current_map_[position_y-1][position_x]) == Diamond:  # if diamond
             gamedata.total_points_collected_ += 1
-            gamedata.audio_.PlayCollectDiamond()  # play audio
+            gamedata.audio_.PlayCollectSound()  # play audio
 
         gamedata.current_map_[position_y-1][position_x] = None  # remove tile next to remoteplayer
 
@@ -960,7 +1008,6 @@ def Run(gamedata:object,connection:object = None)->bool:
         if loopcount > monstermove_counter+monster_speed: #move monster
             monstermove_counter = loopcount
             MoveMonsters(gamedata,connection) #move monsters
-
 
 
 

@@ -42,7 +42,6 @@ class GameData:
         #gamedata:
         self.multiplayer_ = multiplayer
         self.server_ = server #False = client, True = server
-
         self.remote_player_position_x_ = None
         self.remote_player_position_y_ = None
 
@@ -52,6 +51,11 @@ class GameData:
         # create players
         self.local_player_ = Player()
         self.remote_player_ = Player(False)
+
+        #if the player has the key, it can go through the door:
+        self.local_player_have_green_key_ = False
+        self.local_player_have_blue_key_ = False
+
 
 
         self.points_collected_ = 0 #points collected by local player
@@ -64,7 +68,7 @@ class GameData:
 
 
 
-        self.collision_objects_ = [Player,Stone,Tnt,Bedrock,Brick,Door]
+        self.collision_objects_ = [Player, Stone, Tnt, Bedrock, Brick, Door, LockedDoor]
         self.pushing_objects_ = [Stone, Tnt]
         self.gravity_objects_ = [Stone,Tnt,Diamond]
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
@@ -152,6 +156,14 @@ class GameData:
         door_left_image = pygame.image.load(tile_images["Door"][2])
         door_up_image = pygame.image.load(tile_images["Door"][3])
 
+        green_key_image = pygame.image.load(tile_images["Key"][0])
+        blue_key_image = pygame.image.load(tile_images["Key"][1])
+
+
+        green_door_image = pygame.image.load(tile_images["LockedDoor"][0])
+        blue_door_image = pygame.image.load(tile_images["LockedDoor"][1])
+
+
         #set images to classes:
         Diamond.SetImage(diamondimage)
         Goal.SetImage(goal_open_image,goal_close_image)
@@ -161,11 +173,11 @@ class GameData:
         Bedrock.SetImage(bedrockimage)
         Brick.SetImage(brickimage)
         Monster.SetImage(monsterimage1,monsterimage2)
-
+        Key.SetImage(green_key_image,blue_key_image)
         #set images:
         Stone.SetImage(stoneimage)
         Door.SetImage(door_right_image, door_down_image, door_left_image, door_up_image)
-
+        LockedDoor.SetImage(green_door_image,blue_door_image)
 
         #set players images
         if self.multiplayer_ == True:
@@ -247,7 +259,7 @@ class GameData:
 
 
         #scale tile images:
-        for i in [Goal, Diamond, Tnt, Stone, Door, DefaultTile, Explosion, Brick, Bedrock, Monster]:
+        for i in [Goal, Diamond, Tnt, Stone, Door, DefaultTile, Explosion, Brick, Bedrock, Monster, Key, LockedDoor]:
             i.ScaleImages(self.tile_size_)
 
         #scale player image size

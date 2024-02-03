@@ -68,7 +68,7 @@ class Audio:
             self.channel_explosion_.play(self.explosion_)
 
 
-    def PlayCollectDiamond(self):
+    def PlayCollectSound(self):
         if self.sfx_is_on_ == True and self.collect_ != None:  #if sounds is on and audio file download was succesful
             self.channel_collect_.play(self.collect_)
 

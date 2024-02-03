@@ -20,7 +20,11 @@
         "Explosion":["media/explosion1.png","media/explosion2.png","media/explosion3.png","media/explosion4.png"],
         "Goal":["media/goal open.png","media/goal close.png"],
         "Monster":["media/monster1.png","media/monster2.png"],
-        "Door":["media/door right.png","media/door down.png","media/door left.png","media/door up.png"]
+        "Door":["media/door right.png","media/door down.png","media/door left.png","media/door up.png"],
+        "Key":["media/green key.png","media/blue key.png"],
+        "LockedDoor":["media/green door.png","media/blue door.png"]
+
+
     }
 
 

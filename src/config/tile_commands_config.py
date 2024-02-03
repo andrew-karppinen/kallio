@@ -38,14 +38,22 @@ mapsymbols = {
     "18 3":{"name":"not a falling diamond direction 3","command":"Diamond(False,3)","command2": None},
     "18 4":{"name":"not a falling diamond direction 4","command":"Diamond(False,4)","command2": None},
 
+    "19": {"name": "falling diamond", "command": "Diamond(True)", "command2": None},
+
     "19 1":{"name":"falling diamond direction 1","command":"Diamond(True,1)","command2": None},
     "19 2":{"name":"falling diamond direction 2","command":"Diamond(True,2)","command2": None},
     "19 3":{"name":"falling diamond direction 3","command":"Diamond(True,3)","command2": None},
     "19 4":{"name":"falling diamond direction 4","command":"Diamond(True,4)","command2": None},
 
-    "19":{"name":"falling diamond","command":"Diamond(True)","command2": None},
     "20":{"name":"Door up","command":"Door(1)","command2": None},
     "21":{"name":"Door right","command":"Door(2)","command2": None},
     "22":{"name":"Door down","command":"Door(3)","command2": None},
-    "23":{"name":"Door left","command":"Door(4)","command2": None}
+    "23":{"name":"Door left","command":"Door(4)","command2": None},
+
+    "24":{"name":"Green key","command":"Key('green')","command2": None},
+    "25": {"name": "Blue key", "command": "Key('blue')", "command2": None},
+
+    "26": {"name": "Green door", "command": "LockedDoor('green')", "command2": None},
+    "27": {"name": "Blue door", "command": "LockedDoor('blue')", "command2": None}
+
 }
