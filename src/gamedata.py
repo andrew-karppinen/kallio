@@ -102,7 +102,7 @@ class GameData:
         self.update_camera_ = 0
 
 
-        self.audio_ = Audio(sfx_is_on,volume) #crate Audio object
+        self.audio_ = Sfx(sfx_is_on, volume) #crate Audio object
 
 
         #private variables:
@@ -123,7 +123,7 @@ class GameData:
         tile_images = json_data["other tile images"]
 
         #load tile images:
-        sandimage = pygame.image.load("media/sand.png")
+        sandimage = pygame.image.load(tile_images["DefaultTile"][0])
 
         player1image1 = pygame.image.load(player_images["player1"][0])
         player1image2 = pygame.image.load(player_images["player1"][1])

@@ -71,6 +71,9 @@ class Menu:
         with open("media/font/font config.json") as json_data: #read font file path from json file
             self.font_ = json.load(json_data)["font file path"]
 
+
+
+
         #create menu theme:
         self.menu_theme_ = pygame_menu.Theme(background_color=(0, 0, 0), title_background_color=(178, 29, 29),
                                     widget_font_color=(255, 255, 255), widget_padding=6,title_font = self.font_,
@@ -106,12 +109,17 @@ class Menu:
         self.temp_fullscreen_ = False
         self.temp_sfx_is_on_ = False #sound effects is on
         self.temp_volume_ = 0
+        self.temp_music_is_on_ = False
+        self.temp_music_volume_ = False
 
         #default settings:
         self.resolution_ = [1600,900]
         self.fullscreen_ = False
         self.sfx_is_on_ = True #sound effects is on
-        self.volume_ = 0.5
+        self.sfx_volume_ = 0.5
+        self.music_is_on_ = True
+        self.music_volume_ = 0.5
+
 
         self.ReadSettings() #read settings from json file, create screen, menu object
 
@@ -129,7 +137,14 @@ class Menu:
 
 
             self.sfx_is_on_ = settings["sfx is on"]
-            self.volume_ = settings["volume"]
+            self.sfx_volume_ = settings["volume"]
+
+            self.music_is_on_ = settings["music is on"]
+            self.music_volume_ = settings["music volume"]
+
+            self.music_ = Music(self.music_volume_)  # create music object
+            if self.music_is_on_ == True:
+                self.music_.PlayMusic() #play music
 
             display_resolution = pygame.display.set_mode().get_size() #get screen resolution
             resolution = settings["resolution"] #saved resolution
@@ -147,7 +162,7 @@ class Menu:
                 self.fullscreen_ = False
                 self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
 
-            self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,theme=self.menu_theme_)  # create menu object
+            self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,theme=self.menu_theme_)  #create menu object
             pygame.display.set_caption('KALLIO') #rename window
 
         except Exception: #invalid json file or file not exist
@@ -166,7 +181,10 @@ class Menu:
                 "fullscreen":self.fullscreen_,
                 "resolution":self.resolution_,
                 "sfx is on":self.sfx_is_on_,
-                "volume":self.volume_
+                "volume":self.sfx_volume_,
+                "music is on": self.music_is_on_,
+                "music volume":self.music_volume_
+
             }
         }
 
@@ -213,7 +231,7 @@ class Menu:
 
             #Todo check map cortness before sending it
 
-            gamedata = GameData(True,True,self.font_, self.sfx_is_on_,self.volume_)  # create gamedata
+            gamedata = GameData(True, True, self.font_, self.sfx_is_on_, self.sfx_volume_)  # create gamedata
             gamedata.server_ = True
             mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
 
@@ -297,7 +315,7 @@ class Menu:
 
                 #try connect to server
 
-                gamedata = GameData(True,False,self.font_, self.sfx_is_on_,self.volume_) #create gamedata
+                gamedata = GameData(True, False, self.font_, self.sfx_is_on_, self.sfx_volume_) #create gamedata
                 connection = Client(self.server_ip_, self.port_,True)  #create connection object
 
                 if connection.connected_: #if the connection was successful
@@ -348,7 +366,7 @@ class Menu:
     def SinglePlayerMenu(self):
 
         def StartSingleplayer(self):
-            gamedata = GameData(False, False, self.font_, self.sfx_is_on_,self.volume_)  # create gamedata
+            gamedata = GameData(False, False, self.font_, self.sfx_is_on_, self.sfx_volume_)  # create gamedata
             try:
                 mapstr, gamedata.map_height_, gamedata.map_width_,map_is_multiplayer, gamedata.required_score_, gamedata.level_timelimit_ = ReadMapFile(self.map_file_path_)  # read map file
                 SetMap(gamedata, mapstr)  # convert str to map list
@@ -427,11 +445,13 @@ class Menu:
 
     def SettingsMenu(self):
 
+        self.temp_music_is_on_ = self.music_is_on_
+        self.temp_music_volume_ = self.music_volume_
 
         self.temp_fullscreen_ = self.fullscreen_
         self.temp_resolution_ = self.resolution_
         self.temp_sfx_is_on_ = self.sfx_is_on_
-        self.temp_volume_ = self.volume_
+        self.temp_volume_ = self.sfx_volume_
 
         def SetTempResolution(index:int,resolution:tuple):
             self.temp_resolution_ = resolution
@@ -444,6 +464,13 @@ class Menu:
 
         def SetTempVolume(volume:float):
             self.temp_volume_ = volume /10
+
+        def SetTempMusicVolume(volume:float):
+            self.temp_music_volume_ = volume /10
+
+        def SetTempMusic(on:bool):
+            self.temp_music_is_on_ = on
+
         def ApplySettings():
             '''
             Save changes
@@ -455,9 +482,19 @@ class Menu:
                 self.temp_fullscreen_ = False
 
 
+
             #apply settings
             self.sfx_is_on_ = self.temp_sfx_is_on_
-            self.volume_ = self.temp_volume_
+            self.sfx_volume_ = self.temp_volume_
+            self.music_is_on_ =  self.temp_music_is_on_
+            self.music_volume_ = self.temp_music_volume_
+
+            self.music_.SetVolume(self.music_volume_)#set music volume
+
+            if self.music_is_on_ == True:
+                self.music_.PlayMusic()
+            else:
+                self.music_.StopMusic()
 
             if self.temp_fullscreen_ != self.fullscreen_ or self.temp_resolution_ != self.resolution_: #if the screen settings has been changed
                 self.resolution_ = self.temp_resolution_
@@ -469,7 +506,8 @@ class Menu:
 
             self.SaveSettings() #save settings to json file
 
-            self.MainMenu() #back to mainmenu
+            self.SettingsMenu()
+            self.menu_.mainloop(self.screen_)
 
 
         def FindReslutionIndex(resolution, resoluutions_list):
@@ -479,16 +517,20 @@ class Menu:
             return -1  #Resolution not found in the list
 
 
+
+
+        #settings menu:
         self.menu_.clear() #clear menu
 
 
         self.menu_.add.toggle_switch("Full screen:",onchange=SetTempFullscreen,default=self.temp_fullscreen_) #change window mode
-
         self.menu_.add.selector('Resolution: ', self.resolutions_,default=FindReslutionIndex(self.resolution_,self.resolutions_), onchange=SetTempResolution) #change resolution
         self.menu_.add.toggle_switch('Sound:', default=self.temp_sfx_is_on_, onchange=SetTempSFX)
 
-        self.menu_.add.range_slider(title="Volume: ",default=int(self.volume_*10),range_values=(0, 10),increment=1,onchange=SetTempVolume) #set volume
+        self.menu_.add.range_slider(title="Volume: ", default=int(self.sfx_volume_ * 10), range_values=(0, 10), increment=1, onchange=SetTempVolume) #set volume
+        self.menu_.add.toggle_switch(title="Music: ",onchange=SetTempMusic,default=self.temp_music_is_on_) #turn music on/off
 
+        self.menu_.add.range_slider(title="Music volume: ", default=int(self.temp_music_volume_ * 10), range_values=(0, 10), increment=1, onchange=SetTempMusicVolume) #set volume
         self.menu_.add.button("Apply",action=ApplySettings)
         self.menu_.add.button("Back",self.MainMenu)
 

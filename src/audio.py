@@ -1,7 +1,49 @@
 import pygame
 import json
 
-class Audio:
+
+class Music:
+    def __init__(self,volume:float): #constructor
+        self.music_is_on_ = False
+
+
+        #read music file paths from json file:
+        f = open("media/audio/audio config.json", "r")  #read json file
+        self.audio_files_ = json.load(f)["audio files"]  #read audio file paths
+        f.close()  #close file
+
+
+        #load music files:
+        try:
+            self.music_ = pygame.mixer.Sound(self.audio_files_["music1"])  #collect sound
+            self.music_channel_ = pygame.mixer.Channel(0)
+
+        except: #file not found:
+            self.music_ = None
+
+
+        self.SetVolume(volume)
+
+
+
+    def SetVolume(self, volume:float):
+        if self.music_ != None:  # if audio file download was succesful
+
+            self.music_.set_volume(volume)
+
+    def PlayMusic(self):
+        if self.music_ != None:  # if audio file download was succesful
+            if self.music_is_on_ == False: #make sure that the music is not already on
+                self.music_.play(loops=-1)
+                self.music_is_on_ = True
+
+    def StopMusic(self):
+        if self.music_ != None:  # if audio file download was succesful
+            self.music_.stop()
+        self.music_is_on_ = False
+
+
+class Sfx:
 
     def __init__(self,sfx_is_on:bool= True,volume:float=0.5):
 
@@ -46,11 +88,11 @@ class Audio:
 
     def __CreateChannels(self):
         #create channels:
-        self.channel_collect_ = pygame.mixer.Channel(0)
-        self.channel_explosion_ = pygame.mixer.Channel(1)
-        self.channel_push_ = pygame.mixer.Channel(2)
-        self.channel_drop_ = pygame.mixer.Channel(3)
-        self.channel_step_ = pygame.mixer.Channel(3)
+        self.channel_collect_ = pygame.mixer.Channel(1)
+        self.channel_explosion_ = pygame.mixer.Channel(2)
+        self.channel_push_ = pygame.mixer.Channel(3)
+        self.channel_drop_ = pygame.mixer.Channel(4)
+        self.channel_step_ = pygame.mixer.Channel(5)
 
         self.channel_collect_.set_volume(self.volume_)
         self.channel_explosion_.set_volume(self.volume_)
@@ -60,7 +102,7 @@ class Audio:
 
 
     def SetVolume(self,volume):
-        self.volume_ = volume #default volume
+        self.volume_ = volume #set new volume
         self.__CreateChannels() #update channels
 
     def PlayExplosionSound(self):
