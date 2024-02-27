@@ -3,7 +3,7 @@ import json
 
 
 class Music:
-    def __init__(self,volume:float): #constructor
+    def __init__(self,volume:float=0.5): #constructor
         self.music_is_on_ = False
 
 

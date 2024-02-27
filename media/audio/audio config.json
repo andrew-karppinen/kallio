@@ -4,8 +4,8 @@
         "explosion":"media/audio/Boom 1.wav",
         "push": "media/audio/push-blaster.mp3",
         "drop":"media/audio/fall-blaster.mp3",
-        "step":"",
+        "step":"media/audio/step.wav",
 
-        "music1": "media/audio/music1.wav"
+        "music1": "media/audio/music/music1.wav"
     }
 }

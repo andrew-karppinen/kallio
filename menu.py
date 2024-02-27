@@ -84,8 +84,7 @@ class Menu:
         self.level_completed_ = False
         self.connection_lost_ = False
 
-
-
+        self.music_ = Music()  # create music object
 
         #GAME START DATA
         self.server_ip_ = "localhost"  #client
@@ -142,7 +141,8 @@ class Menu:
             self.music_is_on_ = settings["music is on"]
             self.music_volume_ = settings["music volume"]
 
-            self.music_ = Music(self.music_volume_)  # create music object
+
+            self.music_.SetVolume(settings["music volume"])
             if self.music_is_on_ == True:
                 self.music_.PlayMusic() #play music
 

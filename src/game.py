@@ -27,7 +27,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
     door = False #if go throught the door
     push = False #if pushing
     move = False #normal move
-
+    sand = False #sand
 
 
     #backup current location, if the move is cancelled:
@@ -38,9 +38,15 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     if right:
         if gamedata.local_player_position_x_ + 1 < gamedata.map_width_ and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) in gamedata.collision_objects_:  #if map not end and if no collision
+
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ +1]) == DefaultTile: #if sand
+                sand = True #play sand audio
+
             Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ + 1) #try collect point
             gamedata.local_player_position_x_ += 1 #move player
             move = True
+
+
 
             gamedata.local_player_.AnimateToRight() #change player image
             gamedata.local_player_.movement_going_right_ = True #animate movement
@@ -84,6 +90,10 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     elif left:
         if gamedata.local_player_position_x_-1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) in gamedata.collision_objects_:  #if map not end and if no collision
+
+            if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ -1]) == DefaultTile: #if sand
+                sand = True #play sand audio
+
             Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ - 1) #try collect point
             gamedata.local_player_position_x_ -= 1 #move player
             move = True
@@ -132,11 +142,13 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     elif up:
         if gamedata.local_player_position_y_ - 1 >= 0 and not type(gamedata.current_map_[gamedata.local_player_position_y_ -1][gamedata.local_player_position_x_]) in gamedata.collision_objects_:  #if map not end and if no collision
+
+            if type(gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_]) == DefaultTile: #if sand
+                sand = True #play sand audio
+
             Collect(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ -= 1 #move player
             move = True
-
-
 
             gamedata.local_player_.AnimateToHorizontal() #change player image
             gamedata.local_player_.movement_going_up_ = True #animate movement
@@ -165,11 +177,13 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
 
     elif down:
         if gamedata.local_player_position_y_ +1 <gamedata.map_height_ and not type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) in gamedata.collision_objects_:  #if map not end and if no collision
+
+            if type(gamedata.current_map_[gamedata.local_player_position_y_ +1][gamedata.local_player_position_x_ ]) == DefaultTile: #if sand
+                sand = True #play sand audio
+
             Collect(gamedata, gamedata.local_player_position_y_ + 1, gamedata.local_player_position_x_) #try collect point
             gamedata.local_player_position_y_ += 1 #move player
             move = True
-
-
 
             gamedata.local_player_.AnimateToHorizontal() #change player image
             gamedata.local_player_.movement_going_down_ = True #animate movement
@@ -224,7 +238,7 @@ def Move(gamedata:object,connection:object,right:bool,left:bool,up:bool,down:boo
         gamedata.current_map_[original_y][original_x] = None
         gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_] = gamedata.local_player_ #set player to map list
 
-        if push == False:
+        if sand == True:
             gamedata.audio_.PlayStepSound()
 
         if gamedata.multiplayer_ == True: #if multiplayer
@@ -271,6 +285,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_x_ +1 < gamedata.map_width_: #if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_+1]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ + 1] = None
+                gamedata.audio_.PlayStepSound()
             elif Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ + 1): #try collect
                 pass
             else:
@@ -280,6 +295,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_x_ -1 >= 0:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_][gamedata.local_player_position_x_ - 1] = None
+                gamedata.audio_.PlayStepSound()
             elif Collect(gamedata, gamedata.local_player_position_y_, gamedata.local_player_position_x_ - 1): #try collect
                 pass
             else:
@@ -289,6 +305,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_y_ - 1 >= 0:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_-1][gamedata.local_player_position_x_] = None
+                gamedata.audio_.PlayStepSound()
             elif Collect(gamedata, gamedata.local_player_position_y_ - 1, gamedata.local_player_position_x_): #try  #try collect
                 pass
             else:
@@ -298,7 +315,7 @@ def RemoveTile(gamedata:object,connection, right:bool, left:bool, up:bool, down:
         if gamedata.local_player_position_y_ + 1 < gamedata.map_height_:  # if map not end
             if type(gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_]) == DefaultTile:
                 gamedata.current_map_[gamedata.local_player_position_y_+1][gamedata.local_player_position_x_] = None
-
+                gamedata.audio_.PlayStepSound()
             elif Collect(gamedata, gamedata.local_player_position_y_ + 1, gamedata.local_player_position_x_): #try collect
                 pass
             else:
