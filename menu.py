@@ -96,9 +96,11 @@ class Menu:
         self.resolutions_ = [['1600x900',[1600,900]],['1920x1080',[1920,1080]],['2560x1440',[2560,1440]],['1056x594',[1056,594]],['1280x720', [1280,720]]] #resolutions 16:9 list
 
         #remove resolutions higher than the screen resolution from the list
-        display_resolution = pygame.display.set_mode().get_size() #get screen resolution
+        info = pygame.display.Info() #get screen resolution
+        self.display_resolution_ = (info.current_w,info.current_h) #get screen resolution
+
         for i in range(len(self.resolutions_)-1,0,-1):
-            if self.resolutions_[i][1][0] > display_resolution[0] or self.resolutions_[i][1][1] > display_resolution[1]:
+            if self.resolutions_[i][1][0] > self.display_resolution_[0] or self.resolutions_[i][1][1] > self.display_resolution_[1]:
                 self.resolutions_.pop(i)
 
 
@@ -146,10 +148,10 @@ class Menu:
             if self.music_is_on_ == True:
                 self.music_.PlayMusic() #play music
 
-            display_resolution = pygame.display.set_mode().get_size() #get screen resolution
+
             resolution = settings["resolution"] #saved resolution
 
-            if resolution[0] > display_resolution[0] and resolution[1] > display_resolution[1]: #if saved resolution > screen resolution
+            if resolution[0] > self.display_resolution_[0] and resolution[1] > self.display_resolution_[1]: #if saved resolution > screen resolution
                 raise
             else: #no error
                  self.resolution_ = resolution
