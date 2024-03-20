@@ -724,9 +724,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             #move player:
             gamedata.remote_player_position_x_ += 1 #move player
 
-            if type(gamedata.current_map_[position_y][position_x+1]) == Diamond: #if diamond
+            if type(gamedata.current_map_[position_y][position_x+1]) in [Key,Diamond]: #if diamond or key
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y][position_x+1]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -735,6 +737,8 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.remote_player_position_x_ += 2 #move player
             gamedata.current_map_[position_y][position_x+2] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
+
+
 
         gamedata.remote_player_.AnimateToRight() #change player image
 
@@ -746,9 +750,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             #move player:
             gamedata.remote_player_position_x_ -= 1
 
-            if type(gamedata.current_map_[position_y][position_x-1]) == Diamond: #if diamond
+            if type(gamedata.current_map_[position_y][position_x-1]) in [Key,Diamond]: #if diamond or key
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y][position_x-1]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y][position_x-1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -766,9 +772,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
             gamedata.remote_player_position_y_ += 1 #move player
-            if type(gamedata.current_map_[position_y + 1][position_x]) == Diamond: #if diamond
+            if type(gamedata.current_map_[position_y + 1][position_x]) in [Key,Diamond]: #if diamond or key
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y+1][position_x]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y+1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -786,9 +794,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
             gamedata.remote_player_position_y_ -= 1 #move player
 
-            if type(gamedata.current_map_[position_y - 1][position_x]) == Diamond: #if diamond
+            if type(gamedata.current_map_[position_y - 1][position_x]) in [Key,Diamond]: #if diamond or key
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y-1][position_x]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y-1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -827,25 +837,25 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
     if action[0] == "removeright":
-        if type(gamedata.current_map_[position_y][position_x+1]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y][position_x+1]) in [Key,Diamond]: #if diamond or key
             gamedata.total_points_collected_ += 1
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x+1] = None #remove tile next to remoteplayer
 
     elif action[0] == "removedown":
-        if type(gamedata.current_map_[position_y+1][position_x]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y+1][position_x]) in [Key,Diamond]: #if diamond or key
             gamedata.total_points_collected_ += 1
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y+1][position_x] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeleft":
-        if type(gamedata.current_map_[position_y][position_x-1]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y][position_x-1]) in [Key,Diamond]: #if diamond or key
             gamedata.total_points_collected_ += 1
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x - 1] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeup":
-        if type(gamedata.current_map_[position_y-1][position_x]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y-1][position_x]) in [Key,Diamond]: #if diamond or key
             gamedata.total_points_collected_ += 1
             gamedata.audio_.PlayCollectSound()  # play audio
 
