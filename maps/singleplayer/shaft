@@ -1,7 +1,10 @@
-False
-13
-0
-62,14
+multiplayer=False
+required_score=13
+time=0
+size_y=62
+size_x=14
+map_file_version=2
+mapstart:
 5,5,5,5,5,5,5,5,5,5,5,5,5,5
 5,3,3,3,3,0,0,0,4,0,0,0,7,5
 5,3,3,8,3,0,0,0,4,0,0,0,0,5
