@@ -433,6 +433,7 @@ class Menu:
     def InfoMenu(self):
         self.menu_.clear() #clear menu
 
+        self.menu_.add.label(f"KALLIO v{PROGRAM_VERSION}")
         self.menu_.add.label("Controls:")
         self.menu_.add.label("Move:")
         self.menu_.add.label("arrow keys")
