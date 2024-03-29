@@ -15,13 +15,13 @@
     "5":["maps/singleplayer/flashback","flashback"],
     "6":["maps/singleplayer/no time!","no time!"],
     "7":["maps/singleplayer/accident","accident"],
-    "8":["maps/singleplayer/chaos","chaos"],
-    "9":["maps/singleplayer/aijankallio","äijänkallio"],
-    "10":["maps/singleplayer/up","up!"],
-    "11":["maps/singleplayer/shaft","shaft"],
-    "12": ["maps/singleplayer/out of here","out of here"],
-    "13": ["maps/singleplayer/dark","dark"],
-    "14":["maps/singleplayer/try this","try this"]
+    "8":["maps/singleplayer/aijankallio","äijänkallio"],
+    "9":["maps/singleplayer/up","up!"],
+    "10":["maps/singleplayer/shaft","shaft"],
+    "11": ["maps/singleplayer/out of here","out of here"],
+    "12": ["maps/singleplayer/dark","dark"],
+    "13":["maps/singleplayer/try this","try this"],
+    "14":["maps/singleplayer/run", "run"]
   }
 
 }
