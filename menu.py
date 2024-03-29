@@ -11,7 +11,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.13"
+PROGRAM_VERSION = "0.0.14"
 
 
 
