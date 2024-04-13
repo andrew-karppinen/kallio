@@ -954,35 +954,35 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                 if event.key == pygame.K_RETURN: #enter
                     enter = True
-                if event.key == pygame.K_SPACE: #space
+                if event.key == pygame.K_SPACE or  event.key ==  pygame.K_LCTRL: #space or left ctrl
                     space = True
 
 
                 #arrowkeys
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     left = True
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     right = True
 
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     up = True
 
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     down = True
 
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RETURN: #enter
                     enter = False
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     left = False
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     right = False
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     up = False
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     down = False
-                if event.key == pygame.K_SPACE: #space
+                if event.key == pygame.K_SPACE or  event.key ==  pygame.K_LCTRL : #space or left ctrl
                     space = False
 
 
