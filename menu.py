@@ -11,7 +11,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.14"
+PROGRAM_VERSION = "0.0.15"
 
 
 
@@ -436,10 +436,10 @@ class Menu:
         self.menu_.add.label(f"KALLIO v{PROGRAM_VERSION}")
         self.menu_.add.label("Controls:")
         self.menu_.add.label("Move:")
-        self.menu_.add.label("arrow keys")
+        self.menu_.add.label("arrow keys/wasd")
         self.menu_.add.label("")
         self.menu_.add.label("Delete next to player:")
-        self.menu_.add.label("space + arrow keys")
+        self.menu_.add.label("space/left ctrl + arrow keys/wasd")
         self.menu_.add.label("")
 
         self.menu_.add.button("Back to main menu",self.MainMenu)
