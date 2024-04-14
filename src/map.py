@@ -1,4 +1,5 @@
 import pygame
+import re
 
 from src.objects import *
 from src.config.tile_commands_config import mapsymbols #import mapsymbols
@@ -108,27 +109,69 @@ def ReadMapFile(file_path:str):
 
 
 
-    #open file
-    file = open(file_path, 'r')
-    #read rows to list
-    rows = file.readlines()
 
-    #close file
-    file.close()
+    multiplayer = None
+    required_score = None
+    time = None
 
-    multiplayer = eval(rows[0]) #row 1, multiplayer
-    required_score = int(rows[1]) #row 2, required score
-    time = int(rows[2]) #row 3, time limit
-    mjono = rows[3] # row 4, map size
+    y = None
+    x = None
 
-    #read map size:
-    y_and_x = mjono.split(',') #replace str
-    y = int(y_and_x[0]) #str to int
-    x = int(y_and_x[1])
+
+    line_number = 0
+    file = open(file_path,'r')
+    lines = file.readlines()
+    for line in lines:
+
+        line_number += 1
+
+        if line == "mapstart:\n":
+            if None in [time,multiplayer,required_score,y,x]:
+                print([time,multiplayer,required_score,y,x])
+                raise Exception("invalid option")
+            else:
+                break
+
+
+
+        multiplayer_find = re.search(r'\bmultiplayer=(\S+)\b',line) #find multiplayer
+        if multiplayer_find:
+            multiplayer = str(multiplayer_find.group(1))
+            if multiplayer.lower() == "false":
+                multiplayer = False
+            elif multiplayer.lower() == "true":
+                multiplayer = True
+            else:
+                raise Exception("invalid multiplayer option")
+
+
+
+        required_score_find = re.search(r'required_score=(\d+)', line) #find required score
+        if required_score_find:
+            required_score = int(required_score_find.group(1))
+
+
+        time_find = re.search(r'time=(\d+)',line) #find time
+        if time_find:
+            time = int(time_find.group(1))
+
+
+        x_find = re.search(r'size_x=(\d+)',line) #find size y
+        if x_find:
+            x = int(x_find.group(1))
+
+        y_find = re.search(r'size_y=(\d+)',line) #find size y
+        if y_find:
+            y = int(y_find.group(1))
+
+
+    file.close() #close file
+
 
     #read the remaining lines of the file
     mapstr = ''
-    for i in rows[4:]: #change the remaining lines of the file to str
+
+    for i in lines[line_number:]: #change the remaining lines of the file to str
         mapstr += i
 
     mapstr = mapstr.replace('\n', ',') #newline to ","
