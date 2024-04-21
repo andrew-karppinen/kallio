@@ -167,6 +167,10 @@ class Menu:
             self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,theme=self.menu_theme_)  #create menu object
             pygame.display.set_caption('KALLIO') #rename window
 
+            pygame_icon = pygame.image.load('media/player2.png')
+            pygame.display.set_icon(pygame_icon) #change icon
+
+
         except Exception: #invalid json file or file not exist
             self.SaveSettings() #save default settings to json file
             self.ReadSettings()
