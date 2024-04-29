@@ -8,7 +8,7 @@ pygame.init()
 
 
 
-PROGRAM_VERSION = "0.0.15"
+PROGRAM_VERSION = "0.0.16"
 
 
 
