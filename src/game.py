@@ -958,9 +958,12 @@ def Run(gamedata:object,connection:object = None)->bool:
 
         #timer:
         if gamedata.level_timelimit_ != 0: #if level has timelimit
+
+            gamedata.current_fps_ = clock.get_fps()  # update current fps
+            gamedata.UpdateTimer()
+
             if gamedata.Timer() >= gamedata.level_timelimit_: #time out
                 RestartLevel(gamedata,connection) #restart level
-
 
 
 

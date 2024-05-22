@@ -23,7 +23,6 @@ class GameData:
             self.big_size_font_ = pygame.font.SysFont("", 60)  # load sysfont
 
 
-
         self.tile_size_ = 50 #tilesize y*x
         self.draw_area_x_ = 32 #drawing area size
         self.draw_area_y_ = 16
@@ -105,6 +104,7 @@ class GameData:
         self.audio_ = Sfx(sfx_is_on, volume) #crate Audio object
 
 
+        self.current_fps_ = 30
         #private variables:
         self.__elapsed_time_ = 0
 
@@ -194,16 +194,20 @@ class GameData:
             self.remote_player_.SetImage(player2image1, player2image2, player2image3)
 
     def InitTimer(self):
-        self.__elapsed_time_ = pygame.time.get_ticks() //1000
+        self.__elapsed_time_ = 0
 
 
-    def Timer(self)->int:
+    def UpdateTimer(self):
+        '''
+        Update timer
+        '''
+        self.__elapsed_time_ += 0.033333333
+
+    def Timer(self):
         '''
         get game elapsed time in seconds
         '''
-
-        return pygame.time.get_ticks() //1000 - self.__elapsed_time_ #calculate elapsed time and return it
-
+        return int(self.__elapsed_time_)
 
 
 
