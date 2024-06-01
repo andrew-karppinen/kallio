@@ -2,6 +2,8 @@ import pygame
 import pygame_menu
 import random
 import os
+import platform
+
 import json
 
 from src import * #import py-boulderdash
@@ -59,6 +61,33 @@ def ReturnMaps(multiplayer:bool):
 
 
     return(maplist)  #return maps
+
+
+def GetKallioConfigDirectory():
+    '''
+    get this path in linux:
+    home/.config/kallio
+
+    get this path in windows:
+    appdata/Roaming/kallio
+
+    if "kallio" directory is not exist, create it
+    '''
+    system = platform.system()  # get operating system
+
+
+    if system == "Linux":  # linux
+        path = os.path.expanduser('~') + "/.config/kallio/"
+    elif system == "Windows":  # windows
+        path = os.getenv('APPDATA') + "/kallio/"
+    else:
+        raise OSError(f"Unsupported operating system: {system}")
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    return path
 
 
 
@@ -127,12 +156,21 @@ class Menu:
 
     def ReadSettings(self):
         '''
-        read settings from save/settings.json
-        create menu object and window
+        Read settings from json file
+
+        File path:
+
+        linux:
+        home/.conf/kallio/settings.json
+
+        windows:
+        appdata/Roaming/kallio/settings.json
         '''
 
         try:
-            f = open("save/settings.json", "r")  #read json file
+            path = GetKallioConfigDirectory()  # get config directory path
+
+            f = open(f"{path}settings.json", "r")  #read json file
             settings = json.load(f)["settings"]  #read settings
             f.close()  #close file
 
@@ -178,9 +216,16 @@ class Menu:
     def SaveSettings(self):
         '''
         save current settings to json file
-        save/settings.json
-        '''
 
+        File path:
+
+        linux:
+        home/.conf/kallio/settings.json
+
+        windows:
+
+        appdata/Roaming/kallio/settings.json
+        '''
 
         settings = {
             "settings":{
@@ -196,7 +241,17 @@ class Menu:
 
         jsonstr = json.dumps(settings) #dictionary to str
 
-        f = open("save/settings.json", "w")  #open file
+
+
+        path = GetKallioConfigDirectory() #get config directory path
+
+
+
+
+
+
+
+        f = open(f"{path}settings.json", "w")  #open file
         f.write(jsonstr) #write dictionary data to json file
         f.close()  # close file
 
