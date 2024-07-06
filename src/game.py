@@ -693,6 +693,9 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     gamedata.local_player_have_green_key_ = False
     gamedata.local_player_have_blue_key_ = False
 
+    gamedata.local_player_.StopMovementAnimation()
+
+
     #draw map:
     gamedata.screen_.fill((0,0,0))
     gamedata.DrawMap()
