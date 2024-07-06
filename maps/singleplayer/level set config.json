@@ -3,7 +3,7 @@
 {
   "levels are intended for multiplayer": false,
 
-  "map count": 14,
+  "map count": 15,
 
 
 
@@ -21,7 +21,8 @@
     "11": ["maps/singleplayer/out of here","out of here"],
     "12": ["maps/singleplayer/dark","dark"],
     "13":["maps/singleplayer/try this","try this"],
-    "14":["maps/singleplayer/run", "run"]
+    "14":["maps/singleplayer/run", "run"],
+    "15":["maps/singleplayer/memories", "memories"]
   }
 
 }
