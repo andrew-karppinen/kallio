@@ -13,7 +13,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.17"
+PROGRAM_VERSION = "0.0.18"
 
 
 
@@ -160,7 +160,7 @@ class Menu:
 
 
         self.ReadSettings() #read settings from json file, create screen, menu object
-
+        
 
     def ReadSettings(self):
         '''
@@ -267,7 +267,6 @@ class Menu:
 
 
     def CreateMenuObject(self):
-
         '''
         Create/upadate self.menu_ object
         '''
