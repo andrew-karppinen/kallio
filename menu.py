@@ -3,7 +3,7 @@ import pygame_menu
 import random
 import os
 import platform
-
+import sys
 import json
 
 from src import * #import py-boulderdash
@@ -13,7 +13,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.18"
+PROGRAM_VERSION = "0.0.19"
 
 
 
@@ -646,9 +646,14 @@ class Menu:
         self.menu_.add.button('Multiplayer', self.MultiPlayerMenu)
         self.menu_.add.button("Info",self.InfoMenu)
         self.menu_.add.button("Settings",self.SettingsMenu)
-        self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
+        self.menu_.add.button('Quit', self.Close) #exit program
         self.menu_.mainloop(self.screen_)
 
+
+    def Close(self):
+        self.SaveSettings()
+        pygame.quit()
+        sys.exit()
 
     def BackToMenu(self):
         '''
