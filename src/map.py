@@ -10,8 +10,6 @@ def SetMap(gamedata:object,mapstr:str)->None:
     Convert mapstr to map list
     set maplist to gamedata object
 
-    "initial" parameter must be true, If the level is started from the beginning
-
     data:
     src/config/tile commands_config.py
 

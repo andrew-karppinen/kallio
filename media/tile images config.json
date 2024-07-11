@@ -22,7 +22,9 @@
         "Monster":["media/monster1.png","media/monster2.png"],
         "Door":["media/door right.png","media/door down.png","media/door left.png","media/door up.png"],
         "Key":["media/green key.png","media/blue key.png"],
-        "LockedDoor":["media/green door.png","media/blue door.png"]
+        "LockedDoor":["media/green door.png","media/blue door.png"],
+
+        "Hunter": ["media/hunter.png"]
 
 
     }

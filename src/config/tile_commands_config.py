@@ -54,6 +54,9 @@ mapsymbols = {
     "25": {"name": "Blue key", "command": "Key('blue')", "command2": None},
 
     "26": {"name": "Green door", "command": "LockedDoor('green')", "command2": None},
-    "27": {"name": "Blue door", "command": "LockedDoor('blue')", "command2": None}
+    "27": {"name": "Blue door", "command": "LockedDoor('blue')", "command2": None},
+
+
+    "28": {"name": "Hunter", "command": "Hunter()", "command2": "gamedata.hunters_position_.append([y,x])"} #create a Hunter and set its location to the gamedata object
 
 }

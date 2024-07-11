@@ -489,6 +489,36 @@ class Monster(Tile):
 
 
 
+
+
+class Hunter(Tile):
+
+    #class variables:
+    image1 = None
+
+
+    def SetImage(image1:pygame.surface):
+        Hunter.image1 = image1
+
+    def ScaleImages(tile_size:int):
+        Hunter.image1 = pygame.transform.scale(Hunter.image1,(tile_size,tile_size))
+
+
+    def __init__(self): #constructor
+        super().__init__()
+        self.path_ = [] #y,x
+
+        self.moved_during_this_function_call_ = False
+
+
+
+    @property
+    def image_(self):
+        return(Hunter.image1)
+
+
+
+
 class Door(Tile):
     image_left = None
     image_right = None

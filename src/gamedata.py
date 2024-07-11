@@ -51,6 +51,9 @@ class GameData:
         self.local_player_ = Player()
         self.remote_player_ = Player(False)
 
+        self.hunters_position_ = [] #(y,x)
+
+
         #if the player has the key, it can go through the door:
         self.local_player_have_green_key_ = False
         self.local_player_have_blue_key_ = False
@@ -73,7 +76,7 @@ class GameData:
         self.gravity_objects_2_ = [Brick,Stone,Diamond]  #a stone and diamond will not stay on top of these if there is an empty one next to it
         self.explosive_ = [Tnt,Monster] #causing new explosion if explose
         self.explosive2_ = [Tnt,Monster] #explosive if something falls on it
-        self.deadlys_objects_ = [Explosion,Monster] #if the player moved to these tiles, it's game over
+        self.deadlys_objects_ = [Explosion,Monster,Hunter] #if the player moved to these tiles, it's game over
 
         self.pushing_right_ = 0 #0,1
         self.pushing_left_ = 0 #0,1
@@ -163,6 +166,8 @@ class GameData:
         green_door_image = pygame.image.load(tile_images["LockedDoor"][0])
         blue_door_image = pygame.image.load(tile_images["LockedDoor"][1])
 
+        hunter_image = pygame.image.load(tile_images["Hunter"][0])
+
 
         #set images to classes:
         Diamond.SetImage(diamondimage)
@@ -178,6 +183,8 @@ class GameData:
         Stone.SetImage(stoneimage)
         Door.SetImage(door_right_image, door_down_image, door_left_image, door_up_image)
         LockedDoor.SetImage(green_door_image,blue_door_image)
+
+        Hunter.SetImage(hunter_image)
 
         #set players images
         if self.multiplayer_ == True:
@@ -263,7 +270,7 @@ class GameData:
 
 
         #scale tile images:
-        for i in [Goal, Diamond, Tnt, Stone, Door, DefaultTile, Explosion, Brick, Bedrock, Monster, Key, LockedDoor]:
+        for i in [Goal, Diamond, Tnt, Stone, Door, DefaultTile, Explosion, Brick, Bedrock, Monster, Key, LockedDoor,Hunter]:
             i.ScaleImages(self.tile_size_)
 
         #scale player image size

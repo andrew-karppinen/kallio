@@ -354,6 +354,9 @@ def Gravity(gamedata,connection):
                                 CreateExplosion(gamedata,connection,y,x) #create explosion
                                 return
 
+                        if gamedata.current_map_[y + 1][x] != None:
+                            if type(gamedata.current_map_[y + 1][x]) == Hunter: #if something falls on Hunter
+                                gamedata.current_map_[y + 1][x] = None #remove hunter
 
                         if gamedata.current_map_[y+1][x] != None: #player dead
                             if type(gamedata.current_map_[y+1][x]) == Player:
@@ -408,8 +411,6 @@ def Gravity(gamedata,connection):
                                         gamedata.current_map_[y][x] = None
 
                                         continue
-
-
 
 
                         gamedata.current_map_[y][x].drop_ = False #drop stopping
@@ -681,9 +682,10 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel() #send restart level message
 
-    SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
 
     #init gamedata:
+    gamedata.hunters_position_ = []
+
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
     gamedata.InitTimer() #init timer
@@ -694,6 +696,9 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     gamedata.local_player_have_blue_key_ = False
 
     gamedata.local_player_.StopMovementAnimation()
+
+
+    SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
 
 
     #draw map:
@@ -887,6 +892,50 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
 
+
+
+def MoveHunter(gamedata:object,connection:object):
+
+    for i in gamedata.hunters_position_:
+        x = i[1]
+        y = i[0]
+
+        if type(gamedata.current_map_[y][x]) == Hunter: #if hunter is in this location
+
+            path = astar(gamedata.current_map_, (y, x), (gamedata.local_player_position_y_, gamedata.local_player_position_x_), None)  # calculate path (y,x)
+
+            if path != []:
+                #move hunter
+
+                if gamedata.current_map_[path[0][0]][path[0][1]] != None: #obstacle in the path
+                    if type(gamedata.current_map_[path[0][0]][path[0][1]]) == Player: #if player
+                        RestartLevel(gamedata,connection) #game over
+                        return
+                    else: # other obstacle in the path
+                        continue
+
+                if path[0][0] > y:
+                    gamedata.current_map_[y][x].movement_going_down_ = True
+                elif path[0][0] < y:
+                    gamedata.current_map_[y][x].movement_going_up_ = True
+
+                elif path[0][1] > x:
+                    gamedata.current_map_[y][x].movement_going_right_ = True
+                elif path[0][1] < x:
+                    gamedata.current_map_[y][x].movement_going_left_ = True
+
+                gamedata.current_map_[y][x].moved_during_this_function_call_ = True
+                gamedata.current_map_[path[0][0]][path[0][1]] = gamedata.current_map_[y][x]
+                gamedata.current_map_[y][x] = None
+
+                i[0] = path[0][0] #y
+                i[1] = path[0][1] #x
+
+
+
+
+
+
 def Run(gamedata:object,connection:object = None)->bool:
     '''
     game main function
@@ -908,15 +957,13 @@ def Run(gamedata:object,connection:object = None)->bool:
     clock = pygame.time.Clock() #fps limit
 
     #set speed control variables:
-    if gamedata.multiplayer_ == True: #if multiplayer
-        gravity_counter,gravity_speed = 0,4  #execute gravity every 4 loops
-        player_move_counter,player_speed = 0,3 #player speedlimit
-        monstermove_counter,monster_speed = 0,5 #move monster every 5 loops
 
-    else: #singelplayer
-        gravity_counter,gravity_speed = 0,5  #execute gravity every 5 loops
-        player_move_counter,player_speed = 0,3 #player speecd limit
-        monstermove_counter,monster_speed = 0,6 #move monster every 6 loops
+
+    gravity_counter,gravity_speed = 0,5  #execute gravity every 5 loops
+    player_move_counter,player_speed = 0,3 #player speecd limit
+    monstermove_counter,monster_speed = 0,6 #move monster every 6 loops
+
+    huntermove_counter,hunter_speed = 0,5
 
 
     image_switching_counter, image_switching_speed = 0,5 #set remoteplayer image to default image if not move
@@ -1064,6 +1111,11 @@ def Run(gamedata:object,connection:object = None)->bool:
             MoveMonsters(gamedata,connection) #move monsters
 
 
+        if loopcount > huntermove_counter+hunter_speed: #move hunter
+            huntermove_counter = loopcount
+            MoveHunter(gamedata,connection) #move hunter
+
+
 
         if [right, left, up, down].count(True) > 0:  #if arrow key is pressed
             if loopcount > player_move_counter+player_speed: #speed limit
@@ -1159,7 +1211,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                 connection.CloseSocket()  # close socket
                 print(connection.error_message_)
                 return False, True  # back to menu, level not completed
-
 
 
         clock.tick(30) #fps limit
