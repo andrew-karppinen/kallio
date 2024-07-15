@@ -126,47 +126,47 @@ class GameData:
         tile_images = json_data["other tile images"]
 
         #load tile images:
-        sandimage = pygame.image.load(tile_images["DefaultTile"][0])
+        sandimage = pygame.image.load(tile_images["DefaultTile"][0]).convert()
 
-        player1image1 = pygame.image.load(player_images["player1"][0])
-        player1image2 = pygame.image.load(player_images["player1"][1])
-        player1image3 = pygame.image.load(player_images["player1"][2])
+        player1image1 = pygame.image.load(player_images["player1"][0]).convert()
+        player1image2 = pygame.image.load(player_images["player1"][1]).convert()
+        player1image3 = pygame.image.load(player_images["player1"][2]).convert()
 
-        player2image1 = pygame.image.load(player_images["player2"][0])
-        player2image2 = pygame.image.load(player_images["player2"][1])
-        player2image3 = pygame.image.load(player_images["player2"][2])
+        player2image1 = pygame.image.load(player_images["player2"][0]).convert()
+        player2image2 = pygame.image.load(player_images["player2"][1]).convert()
+        player2image3 = pygame.image.load(player_images["player2"][2]).convert()
 
-        monsterimage1 = pygame.image.load(tile_images["Monster"][0])
-        monsterimage2 = pygame.image.load(tile_images["Monster"][1])
-        stoneimage = pygame.image.load(tile_images["Stone"][0])
-        tntimage = pygame.image.load(tile_images["Tnt"][0])
+        monsterimage1 = pygame.image.load(tile_images["Monster"][0]).convert()
+        monsterimage2 = pygame.image.load(tile_images["Monster"][1]).convert()
+        stoneimage = pygame.image.load(tile_images["Stone"][0]).convert()
+        tntimage = pygame.image.load(tile_images["Tnt"][0]).convert()
 
-        explosionimage1 = pygame.image.load(tile_images["Explosion"][0])
-        explosionimage2 = pygame.image.load(tile_images["Explosion"][1])
-        explosionimage3 = pygame.image.load(tile_images["Explosion"][2])
-        explosionimage4 = pygame.image.load(tile_images["Explosion"][3])
+        explosionimage1 = pygame.image.load(tile_images["Explosion"][0]).convert()
+        explosionimage2 = pygame.image.load(tile_images["Explosion"][1]).convert()
+        explosionimage3 = pygame.image.load(tile_images["Explosion"][2]).convert()
+        explosionimage4 = pygame.image.load(tile_images["Explosion"][3]).convert()
 
-        diamondimage = pygame.image.load(tile_images["Diamond"][0])
+        diamondimage = pygame.image.load(tile_images["Diamond"][0]).convert()
 
-        goal_open_image = pygame.image.load(tile_images["Goal"][0])
-        goal_close_image = pygame.image.load(tile_images["Goal"][1])
+        goal_open_image = pygame.image.load(tile_images["Goal"][0]).convert()
+        goal_close_image = pygame.image.load(tile_images["Goal"][1]).convert()
 
-        bedrockimage = pygame.image.load(tile_images["Bedrock"][0])
-        brickimage = pygame.image.load(tile_images["Brick"][0])
+        bedrockimage = pygame.image.load(tile_images["Bedrock"][0]).convert()
+        brickimage = pygame.image.load(tile_images["Brick"][0]).convert()
 
-        door_right_image = pygame.image.load(tile_images["Door"][0])
-        door_down_image = pygame.image.load(tile_images["Door"][1])
-        door_left_image = pygame.image.load(tile_images["Door"][2])
-        door_up_image = pygame.image.load(tile_images["Door"][3])
+        door_right_image = pygame.image.load(tile_images["Door"][0]).convert()
+        door_down_image = pygame.image.load(tile_images["Door"][1]).convert()
+        door_left_image = pygame.image.load(tile_images["Door"][2]).convert()
+        door_up_image = pygame.image.load(tile_images["Door"][3]).convert()
 
-        green_key_image = pygame.image.load(tile_images["Key"][0])
-        blue_key_image = pygame.image.load(tile_images["Key"][1])
+        green_key_image = pygame.image.load(tile_images["Key"][0]).convert()
+        blue_key_image = pygame.image.load(tile_images["Key"][1]).convert()
 
 
-        green_door_image = pygame.image.load(tile_images["LockedDoor"][0])
-        blue_door_image = pygame.image.load(tile_images["LockedDoor"][1])
+        green_door_image = pygame.image.load(tile_images["LockedDoor"][0]).convert()
+        blue_door_image = pygame.image.load(tile_images["LockedDoor"][1]).convert()
 
-        hunter_image = pygame.image.load(tile_images["Hunter"][0])
+        hunter_image = pygame.image.load(tile_images["Hunter"][0]).convert()
 
 
         #set images to classes:
@@ -429,9 +429,6 @@ class GameData:
         else: #draw the whole map horizontally
             up = 0
             down = self.map_height_
-
-
-
 
 
 
