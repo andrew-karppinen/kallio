@@ -2,17 +2,6 @@
 
 
 
-#needed for the program to work:
-
-#needed directory "/save"
-
-/save/settings.json
-
-
-
-
-#not important:
-
 todo.txt
 
 /src/__pycache__/*
