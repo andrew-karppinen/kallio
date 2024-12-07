@@ -354,6 +354,9 @@ def Gravity(gamedata,connection):
                                 CreateExplosion(gamedata,connection,y,x) #create explosion
                                 return
 
+                        if gamedata.current_map_[y + 1][x] != None:
+                            if type(gamedata.current_map_[y + 1][x]) == Hunter: #if something falls on Hunter
+                                gamedata.current_map_[y + 1][x] = None #remove hunter
 
                         if gamedata.current_map_[y+1][x] != None: #player dead
                             if type(gamedata.current_map_[y+1][x]) == Player:
@@ -408,8 +411,6 @@ def Gravity(gamedata,connection):
                                         gamedata.current_map_[y][x] = None
 
                                         continue
-
-
 
 
                         gamedata.current_map_[y][x].drop_ = False #drop stopping
@@ -681,9 +682,10 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     if connection != None and sendrestartlevel == True:
             connection.SendRestartLevel() #send restart level message
 
-    SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
 
     #init gamedata:
+    gamedata.hunters_position_ = []
+
     gamedata.points_collected_ = 0
     gamedata.total_points_collected_ = 0
     gamedata.InitTimer() #init timer
@@ -692,6 +694,12 @@ def RestartLevel(gamedata:object,connection:object=None,sendrestartlevel:bool = 
     gamedata.remote_player_in_goal_ = False
     gamedata.local_player_have_green_key_ = False
     gamedata.local_player_have_blue_key_ = False
+
+    gamedata.local_player_.StopMovementAnimation()
+
+
+    SetMap(gamedata, gamedata.original_mapstr_)  #set original map to current map
+
 
     #draw map:
     gamedata.screen_.fill((0,0,0))
@@ -728,6 +736,12 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
 
+            elif type(gamedata.current_map_[position_y][position_x+1]) == Key: #if key
+                gamedata.audio_.PlayCollectSound() #play audio
+
+            elif type(gamedata.current_map_[position_y][position_x+1]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audio
+
             gamedata.current_map_[position_y][position_x+1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -735,6 +749,8 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             gamedata.remote_player_position_x_ += 2 #move player
             gamedata.current_map_[position_y][position_x+2] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
+
+
 
         gamedata.remote_player_.AnimateToRight() #change player image
 
@@ -749,6 +765,10 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             if type(gamedata.current_map_[position_y][position_x-1]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y][position_x-1]) == Key: #if key
+                gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y][position_x-1]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y][position_x-1] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -770,6 +790,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
 
+            elif type(gamedata.current_map_[position_y+1][position_x]) == Key: #if key
+                gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y+1][position_x]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
+
             gamedata.current_map_[position_y+1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
 
@@ -789,6 +814,11 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
             if type(gamedata.current_map_[position_y - 1][position_x]) == Diamond: #if diamond
                 gamedata.total_points_collected_ += 1
                 gamedata.audio_.PlayCollectSound() #play audio
+
+            elif type(gamedata.current_map_[position_y-1][position_x]) == Key: #if key
+                gamedata.audio_.PlayCollectSound() #play audio
+            elif type(gamedata.current_map_[position_y-1][position_x]) == DefaultTile: #if sand
+                gamedata.audio_.PlayStepSound() #play audi
 
             gamedata.current_map_[position_y-1][position_x] = gamedata.remote_player_ #place the player to new location
             gamedata.current_map_[position_y][position_x] = None #remote player from current position
@@ -827,29 +857,82 @@ def ExecuteAction(gamedata:object,connection:object,action:str):
 
 
     if action[0] == "removeright":
-        if type(gamedata.current_map_[position_y][position_x+1]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y][position_x+1]) == Diamond: #if diamond
             gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectSound()  # play audio
+
+        if type(gamedata.current_map_[position_y][position_x+1]) == Key: #if key
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x+1] = None #remove tile next to remoteplayer
 
     elif action[0] == "removedown":
-        if type(gamedata.current_map_[position_y+1][position_x]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y+1][position_x]) == Diamond: #if diamond
             gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectSound()  # play audio
+        elif type(gamedata.current_map_[position_y+1][position_x]) == Key: #if key
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y+1][position_x] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeleft":
-        if type(gamedata.current_map_[position_y][position_x-1]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y][position_x-1]) == Diamond: #if diamond
             gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectSound()  # play audio
+        elif type(gamedata.current_map_[position_y][position_x-1]) == Key: #if key
             gamedata.audio_.PlayCollectSound()  # play audio
         gamedata.current_map_[position_y][position_x - 1] = None  # remove tile next to remoteplayer
 
     elif action[0] == "removeup":
-        if type(gamedata.current_map_[position_y-1][position_x]) == Diamond:  # if diamond
+        if type(gamedata.current_map_[position_y-1][position_x]) == Diamond: #if diamond
             gamedata.total_points_collected_ += 1
+            gamedata.audio_.PlayCollectSound()  # play audio
+        elif type(gamedata.current_map_[position_y][position_x+1]) == Key: #if key
             gamedata.audio_.PlayCollectSound()  # play audio
 
         gamedata.current_map_[position_y-1][position_x] = None  # remove tile next to remoteplayer
+
+
+
+
+
+def MoveHunter(gamedata:object,connection:object):
+
+    for i in gamedata.hunters_position_:
+        x = i[1]
+        y = i[0]
+
+        if type(gamedata.current_map_[y][x]) == Hunter: #if hunter is in this location
+
+            path = astar(gamedata.current_map_, (y, x), (gamedata.local_player_position_y_, gamedata.local_player_position_x_), None)  # calculate path (y,x)
+
+            if path != []:
+                #move hunter
+
+                if gamedata.current_map_[path[0][0]][path[0][1]] != None: #obstacle in the path
+                    if type(gamedata.current_map_[path[0][0]][path[0][1]]) == Player: #if player
+                        RestartLevel(gamedata,connection) #game over
+                        return
+                    else: # other obstacle in the path
+                        continue
+
+                if path[0][0] > y:
+                    gamedata.current_map_[y][x].movement_going_down_ = True
+                elif path[0][0] < y:
+                    gamedata.current_map_[y][x].movement_going_up_ = True
+
+                elif path[0][1] > x:
+                    gamedata.current_map_[y][x].movement_going_right_ = True
+                elif path[0][1] < x:
+                    gamedata.current_map_[y][x].movement_going_left_ = True
+
+                gamedata.current_map_[y][x].moved_during_this_function_call_ = True
+                gamedata.current_map_[path[0][0]][path[0][1]] = gamedata.current_map_[y][x]
+                gamedata.current_map_[y][x] = None
+
+                i[0] = path[0][0] #y
+                i[1] = path[0][1] #x
+
+
+
 
 
 
@@ -874,15 +957,13 @@ def Run(gamedata:object,connection:object = None)->bool:
     clock = pygame.time.Clock() #fps limit
 
     #set speed control variables:
-    if gamedata.multiplayer_ == True: #if multiplayer
-        gravity_counter,gravity_speed = 0,4  #execute gravity every 4 loops
-        player_move_counter,player_speed = 0,3 #player speedlimit
-        monstermove_counter,monster_speed = 0,5 #move monster every 5 loops
 
-    else: #singelplayer
-        gravity_counter,gravity_speed = 0,5  #execute gravity every 5 loops
-        player_move_counter,player_speed = 0,3 #player speecd limit
-        monstermove_counter,monster_speed = 0,6 #move monster every 6 loops
+
+    gravity_counter,gravity_speed = 0,5  #execute gravity every 5 loops
+    player_move_counter,player_speed = 0,3 #player speecd limit
+    monstermove_counter,monster_speed = 0,6 #move monster every 6 loops
+
+    huntermove_counter,hunter_speed = 0,5
 
 
     image_switching_counter, image_switching_speed = 0,5 #set remoteplayer image to default image if not move
@@ -927,9 +1008,12 @@ def Run(gamedata:object,connection:object = None)->bool:
 
         #timer:
         if gamedata.level_timelimit_ != 0: #if level has timelimit
+
+            gamedata.current_fps_ = clock.get_fps()  # update current fps
+            gamedata.UpdateTimer()
+
             if gamedata.Timer() >= gamedata.level_timelimit_: #time out
                 RestartLevel(gamedata,connection) #restart level
-
 
 
 
@@ -944,35 +1028,35 @@ def Run(gamedata:object,connection:object = None)->bool:
 
                 if event.key == pygame.K_RETURN: #enter
                     enter = True
-                if event.key == pygame.K_SPACE: #space
+                if event.key == pygame.K_SPACE or  event.key ==  pygame.K_LCTRL: #space or left ctrl
                     space = True
 
 
                 #arrowkeys
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     left = True
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     right = True
 
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     up = True
 
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     down = True
 
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RETURN: #enter
                     enter = False
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     left = False
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     right = False
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     up = False
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     down = False
-                if event.key == pygame.K_SPACE: #space
+                if event.key == pygame.K_SPACE or  event.key ==  pygame.K_LCTRL : #space or left ctrl
                     space = False
 
 
@@ -1025,6 +1109,11 @@ def Run(gamedata:object,connection:object = None)->bool:
         if loopcount > monstermove_counter+monster_speed: #move monster
             monstermove_counter = loopcount
             MoveMonsters(gamedata,connection) #move monsters
+
+
+        if loopcount > huntermove_counter+hunter_speed: #move hunter
+            huntermove_counter = loopcount
+            MoveHunter(gamedata,connection) #move hunter
 
 
 
@@ -1122,7 +1211,6 @@ def Run(gamedata:object,connection:object = None)->bool:
                 connection.CloseSocket()  # close socket
                 print(connection.error_message_)
                 return False, True  # back to menu, level not completed
-
 
 
         clock.tick(30) #fps limit

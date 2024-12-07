@@ -1,0 +1,17 @@
+
+
+
+Hunter
+
+symbooli karttatiedostossa: "28"
+
+
+Karttaa luodessa gamedata objektiin lisätään hunterien sijainnit:
+
+gamedata.hunters_position_ = []
+
+
+Hunterin liikutusfunktiota kutsutaan joka 5 kierros, jokaisella kertaa funktio laskee reitin hunterin ja pelaajan välille, liikuttaa tätä jos reitti on ja päivittää sijainti gamedataan.
+
+
+Jos kivi putoaa hunterin päälle hunter häviää, ei räjähdä.

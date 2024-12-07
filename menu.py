@@ -2,6 +2,8 @@ import pygame
 import pygame_menu
 import random
 import os
+import platform
+import sys
 import json
 
 from src import * #import py-boulderdash
@@ -11,7 +13,7 @@ pygame.init() #init pygame module
 
 
 
-PROGRAM_VERSION = "0.0.12"
+PROGRAM_VERSION = "0.0.21"
 
 
 
@@ -61,6 +63,33 @@ def ReturnMaps(multiplayer:bool):
     return(maplist)  #return maps
 
 
+def GetKallioConfigDirectory():
+    '''
+    get this path in linux:
+    home/.config/kallio
+
+    get this path in windows:
+    appdata/Roaming/kallio
+
+    if "kallio" directory is not exist, create it
+    '''
+    system = platform.system()  # get operating system
+
+
+    if system == "Linux":  # linux
+        path = os.path.expanduser('~') + "/.config/kallio/"
+    elif system == "Windows":  # windows
+        path = os.getenv('APPDATA') + "/kallio/"
+    else:
+        raise OSError(f"Unsupported operating system: {system}")
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    return path
+
+
 
 class Menu:
 
@@ -99,7 +128,7 @@ class Menu:
         info = pygame.display.Info() #get screen resolution
         self.display_resolution_ = (info.current_w,info.current_h) #get screen resolution
 
-        for i in range(len(self.resolutions_)-1,0,-1):
+        for i in range(len(self.resolutions_)-1,-1,-1):
             if self.resolutions_[i][1][0] > self.display_resolution_[0] or self.resolutions_[i][1][1] > self.display_resolution_[1]:
                 self.resolutions_.pop(i)
 
@@ -114,7 +143,15 @@ class Menu:
         self.temp_music_volume_ = False
 
         #default settings:
-        self.resolution_ = [1600,900]
+        self.defalt_resolution_ = [1056,594]
+        self.defalt_fullscreen_ = False
+        self.defalt_sfx_is_on_ = True #sound effects is on
+        self.defalt_sfx_volume_ = 0.5
+        self.defalt_music_is_on_ = True
+        self.defalt_music_volume_ = 0.5
+
+        # settings:
+        self.resolution_ = [1056,594]
         self.fullscreen_ = False
         self.sfx_is_on_ = True #sound effects is on
         self.sfx_volume_ = 0.5
@@ -123,16 +160,25 @@ class Menu:
 
 
         self.ReadSettings() #read settings from json file, create screen, menu object
-
+        
 
     def ReadSettings(self):
         '''
-        read settings from save/settings.json
-        create menu object and window
+        Read settings from json file
+
+        File path:
+
+        linux:
+        home/.conf/kallio/settings.json
+
+        windows:
+        appdata/Roaming/kallio/settings.json
         '''
 
         try:
-            f = open("save/settings.json", "r")  #read json file
+            path = GetKallioConfigDirectory()  # get config directory path
+
+            f = open(f"{path}settings.json", "r")  #read json file
             settings = json.load(f)["settings"]  #read settings
             f.close()  #close file
 
@@ -159,42 +205,87 @@ class Menu:
 
             if settings["fullscreen"] == True:
                 self.fullscreen_ = True
-                self.screen_ = pygame.display.set_mode(self.resolution_, pygame.FULLSCREEN)  # crete fullscreen window
             else:
                 self.fullscreen_ = False
-                self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
 
-            self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,theme=self.menu_theme_)  #create menu object
-            pygame.display.set_caption('KALLIO') #rename window
+
+            self.CreateMenuObject() #create menu object
+            self.SaveSettings(True) #save default settings to json file
+
 
         except Exception: #invalid json file or file not exist
-            self.SaveSettings() #save default settings to json file
+            self.SaveSettings(True) #write default settings to json file
             self.ReadSettings()
 
-    def SaveSettings(self):
+    def SaveSettings(self,default:bool=False):
         '''
         save current settings to json file
-        save/settings.json
+
+        File path:
+
+        linux:
+        home/.conf/kallio/settings.json
+
+        windows:
+
+        appdata/Roaming/kallio/settings.json
         '''
 
-
-        settings = {
-            "settings":{
-                "fullscreen":self.fullscreen_,
-                "resolution":self.resolution_,
-                "sfx is on":self.sfx_is_on_,
-                "volume":self.sfx_volume_,
-                "music is on": self.music_is_on_,
-                "music volume":self.music_volume_
-
+        if default == True:
+            settings = { #default settings
+                "settings":{
+                    "fullscreen":self.defalt_fullscreen_,
+                    "resolution":self.defalt_resolution_,
+                    "sfx is on":self.defalt_sfx_is_on_,
+                    "volume":self.defalt_sfx_volume_,
+                    "music is on": self.defalt_music_is_on_,
+                    "music volume":self.defalt_music_volume_,
+                }
             }
-        }
+
+        else:
+            settings = { #current settings
+                "settings":{
+                    "fullscreen":self.fullscreen_,
+                    "resolution":self.resolution_,
+                    "sfx is on":self.sfx_is_on_,
+                    "volume":self.sfx_volume_,
+                    "music is on": self.music_is_on_,
+                    "music volume":self.music_volume_
+                }
+            }
 
         jsonstr = json.dumps(settings) #dictionary to str
 
-        f = open("save/settings.json", "w")  #open file
+        path = GetKallioConfigDirectory() #get config directory path
+
+
+        f = open(f"{path}settings.json", "w")  #open file
         f.write(jsonstr) #write dictionary data to json file
         f.close()  # close file
+
+
+
+    def CreateMenuObject(self):
+        '''
+        Create/upadate self.menu_ object
+        '''
+
+        if self.fullscreen_ == True:
+            self.fullscreen_ = True
+            self.screen_ = pygame.display.set_mode(self.resolution_,pygame.FULLSCREEN)  # crete fullscreen window
+        else:
+            self.fullscreen_ = False
+            self.screen_ = pygame.display.set_mode(self.resolution_, pygame.WINDOWMOVED)  # crete normal window
+
+        self.menu_ = pygame_menu.Menu('KALLIO', 700, 590, surface=self.screen_,
+                                      theme=self.menu_theme_)  #create menu object
+        pygame.display.set_caption('KALLIO')  # rename window
+
+        pygame_icon = pygame.image.load('media/player2.png')
+        pygame.display.set_icon(pygame_icon)  # change icon
+
+
 
     def SetIpaddress(self, ip: str):
         self.server_ip_ = ip
@@ -433,15 +524,35 @@ class Menu:
     def InfoMenu(self):
         self.menu_.clear() #clear menu
 
+        self.menu_.add.label(f"KALLIO v{PROGRAM_VERSION}")
         self.menu_.add.label("Controls:")
         self.menu_.add.label("Move:")
-        self.menu_.add.label("arrow keys")
+        self.menu_.add.label("arrow keys/wasd")
         self.menu_.add.label("")
         self.menu_.add.label("Delete next to player:")
-        self.menu_.add.label("space + arrow keys")
+        self.menu_.add.label("space/left ctrl + arrow keys/wasd")
         self.menu_.add.label("")
 
         self.menu_.add.button("Back to main menu",self.MainMenu)
+
+
+    def SaveSettingsMenu(self):
+        '''
+        ask the user whether they want to keep the settings or discard the settings
+        '''
+        def KeepSettings():
+            self.SaveSettings(False) #save settigns to json file
+            self.MainMenu() #back to main menu
+
+        def DiscardSettings():
+            self.SaveSettings(True) #write default settings to json file
+            self.ReadSettings() #read settings from json file
+            self.MainMenu()  # back to main menu
+
+        self.menu_.clear()
+        self.menu_.add.button("Keep settings",action=KeepSettings)
+        self.menu_.add.button("Discard settings",action=DiscardSettings)
+        self.menu_.mainloop(self.screen_)
 
 
 
@@ -475,15 +586,11 @@ class Menu:
 
         def ApplySettings():
             '''
-            Save changes
-
             set temp variable -->
             '''
 
             if self.temp_resolution_ == [1056,594]: #prevent setting full screen if the resolution is too low
                 self.temp_fullscreen_ = False
-
-
 
             #apply settings
             self.sfx_is_on_ = self.temp_sfx_is_on_
@@ -501,15 +608,9 @@ class Menu:
             if self.temp_fullscreen_ != self.fullscreen_ or self.temp_resolution_ != self.resolution_: #if the screen settings has been changed
                 self.resolution_ = self.temp_resolution_
                 self.fullscreen_ = self.temp_fullscreen_
-                self.SaveSettings()  # save settings to json file
-                #update menu object:
-                self.ReadSettings()
 
-
-            self.SaveSettings() #save settings to json file
-
-            self.SettingsMenu()
-            self.menu_.mainloop(self.screen_)
+            self.CreateMenuObject()  #update menu object
+            self.SaveSettingsMenu() #ask the user whether they want to keep the settings or discard the settings
 
 
         def FindReslutionIndex(resolution, resoluutions_list):
@@ -534,9 +635,8 @@ class Menu:
 
         self.menu_.add.range_slider(title="Music volume: ", default=int(self.temp_music_volume_ * 10), range_values=(0, 10), increment=1, onchange=SetTempMusicVolume) #set volume
         self.menu_.add.button("Apply",action=ApplySettings)
+
         self.menu_.add.button("Back",self.MainMenu)
-
-
 
 
 
@@ -546,9 +646,14 @@ class Menu:
         self.menu_.add.button('Multiplayer', self.MultiPlayerMenu)
         self.menu_.add.button("Info",self.InfoMenu)
         self.menu_.add.button("Settings",self.SettingsMenu)
-        self.menu_.add.button('Quit', pygame_menu.events.EXIT) #exit program
+        self.menu_.add.button('Quit', self.Close) #exit program
         self.menu_.mainloop(self.screen_)
 
+
+    def Close(self):
+        self.SaveSettings()
+        pygame.quit()
+        sys.exit()
 
     def BackToMenu(self):
         '''

@@ -3,7 +3,7 @@
 {
   "levels are intended for multiplayer": true,
 
-  "map count": 5,
+  "map count": 6,
 
 
   "maps": {
@@ -11,6 +11,7 @@
     "2": ["maps/multiplayer/go go!","go go!"],
     "3": ["maps/multiplayer/gravity","gravity"],
     "4": ["maps/multiplayer/tunnel","tunnel"],
-    "5": ["maps/multiplayer/the rooms","the rooms"]
+    "5": ["maps/multiplayer/the rooms","the rooms"],
+    "6": ["maps/multiplayer/simple","simple"]
   }
 }

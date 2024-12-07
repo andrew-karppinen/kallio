@@ -1,6 +1,8 @@
 
 
 
+from src.astar import astar
+
 
 from src.map import *
 from src.network import *

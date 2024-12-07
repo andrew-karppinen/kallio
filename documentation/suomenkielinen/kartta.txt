@@ -1,23 +1,19 @@
 
 
 utf-8 koodattu tiedosto on seuraavanlainen:
-ensimmäinen rivi on "True" tai "False" True kertoo että kartta on tarkotus pelata moninpelinä (ei käytetä tällä hetkellä)
 
-toisella rivillä on luku joka kertoo vaadittavien pisteiden määrän
 
-kolmannella rivillä on kartan aikaraja sekuntteina, jos se on 0 aikarajaa ei ole
-
-tiedoston neljännellä rivillä on pilkuilla eroteltuna kaksi lukua
-ensimmäinen luku on kartan koko y suunnassa ja toinen kartan koko x suunnassa
-
-viidenneltä riviltä alkaa itse kartta, rivinvaihdot vaihdetaan automaattisesti pilkuiksi
 
 
 ESIMERKKITIEDOSTO:
-True
-5
-0
-8,14
+time=30
+size_x=14
+size_y=8
+multiplayer=False
+required_score=5
+map_file_version=2
+
+mapstart:
 1,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
@@ -25,6 +21,16 @@ True
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
 3,3,3,3,3,3,3,3,3,3,3,3,3,3
-3,3,3,3,3,3,3,3,3,3,3,3,3,3
+3,3,3,3,3,3,3,3,3,3,3,3,3,8
+
+
+
+mapstart: rivi kertoo mistä varsinainen kartta alkaa, tämän muto on oltava oikea, viimesen rivin jälkeen ei saa olla tyhjää riviä.
+muiden asetusten järjestyksellä ei ole väliä
+
+
+map_file_version asetus on sitävarten että tiedoston yhteensopivuus ohjelman nykyisen version kanssa pystytään varmistamaan.
 
 kartan numeroiden merkitys on tallennettu /src/config/tile_commands_config.py tiedostoon
+
+
