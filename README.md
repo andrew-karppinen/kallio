@@ -18,8 +18,6 @@ Pygame,
 Pygame-menu 
 
 
-For playing on a LAN network, a wired network is recommended, not wifi!
-
 Controls:
 Move: arrows keys
 
